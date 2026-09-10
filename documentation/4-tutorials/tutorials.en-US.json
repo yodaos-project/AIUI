@@ -1,0 +1,300 @@
+{
+  "categories": [
+    {
+      "id": "getting-started",
+      "label": "Getting Started",
+      "description": "Create a project and learn the basic parts of an AIUI page.",
+      "order": 10
+    },
+    {
+      "id": "interface",
+      "label": "UI and Interaction",
+      "description": "Build interactive interfaces with data binding, events, and components.",
+      "order": 20
+    },
+    {
+      "id": "data",
+      "label": "Data and Network",
+      "description": "Load data from an endpoint and present it in an AIUI page.",
+      "order": 30
+    },
+    {
+      "id": "framework",
+      "label": "Framework Capabilities",
+      "description": "Organize projects with Widgets, Agent Workers, and custom components.",
+      "order": 40
+    },
+    {
+      "id": "ai",
+      "label": "AI and Speech",
+      "description": "Use language models, speech recognition, and speech synthesis.",
+      "order": 50
+    },
+    {
+      "id": "device",
+      "label": "Device Capabilities",
+      "description": "Read device sensors provided by the glasses and host.",
+      "order": 60
+    },
+    {
+      "id": "delivery",
+      "label": "Build and Delivery",
+      "description": "Package, inspect, and prepare an agent for release.",
+      "order": 70
+    }
+  ],
+  "tutorials": [
+    {
+      "id": "create-first-agent",
+      "title": "Create Your First AIUI Agent",
+      "description": "Scaffold a project and complete the smallest runnable page.",
+      "category": "getting-started",
+      "featured": true,
+      "sourcePath": "4-tutorials/create-first-agent",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["project", "Page"],
+      "order": 10
+    },
+    {
+      "id": "build-interactive-counter",
+      "title": "Build an Interactive Counter",
+      "description": "Update page state with data binding, event handlers, and setData.",
+      "category": "interface",
+      "featured": true,
+      "sourcePath": "4-tutorials/build-interactive-counter",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["data binding", "events"],
+      "order": 10
+    },
+    {
+      "id": "load-remote-data",
+      "title": "Load and Display Remote Data",
+      "description": "Request data with fetch and handle loading, success, and failure states.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/load-remote-data",
+      "difficulty": "beginner",
+      "estimatedMinutes": 15,
+      "tags": ["fetch", "state handling"],
+      "order": 10
+    },
+    {
+      "id": "conditional-content",
+      "title": "Render Content from State",
+      "description": "Cover loading, empty, and complete states with conditional rendering.",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/conditional-content",
+      "difficulty": "beginner",
+      "estimatedMinutes": 8,
+      "tags": ["basics","interface"],
+      "order": 20
+    },
+    {
+      "id": "render-a-list",
+      "title": "Render a Dynamic List",
+      "description": "Render array data with ink:for and a stable key.",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/render-a-list",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["basics","interface"],
+      "order": 30
+    },
+    {
+      "id": "handle-text-input",
+      "title": "Read Text Input",
+      "description": "Read input events and synchronize page data.",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/handle-text-input",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["basics","interface"],
+      "order": 40
+    },
+    {
+      "id": "build-flex-layout",
+      "title": "Lay Out a Page with Flexbox",
+      "description": "Build an adaptive interface with relative sizing and Flexbox.",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/build-flex-layout",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["basics","interface"],
+      "order": 50
+    },
+    {
+      "id": "navigate-between-pages",
+      "title": "Navigate Between Pages",
+      "description": "Register a destination and navigate with query parameters.",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/navigate-between-pages",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["basics","interface"],
+      "order": 60
+    },
+    {
+      "id": "use-page-lifecycle",
+      "title": "Use the Page Lifecycle",
+      "description": "Initialize and release page resources in the correct lifecycle hooks.",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/use-page-lifecycle",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["basics","interface"],
+      "order": 70
+    },
+    {
+      "id": "create-a-widget",
+      "title": "Create a Widget",
+      "description": "Declare and implement a compact, independent Widget.",
+      "category": "framework",
+      "featured": true,
+      "sourcePath": "4-tutorials/create-a-widget",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["framework","structure"],
+      "order": 80
+    },
+    {
+      "id": "run-an-agent-worker",
+      "title": "Run an Agent Worker",
+      "description": "Declare a background Agent Worker without an interface.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/run-an-agent-worker",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["framework","structure"],
+      "order": 90
+    },
+    {
+      "id": "persist-settings",
+      "title": "Persist User Settings",
+      "description": "Save and restore structured settings with localStorage.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/persist-settings",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["data","network"],
+      "order": 100
+    },
+    {
+      "id": "receive-server-events",
+      "title": "Receive Server-Sent Events",
+      "description": "Receive incremental server events with EventSource.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/receive-server-events",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["data","network"],
+      "order": 110
+    },
+    {
+      "id": "connect-a-websocket",
+      "title": "Connect a WebSocket",
+      "description": "Open a real-time connection that sends and receives messages.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/connect-a-websocket",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["data","network"],
+      "order": 120
+    },
+    {
+      "id": "generate-text-with-llm",
+      "title": "Generate Text with a Language Model",
+      "description": "Check capability, create a language-model session, and generate a result.",
+      "category": "ai",
+      "featured": true,
+      "sourcePath": "4-tutorials/generate-text-with-llm",
+      "difficulty": "beginner",
+      "estimatedMinutes": 15,
+      "tags": ["AI","speech"],
+      "order": 130
+    },
+    {
+      "id": "speak-text",
+      "title": "Speak a Text Message",
+      "description": "Speak text with SpeechSynthesisUtterance.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/speak-text",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["AI","speech"],
+      "order": 140
+    },
+    {
+      "id": "recognize-speech",
+      "title": "Recognize a Speech Input",
+      "description": "Start SpeechRecognition and handle recognition results.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/recognize-speech",
+      "difficulty": "beginner",
+      "estimatedMinutes": 15,
+      "tags": ["AI","speech"],
+      "order": 150
+    },
+    {
+      "id": "read-accelerometer",
+      "title": "Read Accelerometer Data",
+      "description": "Subscribe to accelerometer readings and stop sampling correctly.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/read-accelerometer",
+      "difficulty": "beginner",
+      "estimatedMinutes": 15,
+      "tags": ["device","sensor"],
+      "order": 160
+    },
+    {
+      "id": "draw-on-canvas",
+      "title": "Draw on Canvas",
+      "description": "Obtain a 2D context and draw basic shapes and text.",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/draw-on-canvas",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["basics","interface"],
+      "order": 170
+    },
+    {
+      "id": "reuse-a-component",
+      "title": "Reuse a Custom Component",
+      "description": "Register and use a custom component with usingComponents.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/reuse-a-component",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["framework","structure"],
+      "order": 180
+    },
+    {
+      "id": "package-an-aix",
+      "title": "Package an AIX File",
+      "description": "Package and inspect an agent with the AIX CLI.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/package-an-aix",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["AIX","CLI"],
+      "order": 190
+    }
+  ]
+}

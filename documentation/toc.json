@@ -932,7 +932,119 @@
     "slug": "api"
   },
   {
-    "id": "4-cloud",
+    "id": "4-tutorials",
+    "label": "教程",
+    "children": [
+      {
+        "id": "create-first-agent",
+        "label": "创建第一个 AIUI 智能体",
+        "children": []
+      },
+      {
+        "id": "build-interactive-counter",
+        "label": "构建一个交互式计数器",
+        "children": []
+      },
+      {
+        "id": "load-remote-data",
+        "label": "加载并展示远程数据",
+        "children": []
+      },
+      {
+        "id": "conditional-content",
+        "label": "根据状态显示内容",
+        "children": []
+      },
+      {
+        "id": "render-a-list",
+        "label": "渲染动态列表",
+        "children": []
+      },
+      {
+        "id": "handle-text-input",
+        "label": "读取文本输入",
+        "children": []
+      },
+      {
+        "id": "build-flex-layout",
+        "label": "使用 Flexbox 布局页面",
+        "children": []
+      },
+      {
+        "id": "navigate-between-pages",
+        "label": "在 Page 之间导航",
+        "children": []
+      },
+      {
+        "id": "use-page-lifecycle",
+        "label": "使用 Page 生命周期",
+        "children": []
+      },
+      {
+        "id": "create-a-widget",
+        "label": "创建一个 Widget",
+        "children": []
+      },
+      {
+        "id": "run-an-agent-worker",
+        "label": "运行 Agent Worker",
+        "children": []
+      },
+      {
+        "id": "persist-settings",
+        "label": "持久化用户设置",
+        "children": []
+      },
+      {
+        "id": "receive-server-events",
+        "label": "接收服务端事件流",
+        "children": []
+      },
+      {
+        "id": "connect-a-websocket",
+        "label": "建立 WebSocket 连接",
+        "children": []
+      },
+      {
+        "id": "generate-text-with-llm",
+        "label": "使用语言模型生成文本",
+        "children": []
+      },
+      {
+        "id": "speak-text",
+        "label": "播报一段文本",
+        "children": []
+      },
+      {
+        "id": "recognize-speech",
+        "label": "识别一次语音输入",
+        "children": []
+      },
+      {
+        "id": "read-accelerometer",
+        "label": "读取加速度计数据",
+        "children": []
+      },
+      {
+        "id": "draw-on-canvas",
+        "label": "在 Canvas 上绘图",
+        "children": []
+      },
+      {
+        "id": "reuse-a-component",
+        "label": "复用自定义组件",
+        "children": []
+      },
+      {
+        "id": "package-an-aix",
+        "label": "打包 AIX 文件",
+        "children": []
+      }
+    ],
+    "slug": "tutorials"
+  },
+  {
+    "id": "5-cloud",
     "label": "云服务",
     "children": [
       {
@@ -959,7 +1071,7 @@
     "slug": "cloud"
   },
   {
-    "id": "5-design",
+    "id": "6-design",
     "label": "设计",
     "children": [
       {
@@ -982,7 +1094,7 @@
     "slug": "design"
   },
   {
-    "id": "6-tools",
+    "id": "7-tools",
     "label": "工具",
     "children": [
       {
@@ -1014,7 +1126,7 @@
     "slug": "tools"
   },
   {
-    "id": "7-changelog",
+    "id": "8-changelog",
     "label": "更新日志",
     "children": [
       {

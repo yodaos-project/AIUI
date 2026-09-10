@@ -752,7 +752,119 @@
     "slug": "api"
   },
   {
-    "id": "4-cloud",
+    "id": "4-tutorials",
+    "label": "Tutorials",
+    "children": [
+      {
+        "id": "create-first-agent",
+        "label": "Create Your First AIUI Agent",
+        "children": []
+      },
+      {
+        "id": "build-interactive-counter",
+        "label": "Build an Interactive Counter",
+        "children": []
+      },
+      {
+        "id": "load-remote-data",
+        "label": "Load and Display Remote Data",
+        "children": []
+      },
+      {
+        "id": "conditional-content",
+        "label": "Render Content from State",
+        "children": []
+      },
+      {
+        "id": "render-a-list",
+        "label": "Render a Dynamic List",
+        "children": []
+      },
+      {
+        "id": "handle-text-input",
+        "label": "Read Text Input",
+        "children": []
+      },
+      {
+        "id": "build-flex-layout",
+        "label": "Lay Out a Page with Flexbox",
+        "children": []
+      },
+      {
+        "id": "navigate-between-pages",
+        "label": "Navigate Between Pages",
+        "children": []
+      },
+      {
+        "id": "use-page-lifecycle",
+        "label": "Use the Page Lifecycle",
+        "children": []
+      },
+      {
+        "id": "create-a-widget",
+        "label": "Create a Widget",
+        "children": []
+      },
+      {
+        "id": "run-an-agent-worker",
+        "label": "Run an Agent Worker",
+        "children": []
+      },
+      {
+        "id": "persist-settings",
+        "label": "Persist User Settings",
+        "children": []
+      },
+      {
+        "id": "receive-server-events",
+        "label": "Receive Server-Sent Events",
+        "children": []
+      },
+      {
+        "id": "connect-a-websocket",
+        "label": "Connect a WebSocket",
+        "children": []
+      },
+      {
+        "id": "generate-text-with-llm",
+        "label": "Generate Text with a Language Model",
+        "children": []
+      },
+      {
+        "id": "speak-text",
+        "label": "Speak a Text Message",
+        "children": []
+      },
+      {
+        "id": "recognize-speech",
+        "label": "Recognize a Speech Input",
+        "children": []
+      },
+      {
+        "id": "read-accelerometer",
+        "label": "Read Accelerometer Data",
+        "children": []
+      },
+      {
+        "id": "draw-on-canvas",
+        "label": "Draw on Canvas",
+        "children": []
+      },
+      {
+        "id": "reuse-a-component",
+        "label": "Reuse a Custom Component",
+        "children": []
+      },
+      {
+        "id": "package-an-aix",
+        "label": "Package an AIX File",
+        "children": []
+      }
+    ],
+    "slug": "tutorials"
+  },
+  {
+    "id": "5-cloud",
     "label": "Cloud",
     "children": [
       {
@@ -769,7 +881,7 @@
     "slug": "cloud"
   },
   {
-    "id": "5-design",
+    "id": "6-design",
     "label": "Design",
     "children": [
       {
@@ -792,7 +904,7 @@
     "slug": "design"
   },
   {
-    "id": "6-tools",
+    "id": "7-tools",
     "label": "Tools",
     "children": [
       {
@@ -824,7 +936,7 @@
     "slug": "tools"
   },
   {
-    "id": "7-changelog",
+    "id": "8-changelog",
     "label": "Changelog",
     "children": [
       {

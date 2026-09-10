@@ -28,14 +28,15 @@ public skill listings.
 
 ## Documentation Layout
 
-- `documentation/0-guide/`: onboarding, concepts, workflows, and tutorials.
+- `documentation/0-guide/`: onboarding, concepts, and workflows.
 - `documentation/1-framework/`: application format and framework behavior.
 - `documentation/2-components/`: built-in component reference.
 - `documentation/3-api/`: runtime, Web, and `wx` API reference.
-- `documentation/4-cloud/`: cloud services and server integration.
-- `documentation/5-design/`: visual and interaction guidance.
-- `documentation/6-tools/`: development tools and supporting workflows.
-- `documentation/7-changelog/`: release-oriented change summaries.
+- `documentation/4-tutorials/`: task-oriented, runnable example tutorials and their catalog configuration.
+- `documentation/5-cloud/`: cloud services and server integration.
+- `documentation/6-design/`: visual and interaction guidance.
+- `documentation/7-tools/`: development tools and supporting workflows.
+- `documentation/8-changelog/`: release-oriented change summaries.
 - `documentation/toc.json`: navigation hierarchy shared by localized pages.
 
 Use the existing directory that matches the reader's task. Do not reorganize
@@ -213,6 +214,32 @@ wx.request({
 In an ordinary Markdown renderer, the comments are hidden and both bold labels
 and code blocks remain visible. On js.rokid.com, the same source becomes an
 equal-width `Web` / `wx` switch with a sliding selection indicator.
+
+## Tutorial Step Blocks
+
+Tutorial pages may pair an explanation with its corresponding code by wrapping
+one or more Markdown paragraphs and one fenced code block in these comments:
+
+````markdown
+<!-- aiui-tutorial-step -->
+
+Explain what the reader should notice or do. Keep the explanation useful even
+when it renders above the code instead of beside it.
+
+```javascript
+const message = 'Hello, AIUI!';
+```
+
+<!-- /aiui-tutorial-step -->
+````
+
+- Keep both markers on their own lines.
+- Put the explanation first and exactly one fenced code block second.
+- Use multiple step blocks when a tutorial needs multiple explanation and code pairs.
+- Do not put essential content in marker attributes.
+- In ordinary Markdown the explanation and code render vertically. On
+  js.rokid.com, desktop layouts may place the explanation on the left and code
+  on the right; narrow layouts must stack them in source order.
 
 ## Tables and Notes
 

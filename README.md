@@ -52,10 +52,11 @@ The [`documentation/`](./documentation/) directory contains the official AIUI do
 - `1-framework/`: Framework fundamentals including project structure, config, WXML, and WXSS.
 - `2-components/`: Built-in component references such as `view`, `text`, `image`, `input`, `swiper`, `canvas`, and more.
 - `3-api/`: API references for framework, AI, media, device, network, storage, and compatible Web/Weixin APIs.
-- `4-cloud/`: Cloud integration for third-party agents and Rokid Glasses notifications.
-- `5-design/`: Interaction and visual design guidance.
-- `6-tools/`: CLI, Craft, and debugging tool documentation.
-- `7-changelog/`: Latest release notes and change history.
+- `4-tutorials/`: Categorized introductory tutorials and their `tutorials.json` catalog.
+- `5-cloud/`: Cloud integration for third-party agents and Rokid Glasses notifications.
+- `6-design/`: Interaction and visual design guidance.
+- `7-tools/`: CLI, Craft, and debugging tool documentation.
+- `8-changelog/`: Latest release notes and change history.
 
 ## 🎨 Design System
 
