@@ -52,10 +52,11 @@ npm create @yodaos-pkg/aiui-agent@latest my-agent
 - `1-framework/`：框架基础，包括项目结构、配置、WXML 和 WXSS
 - `2-components/`：内置组件参考，如 `view`、`text`、`image`、`input`、`swiper`、`canvas` 等
 - `3-api/`：框架、AI、媒体、设备、网络、存储以及 Web/微信兼容 API 参考
-- `4-cloud/`：第三方 Agent 与 Rokid Glasses 通知的云端集成文档
-- `5-design/`：交互与视觉设计规范
-- `6-tools/`：CLI、Craft 与调试工具文档
-- `7-changelog/`：最新版本说明与变更历史
+- `4-tutorials/`：按分类组织的基础示例教程及 `tutorials.json` 配置
+- `5-cloud/`：第三方 Agent 与 Rokid Glasses 通知的云端集成文档
+- `6-design/`：交互与视觉设计规范
+- `7-tools/`：CLI、Craft 与调试工具文档
+- `8-changelog/`：最新版本说明与变更历史
 
 ## 🎨 设计系统
 

@@ -1,0 +1,300 @@
+{
+  "categories": [
+    {
+      "id": "getting-started",
+      "label": "快速入门",
+      "description": "创建项目并理解 AIUI 页面最基础的组成。",
+      "order": 10
+    },
+    {
+      "id": "interface",
+      "label": "界面与交互",
+      "description": "使用数据绑定、事件和组件构建可交互界面。",
+      "order": 20
+    },
+    {
+      "id": "data",
+      "label": "数据与网络",
+      "description": "从接口加载数据并呈现在 AIUI 页面中。",
+      "order": 30
+    },
+    {
+      "id": "framework",
+      "label": "框架能力",
+      "description": "使用 Widget、Agent Worker 和自定义组件组织项目。",
+      "order": 40
+    },
+    {
+      "id": "ai",
+      "label": "AI 与语音",
+      "description": "使用语言模型、语音识别和语音合成能力。",
+      "order": 50
+    },
+    {
+      "id": "device",
+      "label": "设备能力",
+      "description": "读取眼镜和宿主提供的设备传感器。",
+      "order": 60
+    },
+    {
+      "id": "delivery",
+      "label": "构建与交付",
+      "description": "打包、检查并准备发布智能体。",
+      "order": 70
+    }
+  ],
+  "tutorials": [
+    {
+      "id": "create-first-agent",
+      "title": "创建第一个 AIUI 智能体",
+      "description": "用脚手架创建项目，并完成最小可运行页面。",
+      "category": "getting-started",
+      "featured": true,
+      "sourcePath": "4-tutorials/getting-started/create-first-agent",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["项目", "Page"],
+      "order": 10
+    },
+    {
+      "id": "build-interactive-counter",
+      "title": "构建一个交互式计数器",
+      "description": "通过数据绑定、事件处理和 setData 更新页面状态。",
+      "category": "interface",
+      "featured": true,
+      "sourcePath": "4-tutorials/interface/build-interactive-counter",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["数据绑定", "事件"],
+      "order": 10
+    },
+    {
+      "id": "load-remote-data",
+      "title": "加载并展示远程数据",
+      "description": "使用 fetch 请求数据，并处理加载、成功和失败状态。",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/load-remote-data",
+      "difficulty": "beginner",
+      "estimatedMinutes": 15,
+      "tags": ["fetch", "状态处理"],
+      "order": 10
+    },
+    {
+      "id": "conditional-content",
+      "title": "根据状态显示内容",
+      "description": "使用条件渲染覆盖加载、空数据和完成状态。",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/interface/conditional-content",
+      "difficulty": "beginner",
+      "estimatedMinutes": 8,
+      "tags": ["基础","界面"],
+      "order": 20
+    },
+    {
+      "id": "render-a-list",
+      "title": "渲染动态列表",
+      "description": "使用 ink:for 和稳定键渲染数组数据。",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/interface/render-a-list",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["基础","界面"],
+      "order": 30
+    },
+    {
+      "id": "handle-text-input",
+      "title": "读取文本输入",
+      "description": "读取输入事件并同步更新页面数据。",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/interface/handle-text-input",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["基础","界面"],
+      "order": 40
+    },
+    {
+      "id": "build-flex-layout",
+      "title": "使用 Flexbox 布局页面",
+      "description": "使用相对尺寸和 Flexbox 构建自适应界面。",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/interface/build-flex-layout",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["基础","界面"],
+      "order": 50
+    },
+    {
+      "id": "navigate-between-pages",
+      "title": "在 Page 之间导航",
+      "description": "注册目标页面并携带查询参数完成导航。",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/interface/navigate-between-pages",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["基础","界面"],
+      "order": 60
+    },
+    {
+      "id": "use-page-lifecycle",
+      "title": "使用 Page 生命周期",
+      "description": "在正确的生命周期初始化和释放页面资源。",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/interface/use-page-lifecycle",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["基础","界面"],
+      "order": 70
+    },
+    {
+      "id": "create-a-widget",
+      "title": "创建一个 Widget",
+      "description": "声明并实现一个小尺寸独立 Widget。",
+      "category": "framework",
+      "featured": true,
+      "sourcePath": "4-tutorials/framework/create-a-widget",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["框架","结构"],
+      "order": 80
+    },
+    {
+      "id": "run-an-agent-worker",
+      "title": "运行 Agent Worker",
+      "description": "声明没有界面的后台 Agent Worker 任务。",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/run-an-agent-worker",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["框架","结构"],
+      "order": 90
+    },
+    {
+      "id": "persist-settings",
+      "title": "持久化用户设置",
+      "description": "使用 localStorage 保存和恢复结构化设置。",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/persist-settings",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["数据","网络"],
+      "order": 100
+    },
+    {
+      "id": "receive-server-events",
+      "title": "接收服务端事件流",
+      "description": "使用 EventSource 接收服务端增量事件。",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/receive-server-events",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["数据","网络"],
+      "order": 110
+    },
+    {
+      "id": "connect-a-websocket",
+      "title": "建立 WebSocket 连接",
+      "description": "建立可以双向收发消息的实时连接。",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/connect-a-websocket",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["数据","网络"],
+      "order": 120
+    },
+    {
+      "id": "generate-text-with-llm",
+      "title": "使用语言模型生成文本",
+      "description": "检查能力后创建语言模型会话并生成结果。",
+      "category": "ai",
+      "featured": true,
+      "sourcePath": "4-tutorials/ai/generate-text-with-llm",
+      "difficulty": "beginner",
+      "estimatedMinutes": 15,
+      "tags": ["AI","语音"],
+      "order": 130
+    },
+    {
+      "id": "speak-text",
+      "title": "播报一段文本",
+      "description": "使用 SpeechSynthesisUtterance 播报文本。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/speak-text",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["AI","语音"],
+      "order": 140
+    },
+    {
+      "id": "recognize-speech",
+      "title": "识别一次语音输入",
+      "description": "启动 SpeechRecognition 并处理识别结果。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/recognize-speech",
+      "difficulty": "beginner",
+      "estimatedMinutes": 15,
+      "tags": ["AI","语音"],
+      "order": 150
+    },
+    {
+      "id": "read-accelerometer",
+      "title": "读取加速度计数据",
+      "description": "订阅加速度计读数并正确停止采样。",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/read-accelerometer",
+      "difficulty": "beginner",
+      "estimatedMinutes": 15,
+      "tags": ["设备","传感器"],
+      "order": 160
+    },
+    {
+      "id": "draw-on-canvas",
+      "title": "在 Canvas 上绘图",
+      "description": "获取 2D 上下文并绘制基础图形和文本。",
+      "category": "interface",
+      "featured": false,
+      "sourcePath": "4-tutorials/interface/draw-on-canvas",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["基础","界面"],
+      "order": 170
+    },
+    {
+      "id": "reuse-a-component",
+      "title": "复用自定义组件",
+      "description": "通过 usingComponents 注册并使用自定义组件。",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/reuse-a-component",
+      "difficulty": "beginner",
+      "estimatedMinutes": 12,
+      "tags": ["框架","结构"],
+      "order": 180
+    },
+    {
+      "id": "package-an-aix",
+      "title": "打包 AIX 文件",
+      "description": "使用 AIX CLI 打包并检查智能体产物。",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/package-an-aix",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["AIX","CLI"],
+      "order": 190
+    }
+  ]
+}
