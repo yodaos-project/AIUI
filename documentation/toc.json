@@ -943,7 +943,7 @@
           {
             "id": "create-first-agent",
             "label": "创建第一个 AIUI 智能体",
-            "sourcePath": "4-tutorials/create-first-agent",
+            "sourcePath": "4-tutorials/getting-started/create-first-agent",
             "children": []
           }
         ]
@@ -956,49 +956,49 @@
           {
             "id": "build-interactive-counter",
             "label": "构建一个交互式计数器",
-            "sourcePath": "4-tutorials/build-interactive-counter",
+            "sourcePath": "4-tutorials/interface/build-interactive-counter",
             "children": []
           },
           {
             "id": "conditional-content",
             "label": "根据状态显示内容",
-            "sourcePath": "4-tutorials/conditional-content",
+            "sourcePath": "4-tutorials/interface/conditional-content",
             "children": []
           },
           {
             "id": "render-a-list",
             "label": "渲染动态列表",
-            "sourcePath": "4-tutorials/render-a-list",
+            "sourcePath": "4-tutorials/interface/render-a-list",
             "children": []
           },
           {
             "id": "handle-text-input",
             "label": "读取文本输入",
-            "sourcePath": "4-tutorials/handle-text-input",
+            "sourcePath": "4-tutorials/interface/handle-text-input",
             "children": []
           },
           {
             "id": "build-flex-layout",
             "label": "使用 Flexbox 布局页面",
-            "sourcePath": "4-tutorials/build-flex-layout",
+            "sourcePath": "4-tutorials/interface/build-flex-layout",
             "children": []
           },
           {
             "id": "navigate-between-pages",
             "label": "在 Page 之间导航",
-            "sourcePath": "4-tutorials/navigate-between-pages",
+            "sourcePath": "4-tutorials/interface/navigate-between-pages",
             "children": []
           },
           {
             "id": "use-page-lifecycle",
             "label": "使用 Page 生命周期",
-            "sourcePath": "4-tutorials/use-page-lifecycle",
+            "sourcePath": "4-tutorials/interface/use-page-lifecycle",
             "children": []
           },
           {
             "id": "draw-on-canvas",
             "label": "在 Canvas 上绘图",
-            "sourcePath": "4-tutorials/draw-on-canvas",
+            "sourcePath": "4-tutorials/interface/draw-on-canvas",
             "children": []
           }
         ]
@@ -1011,25 +1011,25 @@
           {
             "id": "load-remote-data",
             "label": "加载并展示远程数据",
-            "sourcePath": "4-tutorials/load-remote-data",
+            "sourcePath": "4-tutorials/data/load-remote-data",
             "children": []
           },
           {
             "id": "persist-settings",
             "label": "持久化用户设置",
-            "sourcePath": "4-tutorials/persist-settings",
+            "sourcePath": "4-tutorials/data/persist-settings",
             "children": []
           },
           {
             "id": "receive-server-events",
             "label": "接收服务端事件流",
-            "sourcePath": "4-tutorials/receive-server-events",
+            "sourcePath": "4-tutorials/data/receive-server-events",
             "children": []
           },
           {
             "id": "connect-a-websocket",
             "label": "建立 WebSocket 连接",
-            "sourcePath": "4-tutorials/connect-a-websocket",
+            "sourcePath": "4-tutorials/data/connect-a-websocket",
             "children": []
           }
         ]
@@ -1042,19 +1042,19 @@
           {
             "id": "create-a-widget",
             "label": "创建一个 Widget",
-            "sourcePath": "4-tutorials/create-a-widget",
+            "sourcePath": "4-tutorials/framework/create-a-widget",
             "children": []
           },
           {
             "id": "run-an-agent-worker",
             "label": "运行 Agent Worker",
-            "sourcePath": "4-tutorials/run-an-agent-worker",
+            "sourcePath": "4-tutorials/framework/run-an-agent-worker",
             "children": []
           },
           {
             "id": "reuse-a-component",
             "label": "复用自定义组件",
-            "sourcePath": "4-tutorials/reuse-a-component",
+            "sourcePath": "4-tutorials/framework/reuse-a-component",
             "children": []
           }
         ]
@@ -1067,19 +1067,19 @@
           {
             "id": "generate-text-with-llm",
             "label": "使用语言模型生成文本",
-            "sourcePath": "4-tutorials/generate-text-with-llm",
+            "sourcePath": "4-tutorials/ai/generate-text-with-llm",
             "children": []
           },
           {
             "id": "speak-text",
             "label": "播报一段文本",
-            "sourcePath": "4-tutorials/speak-text",
+            "sourcePath": "4-tutorials/ai/speak-text",
             "children": []
           },
           {
             "id": "recognize-speech",
             "label": "识别一次语音输入",
-            "sourcePath": "4-tutorials/recognize-speech",
+            "sourcePath": "4-tutorials/ai/recognize-speech",
             "children": []
           }
         ]
@@ -1092,7 +1092,7 @@
           {
             "id": "read-accelerometer",
             "label": "读取加速度计数据",
-            "sourcePath": "4-tutorials/read-accelerometer",
+            "sourcePath": "4-tutorials/device/read-accelerometer",
             "children": []
           }
         ]
@@ -1105,7 +1105,7 @@
           {
             "id": "package-an-aix",
             "label": "打包 AIX 文件",
-            "sourcePath": "4-tutorials/package-an-aix",
+            "sourcePath": "4-tutorials/delivery/package-an-aix",
             "children": []
           }
         ]

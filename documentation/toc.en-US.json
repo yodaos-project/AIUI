@@ -763,7 +763,7 @@
           {
             "id": "create-first-agent",
             "label": "Create Your First AIUI Agent",
-            "sourcePath": "4-tutorials/create-first-agent",
+            "sourcePath": "4-tutorials/getting-started/create-first-agent",
             "children": []
           }
         ]
@@ -776,49 +776,49 @@
           {
             "id": "build-interactive-counter",
             "label": "Build an Interactive Counter",
-            "sourcePath": "4-tutorials/build-interactive-counter",
+            "sourcePath": "4-tutorials/interface/build-interactive-counter",
             "children": []
           },
           {
             "id": "conditional-content",
             "label": "Render Content from State",
-            "sourcePath": "4-tutorials/conditional-content",
+            "sourcePath": "4-tutorials/interface/conditional-content",
             "children": []
           },
           {
             "id": "render-a-list",
             "label": "Render a Dynamic List",
-            "sourcePath": "4-tutorials/render-a-list",
+            "sourcePath": "4-tutorials/interface/render-a-list",
             "children": []
           },
           {
             "id": "handle-text-input",
             "label": "Read Text Input",
-            "sourcePath": "4-tutorials/handle-text-input",
+            "sourcePath": "4-tutorials/interface/handle-text-input",
             "children": []
           },
           {
             "id": "build-flex-layout",
             "label": "Lay Out a Page with Flexbox",
-            "sourcePath": "4-tutorials/build-flex-layout",
+            "sourcePath": "4-tutorials/interface/build-flex-layout",
             "children": []
           },
           {
             "id": "navigate-between-pages",
             "label": "Navigate Between Pages",
-            "sourcePath": "4-tutorials/navigate-between-pages",
+            "sourcePath": "4-tutorials/interface/navigate-between-pages",
             "children": []
           },
           {
             "id": "use-page-lifecycle",
             "label": "Use the Page Lifecycle",
-            "sourcePath": "4-tutorials/use-page-lifecycle",
+            "sourcePath": "4-tutorials/interface/use-page-lifecycle",
             "children": []
           },
           {
             "id": "draw-on-canvas",
             "label": "Draw on Canvas",
-            "sourcePath": "4-tutorials/draw-on-canvas",
+            "sourcePath": "4-tutorials/interface/draw-on-canvas",
             "children": []
           }
         ]
@@ -831,25 +831,25 @@
           {
             "id": "load-remote-data",
             "label": "Load and Display Remote Data",
-            "sourcePath": "4-tutorials/load-remote-data",
+            "sourcePath": "4-tutorials/data/load-remote-data",
             "children": []
           },
           {
             "id": "persist-settings",
             "label": "Persist User Settings",
-            "sourcePath": "4-tutorials/persist-settings",
+            "sourcePath": "4-tutorials/data/persist-settings",
             "children": []
           },
           {
             "id": "receive-server-events",
             "label": "Receive Server-Sent Events",
-            "sourcePath": "4-tutorials/receive-server-events",
+            "sourcePath": "4-tutorials/data/receive-server-events",
             "children": []
           },
           {
             "id": "connect-a-websocket",
             "label": "Connect a WebSocket",
-            "sourcePath": "4-tutorials/connect-a-websocket",
+            "sourcePath": "4-tutorials/data/connect-a-websocket",
             "children": []
           }
         ]
@@ -862,19 +862,19 @@
           {
             "id": "create-a-widget",
             "label": "Create a Widget",
-            "sourcePath": "4-tutorials/create-a-widget",
+            "sourcePath": "4-tutorials/framework/create-a-widget",
             "children": []
           },
           {
             "id": "run-an-agent-worker",
             "label": "Run an Agent Worker",
-            "sourcePath": "4-tutorials/run-an-agent-worker",
+            "sourcePath": "4-tutorials/framework/run-an-agent-worker",
             "children": []
           },
           {
             "id": "reuse-a-component",
             "label": "Reuse a Custom Component",
-            "sourcePath": "4-tutorials/reuse-a-component",
+            "sourcePath": "4-tutorials/framework/reuse-a-component",
             "children": []
           }
         ]
@@ -887,19 +887,19 @@
           {
             "id": "generate-text-with-llm",
             "label": "Generate Text with a Language Model",
-            "sourcePath": "4-tutorials/generate-text-with-llm",
+            "sourcePath": "4-tutorials/ai/generate-text-with-llm",
             "children": []
           },
           {
             "id": "speak-text",
             "label": "Speak a Text Message",
-            "sourcePath": "4-tutorials/speak-text",
+            "sourcePath": "4-tutorials/ai/speak-text",
             "children": []
           },
           {
             "id": "recognize-speech",
             "label": "Recognize a Speech Input",
-            "sourcePath": "4-tutorials/recognize-speech",
+            "sourcePath": "4-tutorials/ai/recognize-speech",
             "children": []
           }
         ]
@@ -912,7 +912,7 @@
           {
             "id": "read-accelerometer",
             "label": "Read Accelerometer Data",
-            "sourcePath": "4-tutorials/read-accelerometer",
+            "sourcePath": "4-tutorials/device/read-accelerometer",
             "children": []
           }
         ]
@@ -925,7 +925,7 @@
           {
             "id": "package-an-aix",
             "label": "Package an AIX File",
-            "sourcePath": "4-tutorials/package-an-aix",
+            "sourcePath": "4-tutorials/delivery/package-an-aix",
             "children": []
           }
         ]
