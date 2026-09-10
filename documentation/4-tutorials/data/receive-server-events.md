@@ -9,7 +9,7 @@
 当服务端只需要持续向页面推送增量内容时，可以使用 `EventSource`。监听消息与错误，并在页面离开时关闭连接。
 
 ```javascript
-const source = new EventSource('/api/agent/stream');
+const source = new EventSource('https://api.example.com/agent/stream');
 
 source.addEventListener('message', (event) => {
   console.log('Update:', event.data);
@@ -25,4 +25,3 @@ source.addEventListener('error', (error) => {
 <!-- /aiui-tutorial-step -->
 
 SSE 是单向通道；需要双向通信时选择 WebSocket。参见 [Event Source](/AIUI/api/network-event-source)。
-
