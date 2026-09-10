@@ -756,109 +756,179 @@
     "label": "Tutorials",
     "children": [
       {
-        "id": "create-first-agent",
-        "label": "Create Your First AIUI Agent",
-        "children": []
+        "id": "getting-started",
+        "label": "Getting Started",
+        "expanded": true,
+        "children": [
+          {
+            "id": "create-first-agent",
+            "label": "Create Your First AIUI Agent",
+            "sourcePath": "4-tutorials/create-first-agent",
+            "children": []
+          }
+        ]
       },
       {
-        "id": "build-interactive-counter",
-        "label": "Build an Interactive Counter",
-        "children": []
+        "id": "interface",
+        "label": "UI and Interaction",
+        "expanded": false,
+        "children": [
+          {
+            "id": "build-interactive-counter",
+            "label": "Build an Interactive Counter",
+            "sourcePath": "4-tutorials/build-interactive-counter",
+            "children": []
+          },
+          {
+            "id": "conditional-content",
+            "label": "Render Content from State",
+            "sourcePath": "4-tutorials/conditional-content",
+            "children": []
+          },
+          {
+            "id": "render-a-list",
+            "label": "Render a Dynamic List",
+            "sourcePath": "4-tutorials/render-a-list",
+            "children": []
+          },
+          {
+            "id": "handle-text-input",
+            "label": "Read Text Input",
+            "sourcePath": "4-tutorials/handle-text-input",
+            "children": []
+          },
+          {
+            "id": "build-flex-layout",
+            "label": "Lay Out a Page with Flexbox",
+            "sourcePath": "4-tutorials/build-flex-layout",
+            "children": []
+          },
+          {
+            "id": "navigate-between-pages",
+            "label": "Navigate Between Pages",
+            "sourcePath": "4-tutorials/navigate-between-pages",
+            "children": []
+          },
+          {
+            "id": "use-page-lifecycle",
+            "label": "Use the Page Lifecycle",
+            "sourcePath": "4-tutorials/use-page-lifecycle",
+            "children": []
+          },
+          {
+            "id": "draw-on-canvas",
+            "label": "Draw on Canvas",
+            "sourcePath": "4-tutorials/draw-on-canvas",
+            "children": []
+          }
+        ]
       },
       {
-        "id": "load-remote-data",
-        "label": "Load and Display Remote Data",
-        "children": []
+        "id": "data",
+        "label": "Data and Network",
+        "expanded": false,
+        "children": [
+          {
+            "id": "load-remote-data",
+            "label": "Load and Display Remote Data",
+            "sourcePath": "4-tutorials/load-remote-data",
+            "children": []
+          },
+          {
+            "id": "persist-settings",
+            "label": "Persist User Settings",
+            "sourcePath": "4-tutorials/persist-settings",
+            "children": []
+          },
+          {
+            "id": "receive-server-events",
+            "label": "Receive Server-Sent Events",
+            "sourcePath": "4-tutorials/receive-server-events",
+            "children": []
+          },
+          {
+            "id": "connect-a-websocket",
+            "label": "Connect a WebSocket",
+            "sourcePath": "4-tutorials/connect-a-websocket",
+            "children": []
+          }
+        ]
       },
       {
-        "id": "conditional-content",
-        "label": "Render Content from State",
-        "children": []
+        "id": "framework",
+        "label": "Framework Capabilities",
+        "expanded": false,
+        "children": [
+          {
+            "id": "create-a-widget",
+            "label": "Create a Widget",
+            "sourcePath": "4-tutorials/create-a-widget",
+            "children": []
+          },
+          {
+            "id": "run-an-agent-worker",
+            "label": "Run an Agent Worker",
+            "sourcePath": "4-tutorials/run-an-agent-worker",
+            "children": []
+          },
+          {
+            "id": "reuse-a-component",
+            "label": "Reuse a Custom Component",
+            "sourcePath": "4-tutorials/reuse-a-component",
+            "children": []
+          }
+        ]
       },
       {
-        "id": "render-a-list",
-        "label": "Render a Dynamic List",
-        "children": []
+        "id": "ai",
+        "label": "AI and Speech",
+        "expanded": false,
+        "children": [
+          {
+            "id": "generate-text-with-llm",
+            "label": "Generate Text with a Language Model",
+            "sourcePath": "4-tutorials/generate-text-with-llm",
+            "children": []
+          },
+          {
+            "id": "speak-text",
+            "label": "Speak a Text Message",
+            "sourcePath": "4-tutorials/speak-text",
+            "children": []
+          },
+          {
+            "id": "recognize-speech",
+            "label": "Recognize a Speech Input",
+            "sourcePath": "4-tutorials/recognize-speech",
+            "children": []
+          }
+        ]
       },
       {
-        "id": "handle-text-input",
-        "label": "Read Text Input",
-        "children": []
+        "id": "device",
+        "label": "Device Capabilities",
+        "expanded": false,
+        "children": [
+          {
+            "id": "read-accelerometer",
+            "label": "Read Accelerometer Data",
+            "sourcePath": "4-tutorials/read-accelerometer",
+            "children": []
+          }
+        ]
       },
       {
-        "id": "build-flex-layout",
-        "label": "Lay Out a Page with Flexbox",
-        "children": []
-      },
-      {
-        "id": "navigate-between-pages",
-        "label": "Navigate Between Pages",
-        "children": []
-      },
-      {
-        "id": "use-page-lifecycle",
-        "label": "Use the Page Lifecycle",
-        "children": []
-      },
-      {
-        "id": "create-a-widget",
-        "label": "Create a Widget",
-        "children": []
-      },
-      {
-        "id": "run-an-agent-worker",
-        "label": "Run an Agent Worker",
-        "children": []
-      },
-      {
-        "id": "persist-settings",
-        "label": "Persist User Settings",
-        "children": []
-      },
-      {
-        "id": "receive-server-events",
-        "label": "Receive Server-Sent Events",
-        "children": []
-      },
-      {
-        "id": "connect-a-websocket",
-        "label": "Connect a WebSocket",
-        "children": []
-      },
-      {
-        "id": "generate-text-with-llm",
-        "label": "Generate Text with a Language Model",
-        "children": []
-      },
-      {
-        "id": "speak-text",
-        "label": "Speak a Text Message",
-        "children": []
-      },
-      {
-        "id": "recognize-speech",
-        "label": "Recognize a Speech Input",
-        "children": []
-      },
-      {
-        "id": "read-accelerometer",
-        "label": "Read Accelerometer Data",
-        "children": []
-      },
-      {
-        "id": "draw-on-canvas",
-        "label": "Draw on Canvas",
-        "children": []
-      },
-      {
-        "id": "reuse-a-component",
-        "label": "Reuse a Custom Component",
-        "children": []
-      },
-      {
-        "id": "package-an-aix",
-        "label": "Package an AIX File",
-        "children": []
+        "id": "delivery",
+        "label": "Build and Delivery",
+        "expanded": false,
+        "children": [
+          {
+            "id": "package-an-aix",
+            "label": "Package an AIX File",
+            "sourcePath": "4-tutorials/package-an-aix",
+            "children": []
+          }
+        ]
       }
     ],
     "slug": "tutorials"
