@@ -165,6 +165,20 @@
         "hasIndex": true
       },
       {
+        "id": "account",
+        "label": "Account & Identity",
+        "expanded": false,
+        "children": [
+          {
+            "id": "authorization",
+            "label": "User Account Authorization",
+            "docId": "account-authorization",
+            "docPath": "0-guide/account/account-auth.en-US.md"
+          }
+        ],
+        "hasIndex": true
+      },
+      {
         "id": "debug",
         "label": "Debugging",
         "expanded": false,
