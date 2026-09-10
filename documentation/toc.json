@@ -171,7 +171,7 @@
         "children": [
           {
             "id": "authorization",
-            "label": "Rokid 账号授权",
+            "label": "用户账号授权",
             "docId": "account-authorization",
             "docPath": "0-guide/account/account-auth.md"
           }
