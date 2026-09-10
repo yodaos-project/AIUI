@@ -172,8 +172,8 @@
           {
             "id": "authorization",
             "label": "用户账号授权",
-            "docId": "account-authorization",
-            "docPath": "0-guide/account/account-auth.md"
+            "docId": "authorization",
+            "docPath": "0-guide/account/authorization.md"
           }
         ],
         "hasIndex": true

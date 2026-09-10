@@ -171,9 +171,9 @@
         "children": [
           {
             "id": "authorization",
-            "label": "User Account Authorization",
-            "docId": "account-authorization",
-            "docPath": "0-guide/account/account-auth.en-US.md"
+            "label": "Account Authorization",
+            "docId": "authorization",
+            "docPath": "0-guide/account/authorization.en-US.md"
           }
         ],
         "hasIndex": true
