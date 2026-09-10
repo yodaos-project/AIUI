@@ -165,6 +165,20 @@
         "hasIndex": true
       },
       {
+        "id": "account",
+        "label": "账号与身份",
+        "expanded": false,
+        "children": [
+          {
+            "id": "authorization",
+            "label": "Rokid 账号授权",
+            "docId": "account-authorization",
+            "docPath": "0-guide/account/account-auth.md"
+          }
+        ],
+        "hasIndex": true
+      },
+      {
         "id": "debug",
         "label": "调试",
         "expanded": false,
@@ -993,11 +1007,6 @@
       {
         "id": "skills",
         "label": "Skills",
-        "children": []
-      },
-      {
-        "id": "debug",
-        "label": "真机调试",
         "children": []
       }
     ],

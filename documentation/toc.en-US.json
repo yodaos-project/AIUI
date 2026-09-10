@@ -814,11 +814,6 @@
         "id": "skills",
         "label": "Skills",
         "children": []
-      },
-      {
-        "id": "debug",
-        "label": "On-Device Debugging",
-        "children": []
       }
     ],
     "slug": "tools"
