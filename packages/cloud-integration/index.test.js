@@ -21,6 +21,7 @@ function mockFetch(payload = successPayload, options = {}) {
     return {
       ok: true,
       status: 200,
+      async text() { return String(payload) },
       async json() { return payload },
     }
   }
@@ -66,8 +67,59 @@ test('preserves tool parameters and supports a custom endpoint', async () => {
 
 test('validates required fields', () => {
   assert.throws(() => new CloudIntegration(), CloudIntegrationValidationError)
-  const client = new CloudIntegration({ token: 'secret', fetch: mockFetch() })
-  assert.rejects(client.sendNotification(), CloudIntegrationValidationError)
+  const notificationClient = new CloudIntegration({ token: 'secret', fetch: mockFetch() })
+  const accountClient = new CloudIntegration({ accessToken: 'secret', fetch: mockFetch() })
+  assert.rejects(notificationClient.sendNotification(), CloudIntegrationValidationError)
+  assert.rejects(accountClient.getToken(), CloudIntegrationValidationError)
+  assert.rejects(accountClient.saveTemporaryMessage(), CloudIntegrationValidationError)
+})
+
+test('gets the account token as an opaque string', async () => {
+  const captured = {}
+  const client = new CloudIntegration({
+    accessToken: 'account-secret',
+    aiuiEndpoint: 'https://aiui.example/',
+    fetch: mockFetch('opaque-account-information', captured),
+  })
+
+  assert.equal(await client.getToken(), 'opaque-account-information')
+  assert.equal(captured.url, 'https://aiui.example/account/v1/token')
+  assert.equal(captured.request.headers.access_token, 'account-secret')
+})
+
+test('caches an AIUI message with the expected request', async () => {
+  const captured = {}
+  const payload = { code: 1, msg: 'success', timestamp: 1, uuid: 'request-id', data: {} }
+  const client = new CloudIntegration({
+    accessToken: 'account-secret',
+    aiuiEndpoint: 'https://aiui.example',
+    fetch: mockFetch(payload, captured),
+  })
+  const data = {
+    customData: 'custom-data',
+    content: 'new message',
+  }
+
+  assert.deepEqual(await client.saveTemporaryMessage('agent-1', '/pages/agent/message', data), payload)
+  assert.equal(captured.url, 'https://aiui.example/metis/openApi/v1/cacheAIUIMessage')
+  assert.equal(captured.request.headers.access_token, 'account-secret')
+  assert.deepEqual(JSON.parse(captured.request.body), {
+    agentId: 'agent-1',
+    path: '/pages/agent/message',
+    ...data,
+  })
+})
+
+test('rejects cache message business failures', async () => {
+  const client = new CloudIntegration({
+    accessToken: 'account-secret',
+    aiuiEndpoint: 'https://aiui.example',
+    fetch: mockFetch({ code: 0, msg: 'denied' }),
+  })
+  await assert.rejects(
+    client.saveTemporaryMessage('agent-1', '/page', { customData: 'data', content: 'message' }),
+    /denied/,
+  )
 })
 
 test('throws for transport, HTTP, JSON, and business failures', async (t) => {

@@ -1,7 +1,7 @@
 {
   "name": "@yodaos-pkg/cloud-integration",
-  "version": "1.0.0",
-  "description": "Rokid Glasses cloud notification integration for third-party agents.",
+  "version": "1.1.0",
+  "description": "Server-side AIUI and Rokid Glasses cloud integration for third-party agents.",
   "type": "module",
   "main": "./index.js",
   "files": [

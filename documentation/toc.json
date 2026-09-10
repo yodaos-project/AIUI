@@ -955,6 +955,16 @@
         "children": []
       },
       {
+        "id": "account-token",
+        "label": "账号 Token",
+        "children": []
+      },
+      {
+        "id": "messaging",
+        "label": "消息服务",
+        "children": []
+      },
+      {
         "id": "notifications",
         "label": "通知下发",
         "children": []
