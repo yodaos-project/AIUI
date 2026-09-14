@@ -26,29 +26,6 @@
 5. 静置 5 秒，观察倒计时归零后自动重新读取并回到 5s。
 6. 在宿主设置中切换系统语言（如切到 English 或繁体中文）后重新进入或长按镜腿，观察整个界面切换为对应语言，且“界面语言”行显示解析结果。
 
-## 真机部署（ADB DEVELOP 直传）
-
-除 Craft / AIUI Studio 云端链路外，可使用 DEVELOP 流程通过 ADB 直接上传到已授权的眼镜（需眼镜开启开发者模式；仓库目录下的 `agent.develop.json` 为本示例的 Definition）：
-
-```bash
-# 1. 打包（agent.develop.json 已通过 .aixignore 排除，不会进入包内）
-aix pack ./samples/navigator-info -o navigator-info.aix
-
-# 2. Prepare（返回 "ready":true 才继续；ENTRYPOINT_DISABLED 时先开启开发者模式）
-adb shell content call --uri content://com.rokid.aiui.develop --method prepare
-
-# 3. Push（暂存目录必须恰好一个 .aix 和一个 .json）
-adb push navigator-info.aix samples/navigator-info/agent.develop.json /sdcard/aiui/package/.staging/adb/
-
-# 4. Apply（检查 result_data：errorCode 为空、agentId 一致、outcome ∈ CREATED/UPDATED/UNCHANGED/REPAIRED）
-adb shell content call --uri content://com.rokid.aiui.develop --method apply
-
-# 5. 查询上传状态（publishState 为 UPLOADED 表示手机已确认）
-adb shell content call --uri content://com.rokid.aiui.develop --method status --arg <operationId>
-```
-
-上传成功后，通过语音命中智能体（如“乐奇，打开设备信息智能体”）即可在眼镜上运行；`adb logcat` 可捕获页面 `console.log` 输出的快照与语言解析日志（tag 含 `[navigator-info]`）。
-
 ## 项目边界
 
 项目不包含写入设备配置、网络请求或本地存储逻辑，全部字段均为只读展示。

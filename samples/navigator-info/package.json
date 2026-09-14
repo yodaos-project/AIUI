@@ -1,8 +1,8 @@
 {
-    "name": "aiui-navigator-info",
-    "version": "1.0.0",
-    "description": "Rokid AIUI Navigator 能力与设备信息单页展示工具",
-    "main": "app.js",
-    "type": "module",
-    "dependencies": {}
+  "name": "aiui-navigator-info",
+  "version": "1.0.0",
+  "description": "Rokid AIUI Navigator 能力与设备信息单页展示工具",
+  "main": "app.js",
+  "type": "module",
+  "dependencies": {}
 }

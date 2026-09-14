@@ -1,11 +1,11 @@
 {
-    "pages": [
-        "pages/index/index"
-    ],
-    "window": {
-        "navigationBarTitleText": "设备信息",
-        "viewport": {
-            "width": "device-width"
-        }
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "设备信息",
+    "viewport": {
+      "width": "device-width"
     }
+  }
 }
