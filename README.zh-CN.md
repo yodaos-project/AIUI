@@ -31,6 +31,7 @@ npm create @yodaos-pkg/aiui-agent@latest my-agent
 
 - [`samples/capabilities/`](./samples/capabilities/)：完整的能力演示应用，可集中了解页面结构、静态资源、辅助模块和多个功能演示。
 - [`samples/gyroscope-test/`](./samples/gyroscope-test/)：陀螺仪测试真机诊断示例，基于 `AbsoluteOrientationSensor` 验证姿态四元数、采样频率、轴向映射和回中误差。
+- [`samples/navigator-info/`](./samples/navigator-info/)：设备信息单页示例，集中展示 Navigator 的运行环境、语言区域、能力挂载与电池状态读取，按 IETF BCP 47 匹配 `navigator.languages` 偏好自动切换简体/繁体/英文界面，支持长按镜腿与每 5 秒自动刷新。
 
 [`samples/capabilities/`](./samples/capabilities/)  示例的主要目录如下：
 

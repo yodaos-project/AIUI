@@ -10,7 +10,7 @@ Read [framework concepts](../framework.md) for file formats and declarations, an
 | `renderingEnabled` | `boolean` | Whether this instance can render a visible interface. |
 | `userAgent` | `string` | AIUI and Ink runtime identification string. |
 | `language` | `string` | Preferred language, or an empty string if unavailable. |
-| `languages` | `string[]` | Ordered language preferences. |
+| `languages` | `string[]` | Ordered language preferences. Match UI strings with IETF BCP 47 tags (e.g. `zh-CN`, `zh-TW`, `zh-HK`) using RFC 4647 Lookup semantics; distinguish Simplified/Traditional Chinese via script and region subtags. |
 | `region` | `string` | Current region, or an empty string if unavailable. |
 | `versions.ink` | `string` | Ink runtime version. |
 | `versions.skia` | `string` | Skia version. |
@@ -18,6 +18,10 @@ Read [framework concepts](../framework.md) for file formats and declarations, an
 | `geolocation` | `Geolocation` | Location entry point. |
 | `mediaDevices` | `MediaDevices` | Camera and microphone capture entry point. |
 | `storage` | `StorageManager` | Persistent storage entry point. |
+
+### Language matching
+
+When building multi-language UIs from `navigator.languages`, treat every entry as an IETF BCP 47 language tag (e.g. `zh-CN`, `zh-TW`, `zh-HK`). Walk the preference list in order; for each tag, match by progressively truncating trailing subtags (RFC 4647 Lookup: `zh-Hant-TW` → `zh-Hant` → `zh`), map Chinese variants via script/region subtags (`zh-Hans*`, `zh-SG` → Simplified; `zh-Hant*`, `zh-TW`, `zh-HK`, `zh-MO` → Traditional), and fall back to a default locale when nothing matches. Reference implementation: [`samples/navigator-info`](https://github.com/yodaos-project/AIUI/tree/main/samples/navigator-info).
 
 ### `navigator.getDeviceSerialNumber()`
 

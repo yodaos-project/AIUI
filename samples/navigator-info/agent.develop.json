@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "agentId": "develop.rokid.sample.navigator-info",
+  "agentName": "设备信息",
+  "agentDesc": "需要查看眼镜运行环境、系统版本、语言区域、电量状态或 Navigator 能力配置时使用。",
+  "agentPrompt": "",
+  "agentLogo": "",
+  "nativeVersion": "1.0.0",
+  "inkVersion": ">=0.17.0",
+  "permissions": []
+}

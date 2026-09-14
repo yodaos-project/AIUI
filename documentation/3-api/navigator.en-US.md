@@ -80,11 +80,14 @@ console.log('Language:', language);
 
 - **Type**: Read-only `string[]`.
 - **Description**: Returns the host-provided language preferences in priority order. The runtime removes surrounding whitespace and empty values; it returns `[]` when no languages are configured. Use this order for locale fallback.
+- **Multi-language matching**: Language tags follow the IETF BCP 47 standard (e.g. `zh-CN`, `zh-TW`, `zh-HK`). When matching localized strings, follow BCP 47 / RFC 4647 Lookup semantics: start from the full tag and progressively truncate trailing subtags (`zh-Hant-TW` → `zh-Hant` → `zh`), use script and region subtags to distinguish Simplified from Traditional Chinese (`zh-Hans*` and `zh-SG` map to Simplified; `zh-Hant*`, `zh-TW`, `zh-HK`, and `zh-MO` map to Traditional), and fall back to a default language when nothing matches.
 
 ```javascript
 const languages = navigator.languages;
 console.log('Languages:', languages);
 ```
+
+For a complete BCP 47 language-matching implementation, see the [`samples/navigator-info`](https://github.com/yodaos-project/AIUI/tree/main/samples/navigator-info) sample: it resolves the UI language from `navigator.languages` in priority order and switches automatically among Simplified Chinese, Traditional Chinese, and English string tables.
 
 #### `navigator.region`
 

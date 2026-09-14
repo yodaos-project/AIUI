@@ -31,6 +31,7 @@ The repository currently provides these samples:
 
 - [`samples/capabilities/`](./samples/capabilities/): A complete capability showcase covering page structure, static assets, helper modules, and feature demos.
 - [`samples/gyroscope-test/`](./samples/gyroscope-test/): A device diagnostic named “Gyroscope Test” that uses `AbsoluteOrientationSensor` to validate pose quaternions, sampling frequency, axis mapping, and recentering error.
+- [`samples/navigator-info/`](./samples/navigator-info/): A single-page “Device Info” agent that reads Navigator to surface runtime versions, locale, capability mounts, and battery status, with UI language (Simplified/Traditional Chinese or English) auto-selected from `navigator.languages` via IETF BCP 47 matching, plus temple long-press and 5-second auto refresh.
 
 The main directories in the [`samples/capabilities/`](./samples/capabilities/) sample are:
 

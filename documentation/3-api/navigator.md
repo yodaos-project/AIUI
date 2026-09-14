@@ -80,11 +80,14 @@ console.log('Language:', language);
 
 - **类型**：`string[]`，只读。
 - **说明**：返回宿主提供的按优先级排列的语言偏好列表。运行时会去除首尾空白和空值；宿主没有配置语言时返回空数组 `[]`。应用可按该顺序实现本地化兜底。
+- **多语言匹配**：语言标签遵循 IETF BCP 47 标准（如 `zh-CN`、`zh-TW`、`zh-HK`）。做多语言文案匹配时，建议按 BCP 47 / RFC 4647 Lookup 语义处理：从完整标签开始逐步截断末尾子标签进行匹配（如 `zh-Hant-TW` → `zh-Hant` → `zh`），并结合文字系统与地区子标签区分简繁体（`zh-Hans*`、`zh-SG` 等归入简体，`zh-Hant*`、`zh-TW`、`zh-HK`、`zh-MO` 归入繁体），全部未命中时回退默认语言。
 
 ```javascript
 const languages = navigator.languages;
 console.log('Languages:', languages);
 ```
+
+完整的 BCP 47 语言匹配实现可参考示例 [`samples/navigator-info`](https://github.com/yodaos-project/AIUI/tree/main/samples/navigator-info)：它按 `navigator.languages` 优先级解析界面语言，自动切换简体中文 / 繁体中文 / 英文三套文案。
 
 #### `navigator.region`
 
