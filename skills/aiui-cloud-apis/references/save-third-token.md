@@ -26,6 +26,7 @@ type SaveThirdTokenV1Request = {
   token: string;         // required, third-party access token
   refreshToken?: string; // optional, third-party refresh token
   meta?: string;         // optional, custom string; may contain JSON text but stays a string field
+  expireInMs?: number;   // optional, token cache TTL in milliseconds
 };
 ```
 
@@ -49,6 +50,7 @@ Usage notes:
 - `token`, `refreshToken`, and `meta` are combined into one JSON value in the cache.
 - `refreshToken` and `meta` are optional; they may be omitted or passed as empty values.
 - `meta` may carry JSON text, but the field type stays a string.
+- `expireInMs`, when provided, sets the token cache TTL in milliseconds; when omitted, the default is `2592000000` milliseconds (30 days).
 - Judge success by `code === 1`, not by `data`; the endpoint returns `data === null` on success.
 - When `company` or `token` is empty, validation fails with `code === 8003` and `msg` `参数不可为空`; fix the input, do not treat it as a transport failure.
 - Treat `token` and `refreshToken` as sensitive credentials: do not log, display, persist, cache, or return them to the user.
