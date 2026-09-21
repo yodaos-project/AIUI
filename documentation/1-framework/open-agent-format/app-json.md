@@ -48,7 +48,13 @@
 {
   "pages": ["pages/index/index"],
   "widgets": [
-    { "path": "widgets/weather/index", "family": "1x2", "placement": "overlay" }
+    {
+      "path": "widgets/weather/index",
+      "family": "1x2",
+      "placement": "overlay",
+      "displayName": "天气",
+      "description": "显示当前位置的天气和温度。"
+    }
   ],
   "agentWorkers": [
     {
@@ -61,10 +67,28 @@
 }
 ```
 
-- `widgets`：声明独立 Widget 的入口、尺寸类别与展示方式。`placement` 可为常驻的 `persistent` 或可通过 `window.open(..., '_widget')` 打开的 `overlay`（可叠加 Widget），省略时默认为 `persistent`。
+- `widgets`：声明独立 Widget 的入口、名称、描述、尺寸类别与展示方式。`placement` 可为常驻的 `persistent` 或可通过 `window.open(..., '_widget')` 打开的 `overlay`（可叠加 Widget），省略时默认为 `persistent`。
 - `agentWorkers`：声明后台脚本的名称、入口文件、启动条件和运行时长。
 
 具体配置和示例请参阅 [Widget](/AIUI/framework/open-agent-format-widget) 与 [Agent Worker](/AIUI/framework/open-agent-format-agent-worker)。
+
+### Widget 文案的多语言
+
+`app.json` 是完整的默认配置，并提供每个 Widget 的默认 `displayName` 和 `description`。需要其他语言时，在应用根目录添加 `app.<locale>.json`，只覆盖 Widget 文案：
+
+```json
+{
+  "locale": "en-US",
+  "widgets": {
+    "widgets/weather/index": {
+      "displayName": "Weather",
+      "description": "Shows the weather and temperature for your current location."
+    }
+  }
+}
+```
+
+语言文件的 `widgets` 使用 Widget 的 `path` 作为键，只能覆盖 `displayName` 和 `description`，不能修改 `family`、`placement` 或其他运行配置。运行时根据用户语言偏好选择语言文件，并在未匹配或字段缺失时回退到 `app.json`。语言文件名使用 BCP 47 标签，例如 `app.en-US.json` 和 `app.zh-TW.json`。
 
 ## 声明权限
 

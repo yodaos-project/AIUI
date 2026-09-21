@@ -4,7 +4,7 @@ A Widget is a small, independent interface provided by an agent. It works well f
 
 ## Declare a Widget
 
-Declare each Widget in the `widgets` array in `app.json`. Each entry describes the Widget's entry point, size family, and presentation mode.
+Declare each Widget in the `widgets` array in `app.json`. Each entry describes the Widget's entry point, name, purpose, size family, and presentation mode.
 
 ```json
 {
@@ -13,12 +13,16 @@ Declare each Widget in the `widgets` array in `app.json`. Each entry describes t
     {
       "path": "widgets/clock/index",
       "family": "1x1",
-      "placement": "persistent"
+      "placement": "persistent",
+      "displayName": "Clock",
+      "description": "Shows the current time."
     },
     {
       "path": "widgets/weather/index",
       "family": "1x2",
-      "placement": "overlay"
+      "placement": "overlay",
+      "displayName": "Weather",
+      "description": "Shows the weather and temperature for your current location."
     }
   ]
 }
@@ -31,10 +35,36 @@ Declare each Widget in the `widgets` array in `app.json`. Each entry describes t
 | `path` | `string` | Yes | - | Project-relative Widget path without the `.ink` extension. The path must resolve to an existing `.ink` file. |
 | `family` | `"1x1" \| "1x2"` | Yes | - | Size category occupied by the Widget. The same value must also be declared in the Widget file's `<script def>`. |
 | `placement` | `"persistent" \| "overlay"` | No | `"persistent"` | How the Widget is presented. Declare this field only in `app.json`, not in the Widget file. |
+| `displayName` | `string` | Yes | - | User-facing Widget name, such as `Weather`. Localized values are declared in the corresponding `app.<locale>.json`. |
+| `description` | `string` | Yes | - | Short explanation of what the Widget displays or does. Localized values are declared in the corresponding `app.<locale>.json`. |
 
 For example, `widgets/weather/index` maps to `widgets/weather/index.ink`. Keep `path` unique; do not declare the same path more than once in the `widgets` array.
 
 `family` is a size category, not a fixed pixel size. Build the Widget layout to adapt to the actual available width and height.
+
+### Localize Widget Metadata
+
+`app.json` must contain the default `displayName` and `description` for every Widget. To provide additional languages, create an `app.<locale>.json` overlay in the application root instead of nesting all translations inside each Widget. For example:
+
+```json
+{
+  "locale": "en-US",
+  "widgets": {
+    "widgets/weather/index": {
+      "displayName": "Weather",
+      "description": "Shows the weather and temperature for your current location."
+    },
+    "widgets/clock/index": {
+      "displayName": "Clock",
+      "description": "Shows the current time."
+    }
+  }
+}
+```
+
+Use a BCP 47 language tag in the filename, such as `app.en-US.json` or `app.zh-TW.json`. The `widgets` value in a locale file is an object keyed by the Widget `path`. It may override only `displayName` and `description`; it must not declare or change runtime configuration such as `family` or `placement`.
+
+The runtime selects a locale file from the user's language preferences and applies BCP 47 lookup fallback. An unsupported locale, an omitted Widget, or a missing field falls back to the corresponding default value in `app.json`. `app.json` must therefore remain a complete, independently usable application configuration.
 
 ## Choose a Placement
 

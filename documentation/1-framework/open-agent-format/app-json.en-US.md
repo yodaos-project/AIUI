@@ -48,7 +48,13 @@ In addition to Pages, `app.json` can declare Widgets and Agent Workers:
 {
   "pages": ["pages/index/index"],
   "widgets": [
-    { "path": "widgets/weather/index", "family": "1x2", "placement": "overlay" }
+    {
+      "path": "widgets/weather/index",
+      "family": "1x2",
+      "placement": "overlay",
+      "displayName": "Weather",
+      "description": "Shows the weather and temperature for your current location."
+    }
   ],
   "agentWorkers": [
     {
@@ -61,10 +67,28 @@ In addition to Pages, `app.json` can declare Widgets and Agent Workers:
 }
 ```
 
-- `widgets` declares each independent Widget's entry point, size family, and presentation mode. `placement` accepts `persistent` for a fixed Widget or `overlay` for a Widget opened with `window.open(..., '_widget')`, and defaults to `persistent` when omitted.
+- `widgets` declares each independent Widget's entry point, name, description, size family, and presentation mode. `placement` accepts `persistent` for a fixed Widget or `overlay` for a Widget opened with `window.open(..., '_widget')`, and defaults to `persistent` when omitted.
 - `agentWorkers` declares the name, entry file, start condition, and lifetime of a background script.
 
 For complete configuration and examples, see [Widget](/AIUI/framework/open-agent-format-widget) and [Agent Worker](/AIUI/framework/open-agent-format-agent-worker).
+
+### Localize Widget Metadata
+
+`app.json` is the complete default configuration and provides the default `displayName` and `description` for every Widget. To add another language, create an `app.<locale>.json` file in the application root that overrides only Widget metadata:
+
+```json
+{
+  "locale": "en-US",
+  "widgets": {
+    "widgets/weather/index": {
+      "displayName": "Weather",
+      "description": "Shows the weather and temperature for your current location."
+    }
+  }
+}
+```
+
+The `widgets` value in a locale file is keyed by the Widget `path` and may override only `displayName` and `description`. It must not change `family`, `placement`, or other runtime configuration. The runtime selects a locale file from the user's language preferences and falls back to `app.json` when the locale or a field is missing. Use BCP 47 tags in locale filenames, such as `app.en-US.json` and `app.zh-TW.json`.
 
 ## Declare Permissions
 

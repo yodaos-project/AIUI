@@ -4,7 +4,7 @@ Widget 是智能体提供的小尺寸独立界面，适合展示天气、播放�
 
 ## 声明 Widget
 
-先在 `app.json` 的 `widgets` 数组中声明 Widget。每一项描述 Widget 的入口、尺寸类别和展示方式。
+先在 `app.json` 的 `widgets` 数组中声明 Widget。每一项描述 Widget 的入口、名称、用途、尺寸类别和展示方式。
 
 ```json
 {
@@ -13,12 +13,16 @@ Widget 是智能体提供的小尺寸独立界面，适合展示天气、播放�
     {
       "path": "widgets/clock/index",
       "family": "1x1",
-      "placement": "persistent"
+      "placement": "persistent",
+      "displayName": "时钟",
+      "description": "显示当前时间。"
     },
     {
       "path": "widgets/weather/index",
       "family": "1x2",
-      "placement": "overlay"
+      "placement": "overlay",
+      "displayName": "天气",
+      "description": "显示当前位置的天气和温度。"
     }
   ]
 }
@@ -31,10 +35,36 @@ Widget 是智能体提供的小尺寸独立界面，适合展示天气、播放�
 | `path` | `string` | 是 | - | Widget 的项目相对路径，不包含 `.ink` 扩展名。路径必须对应实际存在的 `.ink` 文件。 |
 | `family` | `"1x1" \| "1x2"` | 是 | - | Widget 占用的尺寸类别。还必须在 Widget 文件的 `<script def>` 中声明相同的值。 |
 | `placement` | `"persistent" \| "overlay"` | 否 | `"persistent"` | Widget 的展示方式。该字段只在 `app.json` 中声明，不写入 Widget 文件。 |
+| `displayName` | `string` | 是 | - | 面向用户显示的 Widget 名称，例如“天气”。多语言版本在对应的 `app.<locale>.json` 中声明。 |
+| `description` | `string` | 是 | - | 对 Widget 展示内容或用途的简短说明。多语言版本在对应的 `app.<locale>.json` 中声明。 |
 
 例如，`widgets/weather/index` 对应 `widgets/weather/index.ink`。`path` 应保持唯一；同一路径不要在 `widgets` 数组中重复声明。
 
 `family` 是尺寸类别，而不是固定像素尺寸。Widget 应根据实际可用宽高进行自适应布局。
+
+### Widget 元数据的多语言
+
+`app.json` 必须包含每个 Widget 的默认 `displayName` 和 `description`。如果需要提供其他语言，不要在每个 Widget 中嵌套多语言对象，而是在应用根目录创建 `app.<locale>.json` 覆盖文件。例如：
+
+```json
+{
+  "locale": "en-US",
+  "widgets": {
+    "widgets/weather/index": {
+      "displayName": "Weather",
+      "description": "Shows the weather and temperature for your current location."
+    },
+    "widgets/clock/index": {
+      "displayName": "Clock",
+      "description": "Shows the current time."
+    }
+  }
+}
+```
+
+语言文件名使用 BCP 47 语言标签，例如 `app.en-US.json` 或 `app.zh-TW.json`。语言文件中的 `widgets` 是以 Widget `path` 为键的对象，只能覆盖 `displayName` 和 `description`，不能声明或修改 `family`、`placement` 等运行配置。
+
+运行时会按照用户的语言偏好选择语言文件，并按 BCP 47 的逐级回退规则匹配；未匹配的语言、未声明的 Widget 或缺少的字段都会回退到 `app.json` 中的默认值。因此，`app.json` 必须始终能够独立完成应用配置和 Widget 元数据展示。
 
 ## 选择展示方式
 
