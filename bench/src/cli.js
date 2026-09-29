@@ -1,4 +1,10 @@
 #!/usr/bin/env node
+/**
+ * Public bench command line. Commands keep their JSON output and exit codes
+ * stable for shell/CI callers: 0 means success, 1 means an unresolved result,
+ * and 2 means invalid input or an inference error.
+ * @module cli
+ */
 import { access, lstat, mkdir, readFile, realpath, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { assertOutsideRepository, optionValue, parseMaxSteps, resolvedRate } from './cli-utils.js';
@@ -9,25 +15,30 @@ import { prepare } from './workspace.js';
 
 const usage = 'usage: bench list | inspect ID | prepare ID --workspace PATH | infer ID --workspace PATH [--model MODEL] [--api-key-file PATH] [--skill PATH] [--max-steps N] [--output FILE] | prepare-all --workspaces PATH | grade ID [--workspace PATH] [--output FILE] | grade-all --workspaces PATH [--output-dir PATH] | summary RESULT.json...';
 
+/** Emit one machine-readable JSON value to stdout. */
 function print(value) {
   process.stdout.write(`${JSON.stringify(value, null, 2)}\n`);
 }
 
+/** Keep hidden grading fields out of inspect and prepare responses. */
 function publicTask({ id, category, difficulty, description, aiuiVersion }) {
   return { id, category, difficulty, description, aiuiVersion };
 }
 
+/** Read a mandatory CLI option and add command context to its error. */
 function requireOption(options, name, command) {
   const value = optionValue(options, name);
   if (!value) throw new Error(`${command} requires ${name} PATH`);
   return value;
 }
 
+/** Create parent directories and save a pretty-printed JSON artifact. */
 async function saveJson(file, value) {
   await mkdir(path.dirname(file), { recursive: true });
   await writeFile(file, `${JSON.stringify(value, null, 2)}\n`);
 }
 
+/** Check a path with lstat so even a dangling symlink counts as existing. */
 async function exists(file) {
   try {
     await lstat(file);
@@ -38,6 +49,7 @@ async function exists(file) {
   }
 }
 
+/** Prepare all starting fixtures after checking that no target is occupied. */
 async function prepareAll(options) {
   const base = path.resolve(requireOption(options, '--workspaces', 'prepare-all'));
   const catalog = await tasks();
@@ -52,6 +64,7 @@ async function prepareAll(options) {
   print(catalog.map(task => ({ ...publicTask(task), workspace: path.join(base, task.id) })));
 }
 
+/** Grade one workspace per catalog task and optionally save each result. */
 async function gradeAll(options) {
   const base = path.resolve(requireOption(options, '--workspaces', 'grade-all'));
   const outputDir = optionValue(options, '--output-dir');
@@ -70,6 +83,11 @@ async function gradeAll(options) {
   if (resolved !== results.length) process.exitCode = 1;
 }
 
+/**
+ * Read the API key from an explicit file or the environment. An explicitly
+ * supplied empty file is an error rather than a fallback to another key.
+ * Never include the key in CLI JSON output or result artifacts.
+ */
 async function apiKeyFromOptions(options) {
   const keyFile = optionValue(options, '--api-key-file');
   if (keyFile) {
@@ -84,6 +102,11 @@ async function apiKeyFromOptions(options) {
   return process.env.DEEPSEEK_API_KEY;
 }
 
+/**
+ * Guard the workspace both before creation and after realpath resolution,
+ * then run the model and save its full trace. The CLI prints only a compact
+ * outcome, leaving trace and grading details in the output file.
+ */
 async function inferTask(id, options) {
   const task = await getTask(id);
   const workspace = path.resolve(requireOption(options, '--workspace', 'infer'));
@@ -123,6 +146,7 @@ async function inferTask(id, options) {
   else if (result.status !== 'completed' || !result.grading?.resolved) process.exitCode = 1;
 }
 
+/** Grade one prepared workspace, or the checked-in starting fixture. */
 async function gradeTask(id, options) {
   const task = await getTask(id);
   const workspace = path.resolve(optionValue(options, '--workspace') || path.join(task.directory, task.workspace));
@@ -134,10 +158,12 @@ async function gradeTask(id, options) {
   if (!result.resolved) process.exitCode = 1;
 }
 
+/** Aggregate grade JSON files and completed infer JSON files. */
 async function summarize(files) {
   if (files.length === 0) throw new Error('summary requires result JSON files');
   const results = await Promise.all(files.map(async file => JSON.parse(await readFile(file, 'utf8'))));
-  const resolved = results.filter(result => result.resolved).length;
+  const resolved = results.filter(result =>
+    result.grading ? result.status === 'completed' && result.grading.resolved : result.resolved).length;
   const rate = resolvedRate(resolved, results.length);
   print({
     resolved,
@@ -147,6 +173,7 @@ async function summarize(files) {
   });
 }
 
+/** Dispatch subcommands; batch commands do not consume a task ID. */
 async function main([command, id, ...options]) {
   switch (command) {
     case 'list':

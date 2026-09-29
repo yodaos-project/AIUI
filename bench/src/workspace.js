@@ -1,6 +1,13 @@
+/**
+ * Prepare isolated task workspaces and resolve paths used by graders and tools.
+ * Task fixtures must not contain symlinks: copying a link could let a prepared
+ * workspace read files outside the fixture or retain a dangling target.
+ * @module workspace
+ */
 import { cp, lstat, mkdir, readFile, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 
+/** Walk the fixture before copying so a bad link fails without a partial copy. */
 async function rejectSourceSymlinks(source, relative = '.') {
   const stat = await lstat(source);
   if (stat.isSymbolicLink()) throw new Error(`task workspace contains a symlink: ${relative}`);
@@ -11,6 +18,14 @@ async function rejectSourceSymlinks(source, relative = '.') {
   }
 }
 
+/**
+ * Copy a task's starting project into a new directory.
+ *
+ * @param {{directory: string}} task Loaded task with an on-disk fixture.
+ * @param {string} destination Directory that must not already exist.
+ * @returns {Promise<void>}
+ * @throws {Error} If the destination exists or the fixture has any symlink.
+ */
 export async function prepare(task, destination) {
   if (!destination || destination === '/') throw new Error('prepare requires a destination directory');
   try {
@@ -36,6 +51,16 @@ export async function prepare(task, destination) {
   });
 }
 
+/**
+ * Resolve a workspace-relative path while rejecting traversal and existing
+ * targets or immediate parents that resolve outside the workspace. Missing
+ * files are allowed; write tools additionally inspect every path segment
+ * before creating one.
+ *
+ * @param {string} workspace Workspace root.
+ * @param {string} relative Path supplied by a check or tool.
+ * @returns {Promise<string>} Absolute path beneath the canonical workspace.
+ */
 export async function safePath(workspace, relative) {
   if (!relative || path.isAbsolute(relative) || relative.split(/[\\/]/).includes('..')) {
     throw new Error(`unsafe path: ${relative}`);
@@ -56,6 +81,7 @@ export async function safePath(workspace, relative) {
   return absolute;
 }
 
+/** Read UTF-8 workspace content through the shared path guard. */
 export async function readWorkspace(workspace, relative) {
   return readFile(await safePath(workspace, relative), 'utf8');
 }

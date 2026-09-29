@@ -1,3 +1,10 @@
+/**
+ * Execute the small JS subset needed by deterministic behavior checks. Local
+ * imports are resolved inside the prepared workspace and external imports need
+ * explicit mocks. This regex-based ESM transform is intentionally limited; the
+ * Node VM timeout is a test aid, not a security boundary for hostile code.
+ * @module behavior
+ */
 import path from 'node:path';
 import vm from 'node:vm';
 import { readWorkspace } from './workspace.js';
@@ -6,6 +13,7 @@ const identifier = /^[A-Za-z_$][\w$]*$/;
 const importStatement = /^[ \t]*import[ \t]+(?:(?<clause>[\s\S]*?)\s+from\s+)?(?<quote>['"])(?<specifier>[^'"]+)\k<quote>[ \t]*;?/gm;
 const reExportStatement = /^[ \t]*export\s+(?:\{(?<list>[^}]*)\}|(?<star>\*))\s+from\s+(?<quote>['"])(?<specifier>[^'"]+)\k<quote>[ \t]*;?/gm;
 
+/** Translate supported default, namespace, and named imports into VM bindings. */
 function importBindings(clause, index) {
   if (!clause) return '';
   const parts = clause.trim().split(/,(?=\s*\{|\s*\*)/);
@@ -28,6 +36,11 @@ function importBindings(clause, index) {
   return bindings.join('\n');
 }
 
+/**
+ * Remove supported export syntax and build the object returned by a module.
+ * This keeps named exports available to locally imported helper modules while
+ * preserving the Page/Widget default object used by loadLogic.
+ */
 function stripExports(source) {
   const names = new Map();
   let transformed = source.replace(/^[ \t]*export\s+(const|let|var|function|async\s+function|class)\s+([A-Za-z_$][\w$]*)/gm, (_, kind, name) => {
@@ -52,6 +65,11 @@ function stripExports(source) {
   };
 }
 
+/**
+ * Resolve one import. Bare specifiers use supplied mocks; relative specifiers
+ * stay inside the workspace. A null cache entry marks a module in progress so
+ * circular imports fail clearly instead of recursing indefinitely.
+ */
 async function resolveImport(workspace, relative, specifier, globals, context, cache) {
   if (!specifier.startsWith('.')) {
     if (specifier === 'wx') return { default: globals.wx, ...(globals.wx || {}) };
@@ -83,6 +101,7 @@ async function resolveImport(workspace, relative, specifier, globals, context, c
   throw new Error(`module not found: ${specifier} from ${relative}`);
 }
 
+/** Load imports/re-exports, transform the source, and evaluate one module. */
 async function evaluateModule(workspace, relative, source, globals, context, cache) {
   const matches = [...source.matchAll(importStatement)];
   const imports = [];
@@ -124,6 +143,16 @@ async function evaluateModule(workspace, relative, source, globals, context, cac
   return { ...reexported, ...exported };
 }
 
+/**
+ * Load a single-file .ink setup script or a multi-file JS logic file. The
+ * returned harness clones initial data, records setData patches, invokes
+ * handlers by name, and snapshots JSON state for the grader.
+ *
+ * @param {string} workspace Prepared project root.
+ * @param {string} relative Workspace-relative .ink or .js path.
+ * @param {Record<string, unknown>} [globals] Explicit runtime mocks.
+ * @returns {Promise<{context: import('node:vm').Context, call: (method: string, argument?: unknown) => unknown, setData: (patch: object) => void, snapshot: () => string}>}
+ */
 export async function loadLogic(workspace, relative, globals = {}) {
   const raw = await readWorkspace(workspace, relative);
   const match = relative.endsWith('.ink') ? raw.match(/<script\s+setup[^>]*>([\s\S]*?)<\/script>/i) : [null, raw];

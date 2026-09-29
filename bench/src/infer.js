@@ -1,3 +1,9 @@
+/**
+ * DeepSeek tool-calling driver. Each infer run sees one task description, a
+ * prepared workspace, and the selected aiui-dev skill. The trace records
+ * model/tool traffic without saving or exposing the API key.
+ * @module infer
+ */
 import { createHash } from 'node:crypto';
 import { readFile, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
@@ -5,8 +11,14 @@ import { executeTool, toolDefinitions } from './agent-tools.js';
 import { grade } from './grader.js';
 
 const API_URL = 'https://api.deepseek.com/chat/completions';
+/** Normalize Error and non-Error throws before putting them in a result. */
 const errorText = error => String(error?.message ?? error);
 
+/**
+ * Hash sorted skill-relative paths and contents, excluding symlinks. This
+ * identifies the exact skill revision supplied to an infer run.
+ * @returns {Promise<string>} SHA-256 fingerprint prefixed with sha256:.
+ */
 async function skillFingerprint(skill) {
   const hash = createHash('sha256');
 
@@ -31,6 +43,12 @@ async function skillFingerprint(skill) {
   return `sha256:${hash.digest('hex')}`;
 }
 
+/**
+ * Make one non-streaming Chat Completions request with the workspace tools.
+ * @param {{apiKey: string, model: string, messages: object[], fetchImpl?: typeof fetch}} options
+ * @returns {Promise<{message: object, finishReason: string, usage: object | null}>}
+ * @throws {Error} On HTTP failure or an unsupported response shape.
+ */
 export async function deepseekCompletion({ apiKey, model, messages, fetchImpl = fetch }) {
   const response = await fetchImpl(API_URL, {
     method: 'POST',
@@ -56,6 +74,7 @@ export async function deepseekCompletion({ apiKey, model, messages, fetchImpl = 
   return { message: choice.message, finishReason: choice.finish_reason, usage: body.usage || null };
 }
 
+/** Convert a tool exception into a response the model can inspect and repair. */
 async function executeToolCall(call, context) {
   try {
     const args = JSON.parse(call.function?.arguments || '{}');
@@ -65,6 +84,18 @@ async function executeToolCall(call, context) {
   }
 }
 
+/**
+ * Run one task for at most maxSteps assistant turns, then grade the resulting
+ * workspace and fingerprint its skill. Provider, grader, and fingerprint
+ * failures become status:error records; reaching the limit yields max_steps.
+ * Grading may be null only when grading itself fails. The API key is used only
+ * in request headers and never copied into trace/result fields.
+ *
+ * @param {{id: string, description: string}} task Loaded task.
+ * @param {string} workspace Prepared project root.
+ * @param {{apiKey: string, model?: string, skill: string, maxSteps?: number, fetchImpl?: typeof fetch}} options
+ * @returns {Promise<object>} Trace, token usage, status, grading, and metadata.
+ */
 export async function infer(task, workspace, { apiKey, model = 'deepseek-flash', skill, maxSteps = 30, fetchImpl = fetch }) {
   if (!apiKey) throw new Error('DEEPSEEK_API_KEY is required for infer');
   if (!Number.isInteger(maxSteps) || maxSteps < 1 || maxSteps > 100) {

@@ -1,9 +1,22 @@
+/**
+ * Deterministic task checks. Source/manifest checks and a bounded behavior
+ * harness produce required and regression results; shared validator issues
+ * plus task-specific checks produce constraint violations. No golden patch is
+ * compared, so multiple valid implementations can resolve a task.
+ * @module grader
+ */
 import { access, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { readWorkspace, safePath } from './workspace.js';
 import { loadLogic } from './behavior.js';
 import { validateWorkspace } from './validator.js';
 
+/**
+ * Find the tap handler for a button with the requested visible label. The
+ * lightweight tag walk supports a handler on the button or a wrapping node
+ * and ignores > inside quoted attributes; it is not a full template parser.
+ * @returns {string | null} Bound handler name, if a matching button exists.
+ */
 function boundButtonHandler(source, label) {
   const normalize = value => value.replace(/\s+/g, ' ').trim().toLowerCase();
   const wanted = normalize(label);
@@ -50,6 +63,7 @@ function boundButtonHandler(source, label) {
   return null;
 }
 
+/** Compare a displayed numeric/string state after string conversion. */
 function sameDisplayValue(actual, expected) {
   const displayTypes = ['number', 'string'];
   if (displayTypes.includes(typeof actual) && displayTypes.includes(typeof expected)) {
@@ -58,14 +72,21 @@ function sameDisplayValue(actual, expected) {
   return JSON.stringify(actual) === JSON.stringify(expected);
 }
 
+/** Compare state by JSON serialization; object key order remains significant. */
 function sameJsonValue(actual, expected) {
   return JSON.stringify(actual) === JSON.stringify(expected);
 }
 
+/** Require every expected key while allowing unrelated state keys. */
 function matchesExpectedData(data, expected = {}, compare = sameJsonValue) {
   return Object.entries(expected).every(([key, value]) => compare(data[key], value));
 }
 
+/**
+ * Scan every regular JS/template source under a prepared workspace for browser
+ * DOM patterns. Unlike the shared validator, this also sees unreferenced
+ * helper files, making the noDom task constraint explicit.
+ */
 async function hasDomSource(workspace, directory = '') {
   for (const entry of await readdir(path.join(workspace, directory), { withFileTypes: true })) {
     const relative = path.join(directory, entry.name);
@@ -81,6 +102,15 @@ async function hasDomSource(workspace, directory = '') {
   return false;
 }
 
+/**
+ * Evaluate one schema check. A false result means the observed condition was
+ * unmet; operational errors are caught by runChecks. An unknown check type is
+ * a task-authoring error and deliberately escapes grading.
+ * @param {{id: string, type: string, [key: string]: unknown}} check
+ * @param {string} workspace Prepared project root.
+ * @param {object | null} manifest Parsed app.json from validateWorkspace.
+ * @returns {Promise<boolean>}
+ */
 async function evaluate(check, workspace, manifest) {
   const read = relative => readWorkspace(workspace, relative);
   switch (check.type) {
@@ -149,6 +179,9 @@ async function evaluate(check, workspace, manifest) {
     case 'workerBehavior': {
       const logic = await loadLogic(workspace, check.path);
       let promise;
+      // waitUntil must be registered synchronously during onOpen. Await only
+      // the registered work, with a bounded timer so a stuck Worker cannot
+      // stall the entire benchmark.
       const event = {
         waitUntil(value) {
           promise = Promise.resolve(value);
@@ -174,6 +207,8 @@ async function evaluate(check, workspace, manifest) {
     case 'locationBehavior': {
       let success;
       let failure;
+      // Invoke the captured callback after the handler returns, mirroring a
+      // location response or denial without touching a real device sensor.
       const navigator = {
         geolocation: {
           getCurrentPosition(ok, bad) {
@@ -200,6 +235,7 @@ async function evaluate(check, workspace, manifest) {
       let success;
       let failure;
       const cleared = [];
+      // A fixed watch ID makes it possible to assert cleanup on unload.
       const navigator = {
         geolocation: {
           watchPosition(ok, bad) {
@@ -229,6 +265,8 @@ async function evaluate(check, workspace, manifest) {
     case 'storageBehavior': {
       const values = new Map();
       const writes = [];
+      // The map models synchronous wx storage; writes are tracked separately
+      // so returning a hard-coded value cannot pass the storage check.
       const wx = {
         setStorageSync(key, value) {
           values.set(key, value);
@@ -285,6 +323,10 @@ async function evaluate(check, workspace, manifest) {
   }
 }
 
+/**
+ * Run a group independently and retain per-check diagnostics. Ordinary file
+ * or behavior errors become failed checks; an unsupported type still throws.
+ */
 async function runChecks(checks, workspace, manifest) {
   return Promise.all(checks.map(async check => {
     try {
@@ -297,6 +339,7 @@ async function runChecks(checks, workspace, manifest) {
   }));
 }
 
+/** Build the stable passed/total/checks shape used in result JSON. */
 function checkSummary(checks) {
   return {
     passed: checks.filter(check => check.passed).length,
@@ -305,6 +348,15 @@ function checkSummary(checks) {
   };
 }
 
+/**
+ * Grade one task against a prepared workspace. resolved requires all required
+ * and regression checks to pass and zero constraint violations. Shared
+ * validator issues always count as constraints even when a task has no custom
+ * constraint checks.
+ * @param {{id: string, category: string, grading: object}} task Loaded task.
+ * @param {string} workspace Prepared project root.
+ * @returns {Promise<object>} Serializable score with per-check details.
+ */
 export async function grade(task, workspace) {
   const { manifest, issues } = await validateWorkspace(workspace);
   const [requiredChecks, regressionChecks, constraintChecks] = await Promise.all([

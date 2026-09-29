@@ -1,3 +1,10 @@
+/**
+ * Shared AIUI source validator used by every task. It checks manifest/source
+ * relationships and a documented subset of platform rules, returning issues
+ * instead of stopping at the first problem. It is a static check, not a
+ * package build or a substitute for device/runtime testing.
+ * @module validator
+ */
 import { access } from 'node:fs/promises';
 import { readWorkspace, safePath } from './workspace.js';
 
@@ -8,6 +15,9 @@ const tags = new Set(`
   list list-item b i snippet formula icon button input textarea switch table
   streamdown a2ui card error-state
 `.trim().split(/\s+/));
+// Keep these allowlists aligned with the supported AIUI runtime surface. An
+// unknown event/property is not automatically rejected unless a rule below
+// can verify that the platform does not support it.
 const permissions = new Set(['GEOLOCATION', 'CAMERA', 'RECORD_AUDIO']);
 const pageEvents = new Set([
   'tap', 'longpress', 'touchstart', 'touchmove', 'touchend',
@@ -16,6 +26,7 @@ const pageEvents = new Set([
 const unsupportedStyle = /position\s*:\s*sticky\b|\banimation(?:-[\w-]+)?\s*:|\b(?:white-space|word-break|visibility|font-variant)\s*:/;
 const fixedWidgetSize = /(?:width\s*:\s*(?:239|480)px[\s\S]{0,100}height\s*:\s*140px|height\s*:\s*140px[\s\S]{0,100}width\s*:\s*(?:239|480)px)/;
 
+/** Return false for a missing or unsafe source reference. */
 async function exists(workspace, relative) {
   try {
     await access(await safePath(workspace, relative));
@@ -25,20 +36,32 @@ async function exists(workspace, relative) {
   }
 }
 
+/** Construct the stable issue shape consumed by the grader. */
 function issue(rule, file, message) {
   return { rule, file, message };
 }
 
+/** Extract an .ink block by tag pattern; only the small supported syntax is parsed. */
 function block(source, name) {
   const close = name.startsWith('script') ? 'script' : name;
   return source.match(new RegExp(`<${name}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${close}>`, 'i'))?.[1];
 }
 
+/** Recognize method shorthand and function-valued object properties. */
 function hasHandler(logic, name) {
   const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   return new RegExp(`(?<![\\w$])${escaped}\\s*(?:\\(|:)`).test(logic);
 }
 
+/**
+ * Validate a prepared AIUI project and collect all supported diagnostics.
+ * Invalid/missing app.json returns manifest:null with an app-json issue;
+ * otherwise the parsed manifest is returned even when it has other errors.
+ * Grading counts every returned issue as a constraint violation.
+ *
+ * @param {string} workspace Prepared project root.
+ * @returns {Promise<{manifest: object | null, issues: Array<{rule: string, file: string, message: string}>}>}
+ */
 export async function validateWorkspace(workspace) {
   const issues = [];
   let app;
@@ -79,6 +102,8 @@ export async function validateWorkspace(workspace) {
       continue;
     }
     const ink = await exists(workspace, `${route}.ink`);
+    // A Page must use exactly one source form: .ink or the complete
+    // .json/.wxml/.wxss/.js set. Partial multi-file Pages remain invalid.
     const multi = (await Promise.all(['json', 'wxml', 'wxss', 'js'].map(ext => exists(workspace, `${route}.${ext}`)))).every(Boolean);
     if (ink === multi) {
       issues.push(issue('page-source', 'app.json', `${route} must have exactly one complete source form`));
@@ -187,6 +212,8 @@ export async function validateWorkspace(workspace) {
     }
 
     if (template) {
+      // Only known Page events are checked for matching handlers. Component
+      // specific event contracts need a typed/runtime checker.
       for (const match of template.matchAll(/<([a-z][\w-]*)(?=[\s/>])/g)) {
         if (!tags.has(match[1]) && !(match[1] in (app.usingComponents || {}))) {
           issues.push(issue('component', item.file, `unknown component ${match[1]}`));

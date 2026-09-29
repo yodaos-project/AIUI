@@ -71,3 +71,26 @@ test('empty grade sets have a finite zero resolved rate', () => {
   assert.equal(resolvedRate(0, 0), 0);
   assert.equal(resolvedRate(2, 4), 0.5);
 });
+
+test('summary counts completed infer records and plain grade results', async () => {
+  const parent = await mkdtemp(path.join(os.tmpdir(), 'aiui-cli-summary-'));
+  try {
+    const gradeFile = path.join(parent, 'grade.json');
+    const inferFile = path.join(parent, 'infer.json');
+    const incompleteFile = path.join(parent, 'incomplete.json');
+    await writeFile(gradeFile, JSON.stringify({ resolved: true }));
+    await writeFile(inferFile, JSON.stringify({ status: 'completed', grading: { resolved: true } }));
+    await writeFile(incompleteFile, JSON.stringify({ status: 'max_steps', grading: { resolved: true } }));
+
+    const result = run(['summary', gradeFile, inferFile, incompleteFile]);
+    assert.equal(result.status, 0);
+    assert.deepEqual(JSON.parse(result.stdout), {
+      resolved: 2,
+      total: 3,
+      resolvedRate: 2 / 3,
+      display: 'Resolved: 2 / 3\nResolved Rate: 67%',
+    });
+  } finally {
+    await rm(parent, { recursive: true, force: true });
+  }
+});
