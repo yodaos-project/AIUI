@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "009-migrate-worker",
+  "category": "migrate",
+  "difficulty": "easy",
+  "description": "Migrate the old workers manifest field to the current agentWorkers field. Preserve the registered sync Worker and existing Home Page.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "new-field",
+        "type": "manifestField",
+        "value": "agentWorkers"
+      },
+      {
+        "id": "old-field-absent",
+        "type": "manifestField",
+        "value": "workers",
+        "absent": true
+      },
+      {
+        "id": "worker",
+        "type": "worker",
+        "path": "workers/sync.js"
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      },
+      {
+        "id": "worker-behavior",
+        "type": "workerBehavior",
+        "path": "workers/sync.js",
+        "expect": {
+          "latestStatus": "ready"
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

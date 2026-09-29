@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "id": "010-constraint-location",
+  "category": "constraint",
+  "difficulty": "medium",
+  "description": "Build a Page with a Locate button that reads one position and displays latitude 30 and longitude 120 from the callback. On permission denial show status denied. Use the AIUI geolocation API and declare its capability; avoid browser DOM location APIs.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "permission",
+        "type": "permission",
+        "value": "GEOLOCATION"
+      },
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Locate"
+      },
+      {
+        "id": "coordinates",
+        "type": "locationBehavior",
+        "path": "pages/index/index.ink",
+        "outcome": "success",
+        "expect": {
+          "latitude": 30,
+          "longitude": 120
+        },
+        "buttonLabel": "Locate"
+      },
+      {
+        "id": "denial",
+        "type": "locationBehavior",
+        "path": "pages/index/index.ink",
+        "outcome": "error",
+        "expect": {
+          "status": "denied"
+        },
+        "buttonLabel": "Locate"
+      }
+    ],
+    "regression": [],
+    "constraints": []
+  }
+}

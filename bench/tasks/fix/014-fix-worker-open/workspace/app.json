@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "agentWorkers": [
+    {
+      "name": "sync",
+      "script": "workers/sync.js",
+      "trigger": {
+        "type": "open"
+      },
+      "lifetime": "foreground"
+    }
+  ]
+}

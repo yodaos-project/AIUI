@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "id": "017-create-overlay",
+  "category": "create",
+  "difficulty": "hard",
+  "description": "Add a temporary 1x1 Weather Widget at widgets/weather/index with placement overlay, displayName Weather, and description Shows weather. Add an Open Weather button to the existing Home Page. Its handler must call window.open with widgets/weather/index?city=hangzhou and target _widget. Keep the Home Page route.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "widget",
+        "type": "widget",
+        "path": "widgets/weather/index",
+        "family": "1x1",
+        "displayName": "Weather",
+        "description": "Shows weather"
+      },
+      {
+        "id": "widget-source",
+        "type": "file",
+        "path": "widgets/weather/index.ink"
+      },
+      {
+        "id": "open",
+        "type": "overlayBehavior",
+        "path": "pages/index/index.ink",
+        "buttonLabel": "Open Weather",
+        "widgetPath": "widgets/weather/index",
+        "url": "widgets/weather/index?city=hangzhou"
+      }
+    ],
+    "regression": [
+      {
+        "id": "home",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "title",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Home"
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "011-constraint-no-dom",
+  "category": "constraint",
+  "difficulty": "easy",
+  "description": "Create a Page with a button labeled Activate. On tap update bound status from idle to active. Do not use browser DOM APIs such as document.querySelector or onclick; use AIUI template events and setData instead.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "text": "Activate",
+        "eventLabel": "Activate"
+      },
+      {
+        "id": "status",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "status"
+      },
+      {
+        "id": "interaction",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Activate"
+          }
+        ],
+        "expect": {
+          "status": "active"
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "initial-status",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "status": "idle"
+        }
+      }
+    ],
+    "regression": [],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

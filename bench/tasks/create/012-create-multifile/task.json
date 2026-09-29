@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "012-create-multifile",
+  "category": "create",
+  "difficulty": "medium",
+  "description": "Add a Settings Page at pages/settings/index using all four multi-file Page files (.json, .wxml, .wxss, .js). Put it after the existing Home Page in app.json. Start with count 0; tapping Increment must show count 1, then 2. Preserve the Home Page.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/settings/index"
+      },
+      {
+        "id": "json",
+        "type": "file",
+        "path": "pages/settings/index.json"
+      },
+      {
+        "id": "wxml",
+        "type": "template",
+        "path": "pages/settings/index.wxml",
+        "tag": "button",
+        "eventLabel": "Increment",
+        "binding": "count"
+      },
+      {
+        "id": "wxss",
+        "type": "file",
+        "path": "pages/settings/index.wxss"
+      },
+      {
+        "id": "js",
+        "type": "file",
+        "path": "pages/settings/index.js"
+      },
+      {
+        "id": "tap-twice",
+        "type": "behavior",
+        "path": "pages/settings/index.js",
+        "templatePath": "pages/settings/index.wxml",
+        "calls": [
+          {
+            "button": "Increment"
+          },
+          {
+            "button": "Increment"
+          }
+        ],
+        "expect": {
+          "count": 2
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "home-route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "home-page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      },
+      {
+        "id": "route-order",
+        "type": "routeOrder",
+        "before": "pages/index/index",
+        "after": "pages/settings/index"
+      }
+    ],
+    "constraints": []
+  }
+}

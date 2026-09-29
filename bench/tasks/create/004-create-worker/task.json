@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "004-create-worker",
+  "category": "create",
+  "difficulty": "easy",
+  "description": "Add an Agent Worker at workers/sync.js that initializes local status asynchronously on open. Register it with the open trigger and foreground lifetime. Call event.waitUntil synchronously and set latestStatus to ready when work finishes.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "worker",
+        "type": "worker",
+        "path": "workers/sync.js",
+        "lifetime": "foreground"
+      },
+      {
+        "id": "wait-until",
+        "type": "workerBehavior",
+        "path": "workers/sync.js",
+        "expect": {
+          "latestStatus": "ready"
+        }
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      }
+    ],
+    "constraints": []
+  }
+}

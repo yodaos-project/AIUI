@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "id": "002-create-counter",
+  "category": "create",
+  "difficulty": "easy",
+  "description": "Create a counter Page at pages/index/index. Start at 0. A tap on an Increment button adds one; a Reset button returns to zero. Render the count from data.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      },
+      {
+        "id": "count-binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "count"
+      },
+      {
+        "id": "increment-event",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Increment"
+      },
+      {
+        "id": "increment",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Increment"
+          },
+          {
+            "button": "Increment"
+          }
+        ],
+        "expect": {
+          "count": 2
+        },
+        "minPatches": 2
+      },
+      {
+        "id": "reset",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Increment"
+          },
+          {
+            "button": "Reset"
+          }
+        ],
+        "expect": {
+          "count": 0
+        },
+        "minPatches": 2
+      },
+      {
+        "id": "reset-event",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Reset"
+      },
+      {
+        "id": "labels",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "text": "Reset"
+      }
+    ],
+    "regression": [],
+    "constraints": []
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "id": "005-modify-toggle",
+  "category": "modify",
+  "difficulty": "easy",
+  "description": "Add a Toggle button to the existing Status Page. Each tap flips enabled between false and true using setData. Preserve its Status title and onLoad behavior.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Toggle"
+      },
+      {
+        "id": "twice",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Toggle"
+          },
+          {
+            "button": "Toggle"
+          }
+        ],
+        "expect": {
+          "enabled": false
+        },
+        "minPatches": 2
+      },
+      {
+        "id": "once",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Toggle"
+          }
+        ],
+        "expect": {
+          "enabled": true
+        },
+        "minPatches": 1
+      }
+    ],
+    "regression": [
+      {
+        "id": "title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "load",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "method": "onLoad"
+          }
+        ],
+        "expect": {
+          "enabled": false
+        }
+      },
+      {
+        "id": "original-title",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Status"
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

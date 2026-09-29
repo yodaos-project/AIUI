@@ -1,0 +1,10 @@
+{
+  "name": "aiui-coding-bench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bench": "node src/cli.js",
+    "test": "node --test"
+  },
+  "engines": { "node": ">=20" }
+}

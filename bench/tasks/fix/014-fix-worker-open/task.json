@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "014-fix-worker-open",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "The registered Worker does its asynchronous open setup but calls event.waitUntil too late, after an await. Repair onOpen so it registers the pending work synchronously and latestStatus becomes ready when it finishes. Preserve its foreground open-trigger declaration and Home Page.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "synchronous-wait",
+        "type": "workerBehavior",
+        "path": "workers/sync.js",
+        "expect": {
+          "latestStatus": "ready"
+        }
+      }
+    ],
+    "regression": [
+      {
+        "id": "worker-config",
+        "type": "worker",
+        "path": "workers/sync.js",
+        "lifetime": "foreground"
+      },
+      {
+        "id": "home",
+        "type": "route",
+        "value": "pages/index/index"
+      }
+    ],
+    "constraints": []
+  }
+}

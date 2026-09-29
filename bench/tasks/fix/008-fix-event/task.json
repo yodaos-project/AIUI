@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "id": "008-fix-event",
+  "category": "fix",
+  "difficulty": "easy",
+  "description": "The Go button uses a browser onclick attribute. Make tapping it invoke activate through AIUI template events. Preserve the Ready to Done state update.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "tap",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "event": "activate"
+      }
+    ],
+    "regression": [
+      {
+        "id": "state",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "method": "activate"
+          }
+        ],
+        "expect": {
+          "message": "Done"
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "label",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "text": "Go"
+      },
+      {
+        "id": "initial-state",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "message": "Ready"
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

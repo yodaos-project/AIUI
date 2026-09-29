@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "id": "015-fix-widget-lifecycle",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "This 1x1 Status Widget uses Page lifecycle callbacks, so it does not update reliably. Use Widget lifecycle callbacks: set status active on attach and idle on detach. Preserve its manifest metadata and responsive layout.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "attach",
+        "type": "behavior",
+        "path": "widgets/status/index.ink",
+        "calls": [
+          {
+            "method": "onAttach"
+          }
+        ],
+        "expect": {
+          "status": "active"
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "detach",
+        "type": "behavior",
+        "path": "widgets/status/index.ink",
+        "calls": [
+          {
+            "method": "onAttach"
+          },
+          {
+            "method": "onDetach"
+          }
+        ],
+        "expect": {
+          "status": "idle"
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "widget",
+        "type": "widget",
+        "path": "widgets/status/index",
+        "family": "1x1",
+        "displayName": "Status",
+        "description": "Shows status"
+      },
+      {
+        "id": "layout",
+        "type": "widgetLayout",
+        "path": "widgets/status/index.ink"
+      }
+    ],
+    "constraints": []
+  }
+}

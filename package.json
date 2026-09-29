@@ -5,7 +5,9 @@
   "description": "AIUI is a *JavaScript User Interface* agentic runtime designed for the AI glasses with Display. It empowers developers to build intelligent, interactive, and context-aware agents with GUI seamlessly.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "bench": "node bench/src/cli.js",
+    "bench:test": "npm test --prefix bench"
   },
   "repository": {
     "type": "git",

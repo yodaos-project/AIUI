@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "003-create-widget",
+  "category": "create",
+  "difficulty": "easy",
+  "description": "Add a 1x1 Widget at widgets/status/index with displayName Status and description Shows status. Show bound status text, update it to ready in onAttach, and use relative root sizing.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "widget",
+        "type": "widget",
+        "path": "widgets/status/index",
+        "family": "1x1",
+        "displayName": "Status",
+        "description": "Shows status"
+      },
+      {
+        "id": "widget-file",
+        "type": "file",
+        "path": "widgets/status/index.ink"
+      },
+      {
+        "id": "status-binding",
+        "type": "template",
+        "path": "widgets/status/index.ink",
+        "tag": "text",
+        "binding": "status"
+      },
+      {
+        "id": "attach",
+        "type": "behavior",
+        "path": "widgets/status/index.ink",
+        "calls": [
+          {
+            "method": "onAttach"
+          }
+        ],
+        "expect": {
+          "status": "ready"
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "relative-layout",
+        "type": "widgetLayout",
+        "path": "widgets/status/index.ink"
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      }
+    ],
+    "constraints": []
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "id": "006-modify-second-page",
+  "category": "modify",
+  "difficulty": "easy",
+  "description": "Add a detail Page at pages/detail/index, show Detail in it, and register it after the existing Home Page. Preserve the original Home Page.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "detail-route",
+        "type": "route",
+        "value": "pages/detail/index"
+      },
+      {
+        "id": "detail-file",
+        "type": "file",
+        "path": "pages/detail/index.ink"
+      },
+      {
+        "id": "detail-label",
+        "type": "template",
+        "path": "pages/detail/index.ink",
+        "tag": "text",
+        "text": "Detail"
+      },
+      {
+        "id": "route-order",
+        "type": "routeOrder",
+        "before": "pages/index/index",
+        "after": "pages/detail/index"
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "home-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "home-state",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Home"
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

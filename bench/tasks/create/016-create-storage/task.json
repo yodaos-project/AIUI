@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "id": "016-create-storage",
+  "category": "create",
+  "difficulty": "hard",
+  "description": "Create a Home Page with count initially 3, a Save button, and a Load button. Save must persist the count under key aiui-bench-count using wx.setStorageSync. Load must read it using wx.getStorageSync and display the value in restored. Use the AIUI wx module. Do not rely on browser localStorage.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      },
+      {
+        "id": "save",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Save"
+      },
+      {
+        "id": "load",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Load",
+        "binding": "restored"
+      },
+      {
+        "id": "storage-roundtrip",
+        "type": "storageBehavior",
+        "path": "pages/index/index.ink",
+        "seed": { "count": 8 },
+        "buttons": [
+          "Save",
+          "Load"
+        ],
+        "key": "aiui-bench-count",
+        "stored": 8,
+        "expect": {
+          "restored": 8
+        }
+      },
+      {
+        "id": "storage-updated-count",
+        "type": "storageBehavior",
+        "path": "pages/index/index.ink",
+        "seed": { "count": 13 },
+        "buttons": [ "Save", "Load" ],
+        "key": "aiui-bench-count",
+        "stored": 13,
+        "expect": { "restored": 13 }
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "initial-count",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": { "count": 3 }
+      }
+    ],
+    "constraints": []
+  }
+}
