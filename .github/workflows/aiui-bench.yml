@@ -66,10 +66,16 @@ jobs:
 
           failed=0
           for model in "${models[@]}"; do
+            output_dir="bench/results/github-actions/$model"
+            status=0
             node bench/scripts/run-all.js \
               --model "$model" \
               --max-steps "$BENCH_MAX_STEPS" \
-              --output-dir "bench/results/github-actions/$model" || failed=1
+              --output-dir "$output_dir" || status=$?
+            if (( status > 1 )) || [[ ! -s "$output_dir/summary.json" || ! -s "$output_dir/report.md" ]]; then
+              echo "::error::Benchmark run for $model did not complete (exit $status)."
+              failed=1
+            fi
           done
           exit "$failed"
 

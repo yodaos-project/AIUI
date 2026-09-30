@@ -74,7 +74,7 @@ node bench/scripts/run-all.js \
 
 在仓库的 Actions secrets 中添加名为 `DEEPSEEK_API_KEY` 的密钥。进入仓库 **Actions** 页面，选择 **AIUI Coding Benchmark**，点击 **Run workflow**，勾选一个或两个模型，并设置最大步数。GitHub 的 `choice` 输入只能单选，因此每个支持的模型使用独立的勾选框。该 workflow 仅手动触发，先运行测试框架的测试，再对每个选中模型执行全部任务。要在页面看到 **Run workflow** 按钮，workflow 文件须位于仓库默认分支。
 
-对应 workflow 运行页面的 **Summary** 会按模型分别展示通过数量、预估美元总费用，以及每个任务的结果和费用。下载 `aiui-bench-<run-id>-<attempt>` artifact，可获得各模型的 `summary.json`、`report.md`、infer 轨迹和生成的工作区。任一模型有任务未通过或出错，job 就会失败，但仍会上传 artifact。结果中不包含 API key。workflow 名称和报告格式不限定 Provider；目前 infer CLI 仅支持 DeepSeek 模型。
+对应 workflow 运行页面的 **Summary** 会按模型分别展示通过数量、预估美元总费用，以及每个任务的结果和费用。下载 `aiui-bench-<run-id>-<attempt>` artifact，可获得各模型的 `summary.json`、`report.md`、infer 轨迹和生成的工作区。只要所有选中模型都生成了完整报告，即使有任务未通过或单个任务出错，Actions job 仍视为成功；缺少报告或批量运行未完成仍会失败。结果中不包含 API key。workflow 名称和报告格式不限定 Provider；目前 infer CLI 仅支持 DeepSeek 模型。
 
 费用根据 API 每次请求返回的缓存命中、未命中和输出 token 数，以及请求发生时的 UTC 峰时／非峰时，按 [DeepSeek 官方美元价格](https://api-docs.deepseek.com/quick_start/pricing/)估算。`src/pricing.js` 中的单价快照日期为 2026-09-30；官方调价后须更新。若任务缺少用量信息或有 API 请求失败，费用显示为 `N/A`，报告和 `bench summary` 仍保留已知费用的小计；实际扣费以 Provider 账单为准。
 
