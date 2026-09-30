@@ -71,6 +71,7 @@ test('scenario schema rejects unknown actions, invalid effects, and unsafe neste
     { steps: [{action:'expect', data:[]}] },
     { steps: [{action:'call', method:'open', button:'Open'}, {action:'expect', data:{}}] },
     { steps: [{action:'advance', ms:-1}, {action:'expect', data:{}}] },
+    { steps: [{action:'location', request:0, late:'yes'}, {action:'expect', data:{}}] },
     { steps: [{action:'call', method:'open', instance:'missing'}, {action:'expect', data:{}}] },
     { instances: {detail:{path:'../secret.js'}} },
     { instances: {detail:{path:'pages/detail/index.js', templatePath:'/secret.wxml'}} },
@@ -151,4 +152,20 @@ test('search race accepts cancellation as an alternative to version counters', a
   await put(workspace, file, source);
   const result = await grade(task, workspace);
   assert.equal(result.resolved, true, JSON.stringify(result));
+}));
+
+test('released watch delivers a queued callback and rejects an unguarded handler', async () => fixture('071-watch-resume', async (task, workspace) => {
+  const file = 'pages/index/index.ink';
+  const guarded = solutions[task.id].files[file];
+  await put(workspace, file, guarded);
+  assert.equal((await grade(task, workspace)).resolved, true);
+
+  const unguarded = guarded.replace(
+    'if (generation===this.watchGeneration) this.setData({latitude:pos.coords.latitude});',
+    'this.setData({latitude:pos.coords.latitude});'
+  );
+  assert.notEqual(unguarded, guarded);
+  await put(workspace, file, unguarded);
+  const result = await grade(task, workspace);
+  assert.equal(result.required.checks.find(check => check.id === 'watch-ownership').passed, false);
 }));

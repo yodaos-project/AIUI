@@ -50,6 +50,7 @@
           {
             "action": "location",
             "request": 0,
+            "late": true,
             "coords": {
               "latitude": 99,
               "longitude": 20

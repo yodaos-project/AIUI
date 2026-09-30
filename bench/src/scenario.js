@@ -29,6 +29,7 @@ export function validateScenario(check, validatePath) {
     if (step.action === 'expect' && (!(object(step.data) || object(step.effects))
       || (step.data !== undefined && !object(step.data)) || (step.effects !== undefined && !object(step.effects)))) throw new Error('invalid scenario expectation');
     if (['respond', 'location'].includes(step.action) && (!Number.isInteger(step.request) || step.request < 0)) throw new Error('invalid scenario request');
+    if (step.action === 'location' && step.late !== undefined && typeof step.late !== 'boolean') throw new Error('invalid late location flag');
     if (step.action === 'advance' && (!Number.isInteger(step.ms) || step.ms < 0 || step.ms > 60000)) throw new Error('invalid scenario clock advance');
     if (step.action === 'storageFailure' && typeof step.enabled !== 'boolean') throw new Error('invalid storage failure');
   }
@@ -144,7 +145,9 @@ export async function runScenario(check, workspace, buttonHandler) {
     } else if (step.action === 'location') {
       const request = locations[step.request];
       if (!request) throw new Error('missing location request');
-      if (!request.watch || request.active) {
+      // A queued watch callback may arrive after clearWatch. Deliver it only
+      // when the scenario explicitly tests that race.
+      if (!request.watch || request.active || step.late) {
         if (step.error) { if (!request.error) throw new Error('missing location error handler'); track(invoke(request.error, [step.error])); }
         else track(invoke(request.success, [{ coords: step.coords, timestamp: now }]));
       }
