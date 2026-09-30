@@ -3,7 +3,7 @@
   "id": "052-design-typography",
   "category": "design",
   "difficulty": "medium",
-  "description": "Restyle the telemetry typography in pages/index/index.ink: title uses the display token (22px/500 sans-serif, 72% green), numerical value uses data (13px/500 monospace, full green), and metadata uses readable secondary body-sm (12px/400 sans-serif, 48% green). Refresh must still add 1 to value, starting at 42; preserve title Telemetry and metadata Sensor A. Read references/design/monochrome-green.md in the provided aiui-dev skill, together with references/wxss.md, and apply its monochrome-green specification. Keep the supplied class names on their existing content nodes. For deterministic source grading, use flat .class selectors (comma lists are allowed) and explicit longhand properties in the inline <style> block; do not use imports, variables, shorthands, complex selectors, or !important. Preserve the route, bound content, initial state, and existing button behavior. Use AIUI APIs, not browser DOM APIs.",
+  "description": "Improve the telemetry text hierarchy in pages/index/index.ink for RokidGlasses1 and RokidGlasses2: distinguish the Telemetry title, the numerical reading, and the secondary Sensor A metadata. Preserve all bound content and the Refresh button that increases the reading from its initial value of 42.",
   "aiuiVersion": "current",
   "workspace": "./workspace",
   "grading": {

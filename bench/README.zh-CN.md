@@ -126,7 +126,7 @@ node bench/scripts/run-all.js \
 
 ### 设计任务与样式检查
 
-`design` 用于验证 coding agent 是否能落实 [monochrome-green 设计规范](../design/monochrome/design-system-green.md)。设计任务复用所提供的 `aiui-dev` skill 中的 `references/design/monochrome-green.md` 和 `references/wxss.md`；推理运行器已通过 skill 工具开放这些文件。人工或外部 agent 执行时，须同时提供任务工作区、描述和 `skills/aiui-dev/` 目录（或通过 `--skill` 选择的等效 skill），包含上述参考文件。比较结果时记录 skill 版本，任务工作区无需复制指南。首批 5 个任务覆盖画布与安全边距、文字层级、描边按钮、开放列表行及错误状态的冗余语义。required 检查设计属性，regression 保护数据绑定与按钮行为。
+`design` 用于验证 coding agent 是否能落实 [monochrome-green 设计规范](../design/monochrome/design-system-green.md)。任务描述只说明目标硬件、产品目标和需保留的行为，不点名 skill 参考文件、不指定设计 token，也不透露评分语法；agent 须自行从提供的 `aiui-dev` skill 发现并应用合适的设计规范。推理运行器已通过 skill 工具开放这些文件。人工或外部 agent 执行时，须同时提供任务工作区、描述和 `skills/aiui-dev/` 目录（或通过 `--skill` 选择的等效 skill），包含上述参考文件。比较结果时记录 skill 版本，任务工作区无需复制指南。首批 5 个任务覆盖画布与安全边距、文字层级、描边按钮、开放列表行及错误状态的冗余语义。required 检查设计属性，regression 保护数据绑定与按钮行为。
 
 `style` 检查需要 `path`（`.ink` 文件）、`className` 和非空 `declarations` 对象（CSS 属性名到字面量字符串的映射）；可选的正整数 `minCount` 要求匹配节点的最少数量；`tag`、`text`、`binding` 限定承载该 class 的内容节点。例如：
 
@@ -134,7 +134,7 @@ node bench/scripts/run-all.js \
 { "id": "body-copy", "type": "style", "path": "pages/index/index.ink", "className": "title", "tag": "text", "binding": "title", "declarations": { "font-size": "14px", "color": "rgba(64,255,94,0.72)" } }
 ```
 
-检查器读取 `.ink` 内联样式块，要求 class 应用在真实 Page/Widget 模板节点上，且所有同 class 节点都通过。支持简单 `.class` 选择器、逗号列表、按源码顺序覆盖的重复规则/声明、多 class 以及字面量内联长属性；忽略注释和脚本，规范化大小写、空白、短十六进制颜色与透明度小数格式，并检查选中节点上的文字/绑定。任务明确要求这种语法；复杂选择器、at-rule/import、变量、动态样式、`!important` 和常见简写会被拒绝。属性须直接声明；继承、通用简写展开、布局、设备渲染和感知质量不在评分范围内。这是确定性的源码 benchmark，不是完整 CSS 引擎或视觉比对。
+检查器读取 `.ink` 内联样式块，要求 class 应用在真实 Page/Widget 模板节点上，且所有同 class 节点都通过。支持标签、class、ID、复合及后代选择器、`:root`、逗号列表、优先级和源码顺序、内联声明、`!important`、静态自定义属性与 `var()`、文字属性继承，以及常见 padding/margin/border/radius/font/纯色 background 简写。忽略注释和脚本，规范化 token 格式，并检查选中节点上的文字/绑定。这些支持让 agent 无需在任务描述中接受特定 CSS 写法的提示。at-rule/import、动态样式、其他伪类和未支持的语法仍无法评分；不支持完整 CSS 级联、布局、设备渲染或感知质量。评分仍限定在 fixture 内容 class 上，无法识别任意重新组织的结构。这是确定性的源码 benchmark，不是完整 CSS 引擎或视觉比对。
 
 ### 3. 补充正反向测试
 

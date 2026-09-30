@@ -51,18 +51,19 @@ async function fixture(id, callback) {
 async function solution(id, workspace) {
   const original = await readFile(path.join(workspace, pagePath), 'utf8');
   let source = original.replace(/<style>[\s\S]*?<\/style>/, `<style>${solutions[id]}</style>`);
-  if (id === '055-design-error-state') source = source.replace('<text class="error-label">', '<text class="error-icon">△</text><text class="error-label">');
+  if (id === '055-design-error-state') source = source.replace('<text class="error-icon"></text>', '<text class="error-icon">△</text>');
   return source;
 }
 
-test('design catalog contains exactly five tasks and reuses the shared skill references', async () => {
+test('design tasks describe product goals without coaching skill discovery or design tokens', async () => {
   const design = (await tasks()).filter(task => task.category === 'design');
   assert.deepEqual(design.map(task => task.id), Object.keys(solutions));
   for (const reference of ['references/design/monochrome-green.md', 'references/wxss.md']) {
     assert.ok((await readFile(path.join(root, '../skills/aiui-dev', reference), 'utf8')).trim());
-    for (const task of design) assert.ok(task.description.includes(reference));
   }
   for (const task of design) {
+    assert.match(task.description, /RokidGlasses1 and RokidGlasses2/);
+    assert.doesNotMatch(task.description, /aiui-dev|references\/|DESIGN\.md|monochrome-green|rgba\(|#[0-9a-f]|\d+px|class selectors|longhand|grading|read.*guide/i);
     assert.deepEqual((await readdir(path.join(task.directory, 'workspace'))).sort(), ['app.js', 'app.json', 'pages']);
   }
 });
@@ -113,7 +114,7 @@ test('list design preserves both styled rows and their bound titles', async () =
   }
 }));
 
-test('inspect and prepare expose the skill reference in the description without private grading checks', async () => fixture('051-design-canvas', async (task, workspace) => {
+test('inspect and prepare expose product goals without design guidance or private grading checks', async () => fixture('051-design-canvas', async (task, workspace) => {
   const inspect = spawnSync(process.execPath, [path.join(root, 'src/cli.js'), 'inspect', task.id], { encoding: 'utf8' });
   assert.equal(inspect.status, 0, inspect.stderr);
   const publicTask = JSON.parse(inspect.stdout);
@@ -143,7 +144,7 @@ test('style checker rejects decoys, overriding inline styles, and unsupported ca
   assert.equal(matchesStyle(`<script setup>const decoy = '${template}';</script><page><text>{{title}}</text></page><style>${css}</style>`, check), false);
   assert.equal(matchesStyle(sample(css).replace('class="title"', 'class="title" style="color: red"'), check), false);
   assert.equal(matchesStyle(sample(css).replace('class="title"', 'class="title extra"').replace('</style>', '.extra { color: red; }</style>'), check), false);
-  for (const unsupported of ['text { color: red; }', '@import "other.wxss";', '.title:hover { color: red; }', '.title { color: #000 !important; }', '.title { font: 10px serif; }', '.title { color: var(--green); }']) {
+  for (const unsupported of ['@import "other.wxss";', '.title:hover { color: red; }', '.title { font: 10px serif; }', '.title { color: var(--green); }']) {
     assert.equal(matchesStyle(sample(css + unsupported), check), false, unsupported);
   }
 });
@@ -167,3 +168,40 @@ test('style schema rejects malformed declarations and unsafe paths', async () =>
     assert.throws(() => validateTask(modified, task.directory), /style check|unsafe check path/);
   }
 });
+
+test('style checker accepts static variables, inheritance, shorthands, and selector specificity', () => {
+  const source = `<page><view class="container"><text class="title">{{title}}</text></view></page>
+    <style>:root { --ink: #000; --size: 14px; }
+    .container { color: var(--ink); font-size: var(--size); }
+    text { color: red; } .container .title { color: inherit; }
+    .title { padding: 8px 12px; border: 1px solid rgba(64,255,94,.48); border-radius: 4px; background: transparent; }
+    </style>`;
+  const expected = { ...check, declarations: { ...check.declarations,
+    'padding-top': '8px', 'padding-right': '12px', 'padding-bottom': '8px', 'padding-left': '12px',
+    'border-width': '1px', 'border-style': 'solid', 'border-color': 'rgba(64,255,94,0.48)',
+    'border-radius': '4px', 'background-color': 'transparent' } };
+  assert.equal(matchesStyle(source, expected), true);
+  assert.equal(matchesStyle(source.replace('border: 1px solid', 'border: 4px solid'), expected), false);
+  assert.equal(matchesStyle(source.replace('</style>', '.title { border-left-width: 4px; }</style>'), expected), false);
+  assert.equal(matchesStyle(source.replace('--ink: #000', '--ink: red'), expected), false);
+  assert.equal(matchesStyle(sample('text { color: red; } .title { color: #000; font: 400 14px sans-serif; }'), check), true);
+  assert.equal(matchesStyle(sample('.title { color: #000; font-size: 14px; } text { color: red; }'), check), true);
+  assert.equal(matchesStyle(sample('.title { color: #000; font-size: 14px; } text.title { color: red; }'), check), false);
+  assert.equal(matchesStyle(sample('.title { color: #000 !important; font-size: 14px; } text.title { color: red; }'), check), true);
+  assert.equal(matchesStyle(sample('.title { color: var(--missing, #000); font-size: 14px; }'), check), true);
+  assert.equal(matchesStyle(sample(':root { --a: var(--b); --b: var(--a); } .title { color: var(--a); font-size: 14px; }'), check), false);
+});
+
+for (const id of Object.keys(solutions)) {
+  test(`${id}: equivalent token variables and common shorthands resolve without prompt coaching`, async () => fixture(id, async (task, workspace) => {
+    let source = await solution(id, workspace);
+    source = source.replace(/color: rgba\(64,255,94,\.72\)/g, 'color: var(--readable)')
+      .replace(/padding-top: (\d+px); padding-bottom: \1;\s*padding-left: (\d+px); padding-right: \2;/g, 'padding: $1 $2;')
+      .replace(/background-color: transparent/g, 'background: transparent')
+      .replace(/border-width: 1px; border-style: (solid|dashed);\s*border-color: (rgba\([^)]*\));/g, 'border: 1px $1 $2;')
+      .replace('<style>', '<style>:root { --readable: rgba(64,255,94,.72); }');
+    await writeFile(path.join(workspace, pagePath), source);
+    const result = await grade(task, workspace);
+    assert.equal(result.resolved, true, JSON.stringify(result));
+  }));
+}

@@ -3,7 +3,7 @@
   "id": "053-design-button",
   "category": "design",
   "difficulty": "medium",
-  "description": "Replace the oversized filled Toggle control in pages/index/index.ink with the default outlined button: minimum height 32px, transparent fill, 1px solid 48% green boundary, 4px radius, 72% green text, and uppercase 11px/500 sans-serif label. The status text must use readable 14px/400 sans-serif at 72% green. Toggle must continue to switch enabled false to true and back. Read references/design/monochrome-green.md in the provided aiui-dev skill, together with references/wxss.md, and apply its monochrome-green specification. Keep the supplied class names on their existing content nodes. For deterministic source grading, use flat .class selectors (comma lists are allowed) and explicit longhand properties in the inline <style> block; do not use imports, variables, shorthands, complex selectors, or !important. Preserve the route, bound content, initial state, and existing button behavior. Use AIUI APIs, not browser DOM APIs.",
+  "description": "Restyle the Toggle control and its status text in pages/index/index.ink for RokidGlasses1 and RokidGlasses2. Make the action easy to identify and operate without dominating the display. Preserve the initially false enabled state and repeated toggling in both directions.",
   "aiuiVersion": "current",
   "workspace": "./workspace",
   "grading": {
