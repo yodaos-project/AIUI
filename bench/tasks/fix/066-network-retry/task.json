@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "id": "066-network-retry",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "Repair loading items from the supplied endpoint. Show loading state during a request; network failures and HTTP error responses must display Load failed and clear loading. Keep the last successful items after a failure, and let Load retry. Success must display the response items and Ready. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "network-failure-retry",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "seed",
+            "data": {
+              "items": [
+                "cached"
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "button": "Load"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "loading": true
+            }
+          },
+          {
+            "action": "respond",
+            "request": 0,
+            "body": null,
+            "error": "offline"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "items": [
+                "cached"
+              ],
+              "loading": false,
+              "status": "Load failed"
+            }
+          },
+          {
+            "action": "call",
+            "button": "Load"
+          },
+          {
+            "action": "respond",
+            "request": 1,
+            "body": {
+              "items": [
+                "fresh",
+                "new"
+              ]
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "items": [
+                "fresh",
+                "new"
+              ],
+              "loading": false,
+              "status": "Ready"
+            },
+            "effects": {
+              "requestUrls": [
+                "https://api.example.test/items",
+                "https://api.example.test/items"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "http-failure",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Load"
+          },
+          {
+            "action": "respond",
+            "request": 0,
+            "body": {
+              "items": [
+                "wrong"
+              ]
+            },
+            "status": 503
+          },
+          {
+            "action": "expect",
+            "data": {
+              "items": [],
+              "loading": false,
+              "status": "Load failed"
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Network Retry"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

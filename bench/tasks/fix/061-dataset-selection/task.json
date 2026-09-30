@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "id": "061-dataset-selection",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "Repair row selection so tapping an item selects the id carried by that row and displays the selection. Do not select the first item by default. The list may be reordered or contain new ids. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "second-row",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "view",
+              "name": "tap",
+              "attribute": "data-id",
+              "value": "{{item.id}}"
+            },
+            "arg": {
+              "target": {
+                "dataset": {
+                  "id": "p"
+                }
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "selected": "p"
+            }
+          }
+        ]
+      },
+      {
+        "id": "new-row",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "seed",
+            "data": {
+              "items": [
+                {
+                  "id": "camera-7",
+                  "name": "Camera"
+                }
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "view",
+              "name": "tap",
+              "attribute": "data-id",
+              "value": "{{item.id}}"
+            },
+            "arg": {
+              "target": {
+                "dataset": {
+                  "id": "camera-7"
+                }
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "selected": "camera-7"
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Dataset Selection"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

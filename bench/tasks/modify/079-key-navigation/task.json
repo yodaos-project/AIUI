@@ -1,0 +1,172 @@
+{
+  "schemaVersion": 1,
+  "id": "079-key-navigation",
+  "category": "modify",
+  "difficulty": "medium",
+  "description": "Add keyboard selection to this three-item page on first-generation Rokid Glasses. ArrowDown and ArrowUp on key release must move selection within the list bounds, Enter must copy the selected id to confirmed, and those handled keys must suppress their host default action. Other keys must retain their default behavior. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "keys-and-defaults",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "preventDefault": true,
+            "method": "onKeyUp",
+            "arg": {
+              "code": "ArrowUp"
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "selectedIndex": 0
+            }
+          },
+          {
+            "action": "call",
+            "preventDefault": true,
+            "method": "onKeyUp",
+            "arg": {
+              "code": "ArrowDown"
+            }
+          },
+          {
+            "action": "call",
+            "preventDefault": true,
+            "method": "onKeyUp",
+            "arg": {
+              "code": "ArrowDown"
+            }
+          },
+          {
+            "action": "call",
+            "preventDefault": true,
+            "method": "onKeyUp",
+            "arg": {
+              "code": "ArrowDown"
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "selectedIndex": 2
+            }
+          },
+          {
+            "action": "call",
+            "preventDefault": true,
+            "method": "onKeyUp",
+            "arg": {
+              "code": "Enter"
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "confirmed": "s"
+            },
+            "effects": {
+              "prevented": 5
+            }
+          },
+          {
+            "action": "call",
+            "preventDefault": true,
+            "method": "onKeyUp",
+            "arg": {
+              "code": "Escape"
+            }
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "prevented": 5
+            }
+          }
+        ]
+      },
+      {
+        "id": "changed-list",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "seed",
+            "data": {
+              "items": [
+                {
+                  "id": "new-1",
+                  "name": "Camera"
+                },
+                {
+                  "id": "new-2",
+                  "name": "Sensor"
+                }
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "preventDefault": true,
+            "method": "onKeyUp",
+            "arg": {
+              "code": "ArrowDown"
+            }
+          },
+          {
+            "action": "call",
+            "preventDefault": true,
+            "method": "onKeyUp",
+            "arg": {
+              "code": "Enter"
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "selectedIndex": 1,
+              "confirmed": "new-2"
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Key Navigation"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

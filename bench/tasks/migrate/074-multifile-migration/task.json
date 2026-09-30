@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "id": "074-multifile-migration",
+  "category": "migrate",
+  "difficulty": "medium",
+  "description": "Migrate the existing multi-file counter page to the current AIUI registration contract without changing its source form, route, bound content, or local helper import. Increment must add the shared step to count, starting at 2. Keep About working. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "logic-file",
+        "type": "file",
+        "path": "pages/index/index.js"
+      },
+      {
+        "id": "imported-step",
+        "type": "scenario",
+        "path": "pages/index/index.js",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Increment"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "count": 6
+            }
+          },
+          {
+            "action": "seed",
+            "data": {
+              "count": 10
+            }
+          },
+          {
+            "action": "call",
+            "button": "Increment"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "count": 14
+            }
+          }
+        ],
+        "templatePath": "pages/index/index.wxml"
+      }
+    ],
+    "regression": [
+      {
+        "id": "declared-page",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "title-binding",
+        "type": "template",
+        "path": "pages/index/index.wxml",
+        "binding": "title"
+      },
+      {
+        "id": "counter-binding",
+        "type": "template",
+        "path": "pages/index/index.wxml",
+        "binding": "count"
+      },
+      {
+        "id": "preserve-about",
+        "type": "scenario",
+        "path": "pages/index/index.js",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Multi-file"
+            }
+          }
+        ],
+        "templatePath": "pages/index/index.wxml"
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

@@ -7,6 +7,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateScenario } from './scenario.js';
 
 /** @typedef {'required' | 'regression' | 'constraints'} CheckGroup */
 /** @typedef {{id: string, type: string, [key: string]: unknown}} TaskCheck */
@@ -30,7 +31,7 @@ const checks = new Set([
   'file', 'route', 'widget', 'worker', 'permission', 'template',
   'behavior', 'workerBehavior', 'locationBehavior', 'watchBehavior',
   'storageBehavior', 'overlayBehavior', 'voiceBehavior',
-  'manifestField', 'routeOrder', 'widgetLayout', 'noDom', 'style',
+  'manifestField', 'routeOrder', 'widgetLayout', 'noDom', 'style', 'scenario',
 ]);
 // Fields used as workspace-relative paths by a check. Presence is type-specific;
 // optional path fields are still validated whenever a task supplies them.
@@ -43,6 +44,7 @@ const pathFields = {
   widgetLayout: ['path'],
   template: ['path'],
   style: ['path'],
+  scenario: ['path'],
   behavior: ['path'],
   workerBehavior: ['path'],
   locationBehavior: ['path'],
@@ -79,6 +81,12 @@ function validateCheck(taskId, check) {
   for (const field of new Set([...(pathFields[check.type] || []), ...optionalPaths])) {
     validateCheckPath(taskId, check, field);
   }
+  if (check.type === 'scenario') validateScenario(check, (item, field) => validateCheckPath(taskId, item, field));
+  if (check.type === 'template' && check.attributes !== undefined && (
+    !check.attributes || typeof check.attributes !== 'object' || Array.isArray(check.attributes)
+    || !Object.keys(check.attributes).length
+    || Object.entries(check.attributes).some(([name, value]) => !/^[\w:-]+$/.test(name) || typeof value !== 'string')
+  )) throw new Error(`invalid template attributes in ${taskId}`);
   if (check.type === 'style' && (
     !/^[a-zA-Z_][\w-]*$/.test(check.className || '')
     || !check.declarations || typeof check.declarations !== 'object'

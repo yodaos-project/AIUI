@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "id": "062-textarea-draft",
+  "category": "modify",
+  "difficulty": "medium",
+  "description": "Finish the multi-line note editor. Every input must update draft; Save must copy its current value to saved without trimming or losing line breaks. Clear must empty draft while preserving the previously saved note. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "editor-binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "textarea",
+        "attributes": {
+          "value": "{{draft}}"
+        }
+      },
+      {
+        "id": "multiline-save",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "textarea",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "first\nsecond"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Save"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "draft": "first\nsecond",
+              "saved": "first\nsecond"
+            }
+          },
+          {
+            "action": "call",
+            "button": "Clear"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "draft": "",
+              "saved": "first\nsecond"
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "textarea",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "  spaces  "
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Save"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "saved": "  spaces  "
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Textarea Draft"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

@@ -1,0 +1,246 @@
+{
+  "056-filter-results": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Filter Results\", \"info\": \"\", \"items\": [{\"id\": \"g\", \"name\": \"Glasses\"}, {\"id\": \"p\", \"name\": \"Phone\"}, {\"id\": \"s\", \"name\": \"Speaker\"}], \"query\": \"\", \"filtered\": [{\"id\": \"g\", \"name\": \"Glasses\"}, {\"id\": \"p\", \"name\": \"Phone\"}, {\"id\": \"s\", \"name\": \"Speaker\"}], \"empty\": false},\nonInput(e) { const query = e.detail.value; const filtered = this.data.items.filter(item => item.name.toLowerCase().includes(query.trim().toLowerCase())); this.setData({ query, filtered, empty: filtered.length === 0 }); }, clear() { this.onInput({detail:{value:\"\"}}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><input value=\"{{query}}\" bindinput=\"onInput\"/><view wx:for=\"{{filtered}}\"><text>{{item.name}}</text></view><text wx:if=\"{{empty}}\">No results</text><button bindtap=\"clear\">Clear</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "query.trim().toLowerCase()",
+      "to": "query"
+    }
+  },
+  "057-validate-form": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Validate Form\", \"info\": \"\", \"email\": \"\", \"error\": \"\", \"status\": \"idle\"},\nonInput(e) { this.setData({email:e.detail.value}); }, submit() { const email=this.data.email.trim(); this.setData({email,error:email && email.includes(\"@\") ? \"\" : \"Invalid email\",status:email && email.includes(\"@\") ? \"Sent\" : \"idle\"}); }, reset() { this.setData({email:\"\",error:\"\",status:\"idle\"}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><input value=\"{{email}}\" bindinput=\"onInput\"/><text>{{error}}</text><text>{{status}}</text><button bindtap=\"submit\">Submit</button><button bindtap=\"reset\">Reset</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "email && email.includes(\"@\")",
+      "to": "true"
+    }
+  },
+  "058-detail-navigation": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\nimport wx from 'wx';\nexport default { data: {\"title\": \"Detail Navigation\", \"info\": \"\", \"query\": \"\", \"items\": [{\"id\": \"g\", \"name\": \"Glasses\"}, {\"id\": \"p\", \"name\": \"Phone\"}, {\"id\": \"s\", \"name\": \"Speaker\"}]},\nonInput(e) { this.setData({query:e.detail.value}); }, open(e) { wx.navigateTo({url:\"/pages/detail/index?id=\"+encodeURIComponent(e.target.dataset.id)}); }, onShow() {},\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><input value=\"{{query}}\" bindinput=\"onInput\"/><view wx:for=\"{{items}}\" data-id=\"{{item.id}}\" bindtap=\"open\"><text>{{item.name}}</text></view><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n",
+      "pages/detail/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\nimport wx from 'wx';\nexport default { data: {\"id\": \"\", \"name\": \"\", \"info\": \"\"},\nonLoad(query) { this.setData({id:query.id,name:query.id === \"g\" ? \"Glasses\" : query.id === \"p\" ? \"Phone\" : \"Not found\"}); }, back() { wx.navigateBack(); }\n};\n</script>\n<page><view class=\"root\"><text>{{id}}</text><text>{{name}}</text><text>{{info}}</text><button bindtap=\"back\">Back</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "encodeURIComponent(e.target.dataset.id)",
+      "to": "e.target.dataset.id"
+    }
+  },
+  "059-persist-preference": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\nimport wx from 'wx';\nexport default { data: {\"title\": \"Persist Preference\", \"info\": \"\", \"enabled\": false},\nonLoad() { const saved=wx.getStorageSync(\"notifications\"); this.setData({enabled:saved === undefined ? false : saved}); }, toggle() { const enabled=!this.data.enabled; wx.setStorageSync(\"notifications\",enabled); this.setData({enabled}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><text>{{enabled}}</text><button bindtap=\"toggle\">Toggle</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "wx.setStorageSync(\"notifications\",enabled);",
+      "to": ""
+    }
+  },
+  "060-switch-setting": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Switch Setting\", \"info\": \"\", \"enabled\": false},\nchange(e) { this.setData({enabled:e.detail.value}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><switch checked=\"{{enabled}}\" bindchange=\"change\"/><text>{{enabled}}</text><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "enabled:e.detail.value",
+      "to": "enabled:!this.data.enabled"
+    }
+  },
+  "061-dataset-selection": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Dataset Selection\", \"info\": \"\", \"items\": [{\"id\": \"g\", \"name\": \"Glasses\"}, {\"id\": \"p\", \"name\": \"Phone\"}, {\"id\": \"s\", \"name\": \"Speaker\"}], \"selected\": \"\"},\nselect(e) { this.setData({selected:e.target.dataset.id}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><view wx:for=\"{{items}}\" data-id=\"{{item.id}}\" bindtap=\"select\"><text>{{item.name}}</text></view><text>{{selected}}</text><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "selected:e.target.dataset.id",
+      "to": "selected:\"g\""
+    }
+  },
+  "062-textarea-draft": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Textarea Draft\", \"info\": \"\", \"draft\": \"\", \"saved\": \"\"},\nedit(e) { this.setData({draft:e.detail.value}); }, save() { this.setData({saved:this.data.draft}); }, clear() { this.setData({draft:\"\"}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><textarea value=\"{{draft}}\" bindinput=\"edit\"/><text>{{saved}}</text><button bindtap=\"save\">Save</button><button bindtap=\"clear\">Clear</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "saved:this.data.draft",
+      "to": "saved:this.data.draft.trim()"
+    }
+  },
+  "063-swiper-controls": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Swiper Controls\", \"info\": \"\", \"page\": 1},\nprevious() { this.setData({page:Math.max(1,this.data.page-1)}); }, next() { this.setData({page:Math.min(3,this.data.page+1)}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><swiper><swiper-item wx:if=\"{{page === 1}}\"><text>Welcome</text></swiper-item><swiper-item wx:if=\"{{page === 2}}\"><text>Connect</text></swiper-item><swiper-item wx:if=\"{{page === 3}}\"><text>Finish</text></swiper-item></swiper><text>{{page}}</text><button bindtap=\"previous\">Previous</button><button bindtap=\"next\">Next</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "Math.min(3,this.data.page+1)",
+      "to": "this.data.page+1"
+    }
+  },
+  "064-location-retry": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Location Retry\", \"info\": \"\", \"latitude\": null, \"longitude\": null, \"status\": \"idle\"},\nlocate() { navigator.geolocation.getCurrentPosition(pos => { this.setData({latitude:pos.coords.latitude,longitude:pos.coords.longitude,status:\"Ready\"}); },error => { this.setData({status:error.code===1?\"Denied\":error.code===2?\"Unavailable\":\"Timeout\"}); }); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><text>{{latitude}}</text><text>{{longitude}}</text><text>{{status}}</text><button bindtap=\"locate\">Locate</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "error.code===1?\"Denied\"",
+      "to": "error.code===1?\"Ready\""
+    }
+  },
+  "065-storage-recovery": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\nimport wx from 'wx';\nexport default { data: {\"title\": \"Storage Recovery\", \"info\": \"\", \"draft\": \"\", \"status\": \"idle\"},\nedit(e) { this.setData({draft:e.detail.value}); }, save() { try { wx.setStorageSync(\"draft\",this.data.draft); this.setData({status:\"Saved\"}); } catch(error) { this.setData({status:\"Save failed\"}); } }, restore() { this.setData({draft:wx.getStorageSync(\"draft\") || \"\"}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><input value=\"{{draft}}\" bindinput=\"edit\"/><text>{{status}}</text><button bindtap=\"save\">Save</button><button bindtap=\"restore\">Restore</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "status:\"Save failed\"",
+      "to": "status:\"Saved\""
+    }
+  },
+  "066-network-retry": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Network Retry\", \"info\": \"\", \"endpoint\": \"https://api.example.test/items\", \"items\": [], \"loading\": false, \"status\": \"idle\"},\nasync load() { this.setData({loading:true,status:\"Loading\"}); try { const response=await fetch(this.data.endpoint); if (!response.ok) throw new Error(\"HTTP\"); const body=await response.json(); this.setData({items:body.items,status:\"Ready\"}); } catch(error) { this.setData({status:\"Load failed\"}); } finally { this.setData({loading:false}); } },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><view wx:for=\"{{items}}\"><text>{{item}}</text></view><text>{{loading}}</text><text>{{status}}</text><button bindtap=\"load\">Load</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "if (!response.ok) throw new Error(\"HTTP\");",
+      "to": ""
+    }
+  },
+  "067-latest-search": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Latest Search\", \"info\": \"\", \"endpoint\": \"https://api.example.test/search\", \"query\": \"\", \"results\": [], \"loading\": false},\nedit(e) { this.setData({query:e.detail.value}); }, async search() { const token=this.token=(this.token||0)+1; this.setData({loading:true}); const response=await fetch(this.data.endpoint+\"?q=\"+encodeURIComponent(this.data.query)); const body=await response.json(); if (token===this.token) this.setData({results:body.items,loading:false}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><input value=\"{{query}}\" bindinput=\"edit\"/><view wx:for=\"{{results}}\"><text>{{item}}</text></view><text>{{loading}}</text><button bindtap=\"search\">Search</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "if (token===this.token) this.setData",
+      "to": "this.setData"
+    }
+  },
+  "068-debounce-search": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Debounce Search\", \"info\": \"\", \"endpoint\": \"https://api.example.test/search\", \"query\": \"\", \"results\": [], \"loading\": false},\nedit(e) { this.setData({query:e.detail.value}); clearTimeout(this.pending); if (this.data.query.trim()) this.pending=setTimeout(()=>this.search(),300); }, async search() { clearTimeout(this.pending); const token=this.token=(this.token||0)+1; this.setData({loading:true}); const response=await fetch(this.data.endpoint+\"?q=\"+encodeURIComponent(this.data.query)); const body=await response.json(); if (token===this.token) this.setData({results:body.items,loading:false}); }, onUnload() { clearTimeout(this.pending); this.token=(this.token||0)+1; },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><input value=\"{{query}}\" bindinput=\"edit\"/><view wx:for=\"{{results}}\"><text>{{item}}</text></view><text>{{loading}}</text><button bindtap=\"search\">Search</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "clearTimeout(this.pending); if",
+      "to": "if"
+    }
+  },
+  "069-page-timer-cleanup": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Page Timer Cleanup\", \"info\": \"\", \"ticks\": 0},\nonShow() { if (this.timer) return; this.timer=setInterval(()=>this.setData({ticks:this.data.ticks+1}),1000); }, onHide() { clearInterval(this.timer); this.timer=null; }, onUnload() { this.onHide(); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><text>{{ticks}}</text><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "clearInterval(this.timer);",
+      "to": ""
+    }
+  },
+  "070-widget-timer-lifecycle": {
+    "files": {
+      "widgets/status/index.ink": "<script def>{\"widget\": {\"family\": \"1x1\"}}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Widget Timer Lifecycle\", \"info\": \"\", \"ticks\": 0},\nonCreate() {}, onAttach() { if (this.timer) return; this.timer=setInterval(()=>this.setData({ticks:this.data.ticks+1}),1000); }, onDetach() { clearInterval(this.timer); this.timer=null; }, onDestroy() { this.onDetach(); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<widget><view class=\"root\"><text>{{title}}</text><text>{{ticks}}</text><text>{{info}}</text><button bindtap=\"about\">About</button></view></widget>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "widgets/status/index.ink",
+      "from": "clearInterval(this.timer);",
+      "to": ""
+    }
+  },
+  "071-watch-resume": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Watch Resume\", \"info\": \"\", \"latitude\": null, \"status\": \"idle\"},\nonShow() { if (this.watchId != null) return; this.watchId=navigator.geolocation.watchPosition(pos=>this.setData({latitude:pos.coords.latitude}),()=>this.setData({status:\"Location failed\"})); }, onHide() { if (this.watchId != null) navigator.geolocation.clearWatch(this.watchId); this.watchId=null; }, onUnload() { this.onHide(); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><text>{{latitude}}</text><text>{{status}}</text><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "navigator.geolocation.clearWatch(this.watchId);",
+      "to": "this.watchId;"
+    }
+  },
+  "072-worker-storage": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\nimport wx from 'wx';\nexport default { data: {\"title\": \"Worker Storage\", \"info\": \"\", \"launches\": 0},\nrefresh() { this.setData({launches:wx.getStorageSync(\"launches\") || 0}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><text>{{launches}}</text><button bindtap=\"refresh\">Refresh</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n",
+      "workers/launches.js": "import wx from 'wx';\nexport default { onOpen(event) { event.waitUntil(Promise.resolve().then(()=>{const launches=wx.getStorageSync('launches') || 0; wx.setStorageSync('launches',launches+1);})); } };\n"
+    },
+    "negative": {
+      "path": "workers/launches.js",
+      "from": "launches+1",
+      "to": "1"
+    }
+  },
+  "073-shared-formatting": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\nimport { formatDistance } from '../../lib/format.js';\nexport default { data: {\"title\": \"Shared Formatting\", \"info\": \"\", \"reading\": 1.25, \"formatted\": \"\"},\nrefresh() { this.setData({formatted:formatDistance(this.data.reading)}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><text>{{formatted}}</text><button bindtap=\"refresh\">Refresh</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n",
+      "lib/format.js": "export function formatDistance(value) { return value.toFixed(1) + \" km\"; }\n"
+    },
+    "negative": {
+      "path": "lib/format.js",
+      "from": "value.toFixed(1)",
+      "to": "Math.round(value)"
+    }
+  },
+  "074-multifile-migration": {
+    "files": {
+      "pages/index/index.js": "import { step } from '../../lib/step.js';\nexport default { data: {title:'Multi-file',info:'',count:2}, increment() { this.setData({count:this.data.count+step}); }, about() { this.setData({info:'AIUI'}); } };\n"
+    },
+    "negative": {
+      "path": "pages/index/index.js",
+      "from": "this.data.count+step",
+      "to": "this.data.count+1"
+    }
+  },
+  "075-browser-routing": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\nimport wx from 'wx';\nexport default { data: {\"title\": \"Browser Routing\", \"info\": \"\", \"selected\": \"g\"},\nopen() { wx.navigateTo({url:\"/pages/detail/index?id=\"+encodeURIComponent(this.data.selected)}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><text>{{selected}}</text><button bindtap=\"open\">Open</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "encodeURIComponent(this.data.selected)",
+      "to": "this.data.selected"
+    }
+  },
+  "076-widget-relative-layout": {
+    "files": {
+      "widgets/status/index.ink": "<script def>{\"widget\": {\"family\": \"1x1\"}}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Widget Relative Layout\", \"info\": \"\", \"refreshes\": 0},\nrefresh() { this.setData({refreshes:this.data.refreshes+1}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<widget><view class=\"root\"><text>{{title}}</text><text>{{refreshes}}</text><button bindtap=\"refresh\">Refresh</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></widget>\n<style>.root { width: 100%; height: 100%; display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "widgets/status/index.ink",
+      "from": "width: 100%",
+      "to": "width: 239px"
+    }
+  },
+  "077-fullcolor-theme": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Fullcolor Theme\", \"info\": \"\", \"updates\": 0},\nupdate() { this.setData({updates:this.data.updates+1}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><text class=\"accent\">Summary</text><text class=\"error\">Error</text><text>{{updates}}</text><button bindtap=\"update\">Update</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { width: 100%; height: 100%; background-color: #ffffff; } .accent { color: #3366ff; } .error { color: #dd3333; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "#3366ff",
+      "to": "#40ff5e"
+    }
+  },
+  "078-overlay-dismiss": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Overlay Dismiss\", \"info\": \"\"},\nopen() { window.open(\"widgets/status/index\",\"_widget\"); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><button bindtap=\"open\">Open Status</button><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n",
+      "widgets/status/index.ink": "<script def>{\"widget\": {\"family\": \"1x1\"}}</script>\n<script setup>\n\nexport default { data: {\"status\": \"Ready\"},\ndismiss() { window.close(); }\n};\n</script>\n<widget><view class=\"root\"><text>{{status}}</text><button bindtap=\"dismiss\">Dismiss</button></view></widget>\n<style>.root { width: 100%; height: 100%; }</style>\n"
+    },
+    "negative": {
+      "path": "widgets/status/index.ink",
+      "from": "window.close();",
+      "to": ""
+    }
+  },
+  "079-key-navigation": {
+    "files": {
+      "pages/index/index.ink": "<script def>{\"navigationBarTitleText\": \"Benchmark\"}</script>\n<script setup>\n\nexport default { data: {\"title\": \"Key Navigation\", \"info\": \"\", \"items\": [{\"id\": \"g\", \"name\": \"Glasses\"}, {\"id\": \"p\", \"name\": \"Phone\"}, {\"id\": \"s\", \"name\": \"Speaker\"}], \"selectedIndex\": 0, \"confirmed\": \"\"},\nonKeyUp(event) { const code=event.code; if (![\"ArrowDown\",\"ArrowUp\",\"Enter\"].includes(code)) return; event.preventDefault(); if (code===\"Enter\") this.setData({confirmed:this.data.items[this.data.selectedIndex].id}); else this.setData({selectedIndex:Math.max(0,Math.min(this.data.items.length-1,this.data.selectedIndex+(code===\"ArrowDown\"?1:-1)))}); },\nabout() { this.setData({ info: \"AIUI\" }); }\n};\n</script>\n<page><view class=\"root\"><text>{{title}}</text><view wx:for=\"{{items}}\"><text>{{item.name}}</text></view><text>{{selectedIndex}}</text><text>{{confirmed}}</text><text>{{info}}</text><button bindtap=\"about\">About</button></view></page>\n<style>.root { display: flex; flex-direction: column; }</style>\n"
+    },
+    "negative": {
+      "path": "pages/index/index.ink",
+      "from": "event.preventDefault();",
+      "to": ""
+    }
+  }
+}

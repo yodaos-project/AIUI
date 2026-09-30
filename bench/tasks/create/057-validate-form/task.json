@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "id": "057-validate-form",
+  "category": "create",
+  "difficulty": "medium",
+  "description": "Finish the email submission form. Trim the entered address, reject an empty address or one without @ with Invalid email, and show Sent after a valid submission. Reset must clear the input and feedback; the input must remain synchronized with the displayed form state. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "email-field",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "input",
+        "attributes": {
+          "value": "{{email}}"
+        }
+      },
+      {
+        "id": "validation-reset",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Submit"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "error": "Invalid email",
+              "status": "idle"
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "bad"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Submit"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "error": "Invalid email"
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "  a@b.test  "
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Submit"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "email": "a@b.test",
+              "error": "",
+              "status": "Sent"
+            }
+          },
+          {
+            "action": "call",
+            "button": "Reset"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "email": "",
+              "error": "",
+              "status": "idle"
+            }
+          }
+        ]
+      },
+      {
+        "id": "another-address",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "second@host"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Submit"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "email": "second@host",
+              "status": "Sent",
+              "error": ""
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Validate Form"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

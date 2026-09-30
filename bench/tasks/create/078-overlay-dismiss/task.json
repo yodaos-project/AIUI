@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "id": "078-overlay-dismiss",
+  "category": "create",
+  "difficulty": "medium",
+  "description": "Finish the temporary status overlay flow. Open Status must open the declared overlay Widget while keeping the page open; Dismiss in the Widget must close the temporary agent instance. Preserve the Ready message and keep the page actions working before the overlay is dismissed. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "overlay-widget",
+        "type": "widget",
+        "path": "widgets/status/index",
+        "family": "1x1"
+      },
+      {
+        "id": "open-and-dismiss",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Open Status"
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "opens": [
+                {
+                  "url": "widgets/status/index",
+                  "target": "_widget"
+                }
+              ],
+              "closes": 0
+            }
+          },
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI"
+            }
+          },
+          {
+            "action": "call",
+            "button": "Dismiss",
+            "instance": "overlay"
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "closes": 1
+            },
+            "instance": "overlay"
+          }
+        ],
+        "instances": {
+          "overlay": {
+            "path": "widgets/status/index.ink"
+          }
+        }
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Overlay Dismiss"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

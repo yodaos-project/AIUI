@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "id": "070-widget-timer-lifecycle",
+  "category": "fix",
+  "difficulty": "hard",
+  "description": "Repair the status Widget so ticks advance once per second while attached. Repeated attachment must not multiply updates, detaching must pause them, reattaching must resume them, and destruction must release all timers. Keep the declared Widget family. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "widget-contract",
+        "type": "widget",
+        "path": "widgets/status/index",
+        "family": "1x1"
+      },
+      {
+        "id": "attach-detach-destroy",
+        "type": "scenario",
+        "path": "widgets/status/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "method": "onAttach"
+          },
+          {
+            "action": "call",
+            "method": "onAttach"
+          },
+          {
+            "action": "advance",
+            "ms": 1000
+          },
+          {
+            "action": "expect",
+            "data": {
+              "ticks": 1
+            },
+            "effects": {
+              "activeTimers": 1
+            }
+          },
+          {
+            "action": "call",
+            "method": "onDetach"
+          },
+          {
+            "action": "advance",
+            "ms": 2000
+          },
+          {
+            "action": "expect",
+            "data": {
+              "ticks": 1
+            },
+            "effects": {
+              "activeTimers": 0
+            }
+          },
+          {
+            "action": "call",
+            "method": "onAttach"
+          },
+          {
+            "action": "advance",
+            "ms": 1000
+          },
+          {
+            "action": "expect",
+            "data": {
+              "ticks": 2
+            }
+          },
+          {
+            "action": "call",
+            "method": "onDestroy"
+          },
+          {
+            "action": "advance",
+            "ms": 2000
+          },
+          {
+            "action": "expect",
+            "data": {
+              "ticks": 2
+            },
+            "effects": {
+              "activeTimers": 0
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "widgets/status/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "widgets/status/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Widget Timer Lifecycle"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

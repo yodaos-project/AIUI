@@ -1,0 +1,1 @@
+<view><text>{{title}}</text><text>{{count}}</text><text>{{info}}</text><button bindtap="increment">Increment</button><button bindtap="about">About</button></view>

@@ -84,7 +84,7 @@ node bench/scripts/run-all.js \
 
 ### 1. 确定 ID 并创建初始项目
 
-创建 `bench/tasks/<category>/<id>/task.json` 和 `bench/tasks/<category>/<id>/workspace/`。类别为 `create`、`modify`、`fix`、`migrate`、`constraint`、`design`；难度为 `easy`、`medium`、`hard`。ID 要在所有类别中唯一，编号放在前面，例如 `056-create-greeting`。目录名、JSON 中的 `id` 和上级类别目录必须一致。
+创建 `bench/tasks/<category>/<id>/task.json` 和 `bench/tasks/<category>/<id>/workspace/`。类别为 `create`、`modify`、`fix`、`migrate`、`constraint`、`design`；难度为 `easy`、`medium`、`hard`。ID 要在所有类别中唯一，编号放在前面，例如 `080-create-greeting`。目录名、JSON 中的 `id` 和上级类别目录必须一致。
 
 `workspace/` 中放最小 AIUI 初始项目，例如 `app.json` 和 `app.js`，但不要提前完成目标任务。不要放符号链接、密钥、评分文件或模型输出。描述应准确写明要实现和保留的行为，只引用 fixture 中真实存在的文件，并避免在运行时没有要求的情况下限定唯一实现方式。
 
@@ -95,7 +95,7 @@ node bench/scripts/run-all.js \
 ```json
 {
   "schemaVersion": 1,
-  "id": "056-create-greeting",
+  "id": "080-create-greeting",
   "category": "create",
   "difficulty": "easy",
   "description": "Create a Page at pages/index/index that displays Hello AIUI from bound data. Use AIUI APIs, not browser DOM APIs.",
@@ -120,13 +120,13 @@ node bench/scripts/run-all.js \
 | --- | --- | --- |
 | 文件与 manifest | `file`、`route`、`widget`、`worker`、`permission`、`manifestField`、`routeOrder` | 文件、声明、权限、顺序 |
 | 模板与布局 | `template`、`widgetLayout`、`style`、`noDom` | 标签、文字、绑定、按钮标签、布局及 DOM 限制 |
-| 处理函数行为 | `behavior`、`workerBehavior`、`locationBehavior`、`watchBehavior`、`storageBehavior`、`overlayBehavior`、`voiceBehavior` | 在确定性 mock 中调用处理函数后的状态 |
+| 处理函数行为 | `scenario`、`behavior`、`workerBehavior`、`locationBehavior`、`watchBehavior`、`storageBehavior`、`overlayBehavior`、`voiceBehavior` | 在确定性 mock 中调用处理函数后的状态 |
 
 `behavior` 可使用 `path`、可选 `calls`（`method` 或可见按钮文字 `button`，以及可选 `arg`）、`expect` 和可选 `minPatches`。多文件 Page 的 `path` 指向 `.js` 逻辑文件；需要按按钮定位时，再用 `templatePath` 指向 `.wxml`。行为模拟器只支持部分 JavaScript/ESM 语法和显式 mock，不执行 TypeScript 或任意模块。特殊检查的字段请参考同类别已有任务。
 
 ### 设计任务与样式检查
 
-`design` 用于验证 coding agent 是否能落实 [monochrome-green 设计规范](../design/monochrome/design-system-green.md)。任务描述只说明目标硬件、产品目标和需保留的行为，不点名 skill 参考文件、不指定设计 token，也不透露评分语法；agent 须自行从提供的 `aiui-dev` skill 发现并应用合适的设计规范。推理运行器已通过 skill 工具开放这些文件。人工或外部 agent 执行时，须同时提供任务工作区、描述和 `skills/aiui-dev/` 目录（或通过 `--skill` 选择的等效 skill），包含上述参考文件。比较结果时记录 skill 版本，任务工作区无需复制指南。首批 5 个任务覆盖画布与安全边距、文字层级、描边按钮、开放列表行及错误状态的冗余语义。required 检查设计属性，regression 保护数据绑定与按钮行为。
+`design` 验证是否采用适合显示场景的设计与布局。首批 5 个任务落实 [monochrome-green 设计规范](../design/monochrome/design-system-green.md)，新增任务覆盖 Widget 自适应尺寸及既有 full-RGB 主题的保留。任务描述只说明目标硬件、产品目标和需保留的行为，不点名 skill 参考文件、不指定设计 token，也不透露评分语法；agent 须自行从提供的 `aiui-dev` skill 发现并应用合适的设计规范。推理运行器已通过 skill 工具开放这些文件。人工或外部 agent 执行时，须同时提供任务工作区、描述和 `skills/aiui-dev/` 目录（或通过 `--skill` 选择的等效 skill），包含其关联的参考文件。比较结果时记录 skill 版本，任务工作区无需复制指南。首批 5 个任务覆盖画布与安全边距、文字层级、描边按钮、开放列表行及错误状态的冗余语义。required 检查设计属性，regression 保护数据绑定与按钮行为。
 
 `style` 检查需要 `path`（`.ink` 文件）、`className` 和非空 `declarations` 对象（CSS 属性名到字面量字符串的映射）；可选的正整数 `minCount` 要求匹配节点的最少数量；`tag`、`text`、`binding` 限定承载该 class 的内容节点。例如：
 
@@ -136,17 +136,44 @@ node bench/scripts/run-all.js \
 
 检查器读取 `.ink` 内联样式块，要求 class 应用在真实 Page/Widget 模板节点上，且所有同 class 节点都通过。支持标签、class、ID、复合及后代选择器、`:root`、逗号列表、优先级和源码顺序、内联声明、`!important`、静态自定义属性与 `var()`、文字属性继承，以及常见 padding/margin/border/radius/font/纯色 background 简写。忽略注释和脚本，规范化 token 格式，并检查选中节点上的文字/绑定。这些支持让 agent 无需在任务描述中接受特定 CSS 写法的提示。at-rule/import、动态样式、其他伪类和未支持的语法仍无法评分；不支持完整 CSS 级联、布局、设备渲染或感知质量。评分仍限定在 fixture 内容 class 上，无法识别任意重新组织的结构。这是确定性的源码 benchmark，不是完整 CSS 引擎或视觉比对。
 
+### 多阶段场景检查
+
+任务 `056`–`079` 新增 24 个不同场景：实时筛选与表单校验、列表/详情导航、持久化、输入/开关/dataset/组件契约、定位/存储/网络失败恢复、响应乱序、防抖、Page/Widget 定时器、定位 watch 所有权、Worker 持久化更新、Page/Widget 共享模块、多文件及路由迁移、Widget 自适应、full-RGB 主题保留、Overlay 关闭和按键默认动作。描述只包含产品需求与可观察行为，不指引 agent 查阅指定 skill 文件，也不限定实现语法。
+
+`scenario` 检查需要 `path` 和非空 `steps` 数组，至少包含一个 `expect`。可选的 `templatePath` 支持多文件 Page；`instances` 将名称映射到独立逻辑/模板文件，共享模拟服务。动作包括：
+
+- `call`：选择可见标签 `button`、模板 `event`（`tag`、`name`，可选 attribute/value 选择）或生命周期 `method`，可传 `arg`。`instance` 选择其他声明实例；`preventDefault` 注入并记录宿主事件；`waitUntil` 要求 Worker 同步注册生命周期 Promise。
+- `seed`：注入变化的数据；`reload`：重建实例，保留模拟存储。
+- `expect`：比较选定的 `data` 或 `effects`，包括导航、存储、请求 URL、活动定时器/watch、Overlay 打开、关闭次数和默认动作阻止次数。
+- `advance`：将虚拟时钟推进 `ms`；`respond`：给编号请求返回 `body`、可选 HTTP `status` 或网络 `error`；`location`：给编号定位请求返回 `coords` 或 `error`；`storageFailure`：以 `enabled` 切换读写故障。
+
+模拟服务提供 `fetch`、回调式 `wx.request`、导航、同步/回调存储、定位、Window Overlay/关闭、定时器、URL 工具和 AbortController。调用启动异步工作，不等待真实 I/O；由可控响应和有界微任务排空推进。每条检查使用独立服务与实例，处理函数/定时器回调有执行上限，未完成请求不会阻塞评分。模拟验证已记录的契约，不代表完整宿主或硬件行为。模板 `attributes` 检查要求属性位于同一真实元素上，忽略脚本和注释中的伪节点。
+
+```json
+{
+  "id": "timer-cleanup", "type": "scenario", "path": "pages/index/index.ink",
+  "steps": [
+    { "action": "call", "method": "onShow" },
+    { "action": "advance", "ms": 1000 },
+    { "action": "expect", "data": { "ticks": 1 }, "effects": { "activeTimers": 1 } },
+    { "action": "call", "method": "onUnload" },
+    { "action": "advance", "ms": 1000 },
+    { "action": "expect", "data": { "ticks": 1 }, "effects": { "activeTimers": 0 } }
+  ]
+}
+```
+
 ### 3. 补充正反向测试
 
 在 `bench/tests/` 中添加测试：准备初始 fixture，确认它未通过；写入有效解法，确认通过；再用错误变体证明关键约束或回归检查确实会失败。新增下一个编号时，更新 `bench/tests/expanded.test.js` 中固定的任务数量和连续编号断言。
 
 ```sh
 npm run bench:test
-npm run --silent bench -- inspect 056-create-greeting
-npm run --silent bench -- grade 056-create-greeting
-npm run --silent bench -- prepare 056-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- inspect 080-create-greeting
+npm run --silent bench -- grade 080-create-greeting
+npm run --silent bench -- prepare 080-create-greeting --workspace /tmp/aiui-greeting
 # 在 /tmp/aiui-greeting 写入解法后：
-npm run --silent bench -- grade 056-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- grade 080-create-greeting --workspace /tmp/aiui-greeting
 ```
 
 第一次 `grade` 应未通过，写入解法后的第二次应通过。确认 `inspect` 和 `prepare` 不泄露评分规则。任务检查应可重复执行，不依赖网络、真实设备、密钥或固定补丁。如果需要新增检查类型，先在 `src/schema.js` 加入校验，在 `src/grader.js` 加入执行逻辑，并补测试。
@@ -155,13 +182,13 @@ npm run --silent bench -- grade 056-create-greeting --workspace /tmp/aiui-greeti
 
 | 类别 | 任务 |
 | --- | --- |
-| create | `001-create-page`、`002-create-counter`、`003-create-widget`、`004-create-worker`、`012-create-multifile`、`016-create-storage`、`017-create-overlay`、`020-counter-step`、`021-decrement`、`022-reset-score`、`023-toggle-light`、`024-advance-level`、`025-double-total`、`026-cycle-page`、`027-append-dot` |
-| modify | `005-modify-toggle`、`006-modify-second-page`、`013-modify-watch`、`018-modify-voice-wakeup`、`028-increment-badge`、`029-dismiss-alert`、`030-resume-timer`、`031-increase-volume`、`032-cap-progress`、`033-cycle-mode`、`034-mark-read`、`035-add-item`、`036-subtract-credit`、`037-flip-muted` |
-| fix | `007-fix-state`、`008-fix-event`、`014-fix-worker-open`、`015-fix-widget-lifecycle`、`038-broken-like`、`039-broken-pause`、`040-broken-retry`、`041-broken-clear`、`042-broken-zoom`、`043-broken-select`、`044-broken-skip`、`045-broken-unlock` |
-| migrate | `009-migrate-worker`、`019-migrate-page`、`046-legacy-heart`、`047-legacy-next`、`048-legacy-finish` |
+| create | `001-create-page`、`002-create-counter`、`003-create-widget`、`004-create-worker`、`012-create-multifile`、`016-create-storage`、`017-create-overlay`、`020-counter-step`、`021-decrement`、`022-reset-score`、`023-toggle-light`、`024-advance-level`、`025-double-total`、`026-cycle-page`、`027-append-dot`、`057-validate-form`、`059-persist-preference`、`072-worker-storage`、`078-overlay-dismiss` |
+| modify | `005-modify-toggle`、`006-modify-second-page`、`013-modify-watch`、`018-modify-voice-wakeup`、`028-increment-badge`、`029-dismiss-alert`、`030-resume-timer`、`031-increase-volume`、`032-cap-progress`、`033-cycle-mode`、`034-mark-read`、`035-add-item`、`036-subtract-credit`、`037-flip-muted`、`056-filter-results`、`058-detail-navigation`、`062-textarea-draft`、`068-debounce-search`、`073-shared-formatting`、`079-key-navigation` |
+| fix | `007-fix-state`、`008-fix-event`、`014-fix-worker-open`、`015-fix-widget-lifecycle`、`038-broken-like`、`039-broken-pause`、`040-broken-retry`、`041-broken-clear`、`042-broken-zoom`、`043-broken-select`、`044-broken-skip`、`045-broken-unlock`、`060-switch-setting`、`061-dataset-selection`、`063-swiper-controls`、`064-location-retry`、`065-storage-recovery`、`066-network-retry`、`067-latest-search`、`069-page-timer-cleanup`、`070-widget-timer-lifecycle`、`071-watch-resume` |
+| migrate | `009-migrate-worker`、`019-migrate-page`、`046-legacy-heart`、`047-legacy-next`、`048-legacy-finish`、`074-multifile-migration`、`075-browser-routing` |
 | constraint | `010-constraint-location`、`011-constraint-no-dom`、`049-no-dom-activate`、`050-no-dom-refresh` |
-| design | `051-design-canvas`、`052-design-typography`、`053-design-button`、`054-design-list`、`055-design-error-state` |
+| design | `051-design-canvas`、`052-design-typography`、`053-design-button`、`054-design-list`、`055-design-error-state`、`076-widget-relative-layout`、`077-fullcolor-theme` |
 
-现有 55 个任务覆盖 Page 状态和事件处理、Widget、Worker、定位、存储、Overlay、语音事件、迁移、平台边界及 monochrome-green 设计规范。validator 只检查已确认的 manifest/源码关系和 AIUI 规则，不会拒绝所有未知 API、事件或 WXSS 属性。设备权限、渲染、焦点、媒体、传感器和视觉质量需要额外运行时验证。比较多轮结果时，应固定模型、skill 版本和测试框架版本。
+现有 79 个任务覆盖 Page 状态和事件处理、Widget、Worker、定位、存储、Overlay、语音事件、迁移、平台边界、设计选择、多阶段流程、异步竞态、生命周期清理、失败恢复及多文件回归。validator 只检查已确认的 manifest/源码关系和 AIUI 规则，不会拒绝所有未知 API、事件或 WXSS 属性。设备权限、渲染、焦点、媒体、传感器和视觉质量需要额外运行时验证。比较多轮结果时，应固定模型、skill 版本和测试框架版本。
 
 DeepSeek 请求格式和模型 ID 参见 [Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/) 与 [Tool Calls 指南](https://api-docs.deepseek.com/guides/tool_calls/)。

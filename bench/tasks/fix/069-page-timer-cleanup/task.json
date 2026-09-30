@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "id": "069-page-timer-cleanup",
+  "category": "fix",
+  "difficulty": "hard",
+  "description": "Repair the elapsed-time page: count one tick per second only while visible. Repeated show notifications must not create duplicate timers; hiding pauses the count, showing resumes it, and leaving permanently releases its timer. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "show-hide-show",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "method": "onShow"
+          },
+          {
+            "action": "call",
+            "method": "onShow"
+          },
+          {
+            "action": "advance",
+            "ms": 2000
+          },
+          {
+            "action": "expect",
+            "data": {
+              "ticks": 2
+            },
+            "effects": {
+              "activeTimers": 1
+            }
+          },
+          {
+            "action": "call",
+            "method": "onHide"
+          },
+          {
+            "action": "advance",
+            "ms": 2000
+          },
+          {
+            "action": "expect",
+            "data": {
+              "ticks": 2
+            },
+            "effects": {
+              "activeTimers": 0
+            }
+          },
+          {
+            "action": "call",
+            "method": "onShow"
+          },
+          {
+            "action": "advance",
+            "ms": 1000
+          },
+          {
+            "action": "expect",
+            "data": {
+              "ticks": 3
+            }
+          },
+          {
+            "action": "call",
+            "method": "onUnload"
+          },
+          {
+            "action": "advance",
+            "ms": 3000
+          },
+          {
+            "action": "expect",
+            "data": {
+              "ticks": 3
+            },
+            "effects": {
+              "activeTimers": 0
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Page Timer Cleanup"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

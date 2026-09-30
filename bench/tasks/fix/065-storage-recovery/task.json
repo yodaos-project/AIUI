@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "id": "065-storage-recovery",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "Repair saving a note under the existing draft storage key. If saving fails, keep the entered text, display Save failed, and let the user retry. A successful retry must persist the actual text and display Saved; Restore must read the stored note, with an empty note when nothing is stored. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "failure-retry-restore",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Restore"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "draft": ""
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "keep this note"
+              }
+            }
+          },
+          {
+            "action": "storageFailure",
+            "enabled": true
+          },
+          {
+            "action": "call",
+            "button": "Save"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "draft": "keep this note",
+              "status": "Save failed"
+            },
+            "effects": {
+              "storageWrites": []
+            }
+          },
+          {
+            "action": "storageFailure",
+            "enabled": false
+          },
+          {
+            "action": "call",
+            "button": "Save"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "status": "Saved"
+            },
+            "effects": {
+              "storage": {
+                "draft": "keep this note"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "other"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Restore"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "draft": "keep this note"
+            }
+          }
+        ]
+      },
+      {
+        "id": "empty-is-valid",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": ""
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Save"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "draft": "",
+              "status": "Saved"
+            },
+            "effects": {
+              "storage": {
+                "draft": ""
+              },
+              "storageWrites": [
+                "draft"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Storage Recovery"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

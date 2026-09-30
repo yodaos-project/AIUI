@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "id": "063-swiper-controls",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "Make the three-part walkthrough work with explicit Previous and Next actions. Keep page within 1..3 at both ends and use page to decide which panel is visible. Do not rely on the container to change pages automatically. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "panels",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "swiper-item",
+        "binding": "page"
+      },
+      {
+        "id": "bounded-walkthrough",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Previous"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "page": 1
+            }
+          },
+          {
+            "action": "call",
+            "button": "Next"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "page": 2
+            }
+          },
+          {
+            "action": "call",
+            "button": "Next"
+          },
+          {
+            "action": "call",
+            "button": "Next"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "page": 3
+            }
+          },
+          {
+            "action": "call",
+            "button": "Previous"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "page": 2
+            }
+          },
+          {
+            "action": "call",
+            "button": "Previous"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "page": 1
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Swiper Controls"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

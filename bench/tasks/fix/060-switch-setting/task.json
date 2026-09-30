@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "id": "060-switch-setting",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "Repair the notification switch so its checked state and visible enabled value follow the actual value delivered by each change event, including repeated identical events. Keep it synchronized when the setting is already enabled. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "checked-state",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "switch",
+        "attributes": {
+          "checked": "{{enabled}}"
+        }
+      },
+      {
+        "id": "repeat-and-false",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "switch",
+              "name": "change"
+            },
+            "arg": {
+              "detail": {
+                "value": true
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "enabled": true
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "switch",
+              "name": "change"
+            },
+            "arg": {
+              "detail": {
+                "value": true
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "enabled": true
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "switch",
+              "name": "change"
+            },
+            "arg": {
+              "detail": {
+                "value": false
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "enabled": false
+            }
+          }
+        ]
+      },
+      {
+        "id": "already-enabled",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "seed",
+            "data": {
+              "enabled": true
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "switch",
+              "name": "change"
+            },
+            "arg": {
+              "detail": {
+                "value": false
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "enabled": false
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Switch Setting"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "id": "077-fullcolor-theme",
+  "category": "design",
+  "difficulty": "medium",
+  "description": "Adapt the summary container to fill its available host space on a full-RGB display. Preserve the supplied white background, blue accent, red error text and all interactions. Repair the unsupported layout treatment rather than applying a different display palette. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "host-bounds",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "root",
+        "tag": "view",
+        "declarations": {
+          "width": "100%",
+          "height": "100%"
+        }
+      },
+      {
+        "id": "update-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Update"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "updates": 1
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "white-theme",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "root",
+        "tag": "view",
+        "declarations": {
+          "background-color": "#ffffff"
+        }
+      },
+      {
+        "id": "blue-accent",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "accent",
+        "tag": "text",
+        "declarations": {
+          "color": "#3366ff"
+        },
+        "text": "Summary"
+      },
+      {
+        "id": "red-error",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "error",
+        "tag": "text",
+        "declarations": {
+          "color": "#dd3333"
+        },
+        "text": "Error"
+      },
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Fullcolor Theme"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

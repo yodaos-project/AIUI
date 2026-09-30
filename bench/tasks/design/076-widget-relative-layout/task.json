@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "id": "076-widget-relative-layout",
+  "category": "design",
+  "difficulty": "medium",
+  "description": "Adapt the status Widget for different host sizes on RokidGlasses1 and RokidGlasses2. Keep its content readable inside the available bounds without fixing the root to one physical pixel size. Preserve the declared family and the Refresh action. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "family",
+        "type": "widget",
+        "path": "widgets/status/index",
+        "family": "1x1"
+      },
+      {
+        "id": "adaptive-root",
+        "type": "style",
+        "path": "widgets/status/index.ink",
+        "className": "root",
+        "tag": "view",
+        "declarations": {
+          "width": "100%",
+          "height": "100%"
+        }
+      },
+      {
+        "id": "refresh-preserved",
+        "type": "scenario",
+        "path": "widgets/status/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Refresh"
+          },
+          {
+            "action": "call",
+            "button": "Refresh"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "refreshes": 2
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "widgets/status/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "widgets/status/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Widget Relative Layout"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

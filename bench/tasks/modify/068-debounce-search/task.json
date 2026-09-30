@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "id": "068-debounce-search",
+  "category": "modify",
+  "difficulty": "hard",
+  "description": "Make typed search wait until the query has been unchanged for 300ms before requesting results. Consecutive edits must replace the pending search, blank input must not request anything, and leaving the page must cancel pending work. Keep the Search button usable for an explicit immediate request. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "coalesce-input",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "g"
+              }
+            }
+          },
+          {
+            "action": "advance",
+            "ms": 200
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "requestUrls": []
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "glasses"
+              }
+            }
+          },
+          {
+            "action": "advance",
+            "ms": 299
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "requestUrls": []
+            }
+          },
+          {
+            "action": "advance",
+            "ms": 1
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "requestUrls": [
+                "https://api.example.test/search?q=glasses"
+              ]
+            }
+          },
+          {
+            "action": "respond",
+            "request": 0,
+            "body": {
+              "items": [
+                "Glasses"
+              ]
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "results": [
+                "Glasses"
+              ],
+              "loading": false
+            }
+          }
+        ]
+      },
+      {
+        "id": "blank-and-unload",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "anything"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "  "
+              }
+            }
+          },
+          {
+            "action": "advance",
+            "ms": 500
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "requestUrls": [],
+              "activeTimers": 0
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "last"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "method": "onUnload"
+          },
+          {
+            "action": "advance",
+            "ms": 1000
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "requestUrls": [],
+              "activeTimers": 0
+            }
+          }
+        ]
+      },
+      {
+        "id": "explicit-search-once",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "camera"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Search"
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "requestUrls": [
+                "https://api.example.test/search?q=camera"
+              ],
+              "activeTimers": 0
+            }
+          },
+          {
+            "action": "advance",
+            "ms": 1000
+          },
+          {
+            "action": "respond",
+            "request": 0,
+            "body": {
+              "items": [
+                "Camera"
+              ]
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "results": [
+                "Camera"
+              ],
+              "loading": false
+            },
+            "effects": {
+              "requestUrls": [
+                "https://api.example.test/search?q=camera"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Debounce Search"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

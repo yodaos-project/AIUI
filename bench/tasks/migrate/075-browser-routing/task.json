@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "id": "075-browser-routing",
+  "category": "migrate",
+  "difficulty": "medium",
+  "description": "Replace browser-style navigation with working navigation to the declared detail page. Open must carry the current selected id as a safely encoded route query. Preserve the detail route and all existing page content; do not navigate by mutating a browser location. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "detail-route",
+        "type": "route",
+        "value": "pages/detail/index"
+      },
+      {
+        "id": "encoded-navigation",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "seed",
+            "data": {
+              "selected": "camera & sensor"
+            }
+          },
+          {
+            "action": "call",
+            "button": "Open"
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "navigation": [
+                {
+                  "type": "to",
+                  "url": "/pages/detail/index?id=camera%20%26%20sensor"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "another-selection",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "seed",
+            "data": {
+              "selected": "p"
+            }
+          },
+          {
+            "action": "call",
+            "button": "Open"
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "navigation": [
+                {
+                  "type": "to",
+                  "url": "/pages/detail/index?id=p"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Browser Routing"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

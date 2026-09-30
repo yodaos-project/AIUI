@@ -11,6 +11,7 @@ import { readWorkspace, safePath } from './workspace.js';
 import { loadLogic } from './behavior.js';
 import { validateWorkspace } from './validator.js';
 import { matchesStyle } from './style.js';
+import { runScenario } from './scenario.js';
 
 /**
  * Find the tap handler for a button with the requested visible label. The
@@ -148,6 +149,8 @@ async function evaluate(check, workspace, manifest) {
       return !await hasDomSource(workspace);
     case 'style':
       return matchesStyle(await read(check.path), check);
+    case 'scenario':
+      return runScenario(check, workspace, boundButtonHandler);
     case 'widgetLayout': {
       const source = await read(check.path);
       const style = source.match(/<style[^>]*>([\s\S]*?)<\/style>/)?.[1] || '';
@@ -155,6 +158,15 @@ async function evaluate(check, workspace, manifest) {
     }
     case 'template': {
       const source = await read(check.path);
+      if (check.attributes) {
+        const template = source.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '').replace(/<!--[\s\S]*?-->/g, '');
+        const nodes = [...template.matchAll(/<([a-z][\w-]*)\b((?:"[^"]*"|'[^']*'|[^'">])*)>/g)];
+        if (!nodes.some(match => {
+          if (check.tag && match[1] !== check.tag) return false;
+          const attributes = Object.fromEntries([...match[2].matchAll(/([\w:-]+)\s*=\s*(["'])(.*?)\2/g)].map(attr => [attr[1], attr[3]]));
+          return Object.entries(check.attributes).every(([name, value]) => attributes[name] === value);
+        })) return false;
+      }
       if (check.tag && !new RegExp(`<${check.tag}(?=[\\s/>])`).test(source)) return false;
       if (check.text && !source.includes(check.text)) return false;
       if (check.binding) {

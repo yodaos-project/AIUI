@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "id": "056-filter-results",
+  "category": "modify",
+  "difficulty": "medium",
+  "description": "Make the device search field filter the supplied items as the user types, ignoring case and surrounding spaces. Show an empty-result message when nothing matches; Clear must restore the complete list. The displayed list must use the filtered results. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "result-list",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "attributes": {
+          "wx:for": "{{filtered}}"
+        }
+      },
+      {
+        "id": "query-input",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "input",
+        "attributes": {
+          "value": "{{query}}"
+        }
+      },
+      {
+        "id": "search-clear",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "  PHo  "
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "query": "  PHo  ",
+              "filtered": [
+                {
+                  "id": "p",
+                  "name": "Phone"
+                }
+              ],
+              "empty": false
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "missing"
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "filtered": [],
+              "empty": true
+            }
+          },
+          {
+            "action": "call",
+            "button": "Clear"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "filtered": [
+                {
+                  "id": "g",
+                  "name": "Glasses"
+                },
+                {
+                  "id": "p",
+                  "name": "Phone"
+                },
+                {
+                  "id": "s",
+                  "name": "Speaker"
+                }
+              ],
+              "query": "",
+              "empty": false
+            }
+          }
+        ]
+      },
+      {
+        "id": "changed-source",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "seed",
+            "data": {
+              "items": [
+                {
+                  "id": "x",
+                  "name": "Camera"
+                },
+                {
+                  "id": "y",
+                  "name": "CAM module"
+                }
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "cam"
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "filtered": [
+                {
+                  "id": "x",
+                  "name": "Camera"
+                },
+                {
+                  "id": "y",
+                  "name": "CAM module"
+                }
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "era"
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "filtered": [
+                {
+                  "id": "x",
+                  "name": "Camera"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Filter Results"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

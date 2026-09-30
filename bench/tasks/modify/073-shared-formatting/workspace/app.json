@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "widgets": [
+    {
+      "path": "widgets/status/index",
+      "family": "1x1"
+    }
+  ]
+}

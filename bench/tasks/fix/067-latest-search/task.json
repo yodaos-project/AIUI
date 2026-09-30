@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "id": "067-latest-search",
+  "category": "fix",
+  "difficulty": "hard",
+  "description": "Fix the search race: if two searches overlap and finish in reverse order, keep the results for the most recently requested query. An older completion must neither replace those results nor clear the loading indicator for a newer pending request. Safely encode the current query in the supplied endpoint URL. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "reverse-completion",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "old"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Search"
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "new & 1"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Search"
+          },
+          {
+            "action": "respond",
+            "request": 1,
+            "body": {
+              "items": [
+                "latest"
+              ]
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "results": [
+                "latest"
+              ],
+              "loading": false
+            }
+          },
+          {
+            "action": "respond",
+            "request": 0,
+            "body": {
+              "items": [
+                "stale"
+              ]
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "results": [
+                "latest"
+              ],
+              "loading": false
+            },
+            "effects": {
+              "requestUrls": [
+                "https://api.example.test/search?q=old",
+                "https://api.example.test/search?q=new%20%26%201"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "old-completes-first",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "first"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Search"
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "second"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "button": "Search"
+          },
+          {
+            "action": "respond",
+            "request": 0,
+            "body": {
+              "items": [
+                "old"
+              ]
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "results": [],
+              "loading": true
+            }
+          },
+          {
+            "action": "respond",
+            "request": 1,
+            "body": {
+              "items": [
+                "second result"
+              ]
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "results": [
+                "second result"
+              ],
+              "loading": false
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Latest Search"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

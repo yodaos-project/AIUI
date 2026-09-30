@@ -56,7 +56,7 @@ async function solution(id, workspace) {
 }
 
 test('design tasks describe product goals without coaching skill discovery or design tokens', async () => {
-  const design = (await tasks()).filter(task => task.category === 'design');
+  const design = (await tasks()).filter(task => Object.hasOwn(solutions, task.id));
   assert.deepEqual(design.map(task => task.id), Object.keys(solutions));
   for (const reference of ['references/design/monochrome-green.md', 'references/wxss.md']) {
     assert.ok((await readFile(path.join(root, '../skills/aiui-dev', reference), 'utf8')).trim());

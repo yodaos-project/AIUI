@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "id": "058-detail-navigation",
+  "category": "modify",
+  "difficulty": "hard",
+  "description": "Connect the device list to the declared detail page. Tapping a row must open its detail route with the selected id safely encoded in the URL. The detail page must show the supplied id and matching name (Glasses for g, Phone for p, Not found otherwise), and Back must return one level. Returning to the list must preserve its search query. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "detail-route",
+        "type": "route",
+        "value": "pages/detail/index"
+      },
+      {
+        "id": "list-detail-back",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "input",
+              "name": "input"
+            },
+            "arg": {
+              "detail": {
+                "value": "phone"
+              }
+            }
+          },
+          {
+            "action": "call",
+            "event": {
+              "tag": "view",
+              "name": "tap",
+              "attribute": "data-id",
+              "value": "{{item.id}}"
+            },
+            "arg": {
+              "target": {
+                "dataset": {
+                  "id": "p"
+                }
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "navigation": [
+                {
+                  "type": "to",
+                  "url": "/pages/detail/index?id=p"
+                }
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "method": "onLoad",
+            "arg": {
+              "id": "p"
+            },
+            "instance": "detail"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "id": "p",
+              "name": "Phone"
+            },
+            "instance": "detail"
+          },
+          {
+            "action": "call",
+            "button": "Back",
+            "instance": "detail"
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "navigation": [
+                {
+                  "type": "to",
+                  "url": "/pages/detail/index?id=p"
+                },
+                {
+                  "type": "back",
+                  "delta": 1
+                }
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "method": "onShow"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "query": "phone"
+            }
+          }
+        ],
+        "instances": {
+          "detail": {
+            "path": "pages/detail/index.ink"
+          }
+        }
+      },
+      {
+        "id": "encoded-id",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "event": {
+              "tag": "view",
+              "name": "tap",
+              "attribute": "data-id",
+              "value": "{{item.id}}"
+            },
+            "arg": {
+              "target": {
+                "dataset": {
+                  "id": "g & 1"
+                }
+              }
+            }
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "navigation": [
+                {
+                  "type": "to",
+                  "url": "/pages/detail/index?id=g%20%26%201"
+                }
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "method": "onLoad",
+            "arg": {
+              "id": "missing"
+            },
+            "instance": "detail"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "name": "Not found",
+              "id": "missing"
+            },
+            "instance": "detail"
+          }
+        ],
+        "instances": {
+          "detail": {
+            "path": "pages/detail/index.ink"
+          }
+        }
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Detail Navigation"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

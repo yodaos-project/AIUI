@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "id": "059-persist-preference",
+  "category": "create",
+  "difficulty": "medium",
+  "description": "Make the notification preference survive closing and reopening the page. Toggle must flip notifications and persist the new value under the notifications storage key. On a fresh install use false. Reopening must restore both true and false rather than treating false as missing. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "persist-both-values",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "method": "onLoad"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "enabled": false
+            }
+          },
+          {
+            "action": "call",
+            "button": "Toggle"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "enabled": true
+            },
+            "effects": {
+              "storage": {
+                "notifications": true
+              }
+            }
+          },
+          {
+            "action": "reload"
+          },
+          {
+            "action": "call",
+            "method": "onLoad"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "enabled": true
+            }
+          },
+          {
+            "action": "call",
+            "button": "Toggle"
+          },
+          {
+            "action": "reload"
+          },
+          {
+            "action": "call",
+            "method": "onLoad"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "enabled": false
+            },
+            "effects": {
+              "storage": {
+                "notifications": false
+              },
+              "storageWrites": [
+                "notifications",
+                "notifications"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Persist Preference"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

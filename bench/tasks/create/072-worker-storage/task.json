@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "id": "072-worker-storage",
+  "category": "create",
+  "difficulty": "hard",
+  "description": "Complete the declared launch-count worker: each open event must finish its asynchronous update and durably increment launches under the launches storage key. A recreated worker must continue the count. Refresh on the existing page must display the persisted count. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "worker-entry",
+        "type": "worker",
+        "path": "workers/launches.js",
+        "lifetime": "foreground"
+      },
+      {
+        "id": "durable-open-count",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "waitUntil": true,
+            "method": "onOpen",
+            "instance": "worker"
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "storage": {
+                "launches": 1
+              }
+            }
+          },
+          {
+            "action": "call",
+            "waitUntil": true,
+            "method": "onOpen",
+            "instance": "worker"
+          },
+          {
+            "action": "reload",
+            "instance": "worker"
+          },
+          {
+            "action": "call",
+            "waitUntil": true,
+            "method": "onOpen",
+            "instance": "worker"
+          },
+          {
+            "action": "call",
+            "button": "Refresh"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "launches": 3
+            },
+            "effects": {
+              "storage": {
+                "launches": 3
+              },
+              "storageWrites": [
+                "launches",
+                "launches",
+                "launches"
+              ]
+            }
+          }
+        ],
+        "instances": {
+          "worker": {
+            "path": "workers/launches.js"
+          }
+        }
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Worker Storage"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "id": "071-watch-resume",
+  "category": "fix",
+  "difficulty": "hard",
+  "description": "Repair live location tracking so only one watch exists while the page is visible. Hiding must release it; showing again must start a new watch. Display coordinates from the current watch, ignore updates from a released watch, and release the final watch when leaving. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "geo-permission",
+        "type": "permission",
+        "value": "GEOLOCATION"
+      },
+      {
+        "id": "watch-ownership",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "method": "onShow"
+          },
+          {
+            "action": "call",
+            "method": "onShow"
+          },
+          {
+            "action": "location",
+            "request": 0,
+            "coords": {
+              "latitude": 10,
+              "longitude": 20
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "latitude": 10
+            },
+            "effects": {
+              "activeWatches": 1
+            }
+          },
+          {
+            "action": "call",
+            "method": "onHide"
+          },
+          {
+            "action": "location",
+            "request": 0,
+            "coords": {
+              "latitude": 99,
+              "longitude": 20
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "latitude": 10
+            },
+            "effects": {
+              "activeWatches": 0
+            }
+          },
+          {
+            "action": "call",
+            "method": "onShow"
+          },
+          {
+            "action": "location",
+            "request": 1,
+            "coords": {
+              "latitude": 30,
+              "longitude": 40
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "latitude": 30
+            },
+            "effects": {
+              "activeWatches": 1,
+              "clearedWatches": [
+                1
+              ]
+            }
+          },
+          {
+            "action": "call",
+            "method": "onUnload"
+          },
+          {
+            "action": "expect",
+            "effects": {
+              "activeWatches": 0,
+              "clearedWatches": [
+                1,
+                2
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Watch Resume"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

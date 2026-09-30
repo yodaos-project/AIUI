@@ -1,0 +1,15 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "agentWorkers": [
+    {
+      "name": "launches",
+      "script": "workers/launches.js",
+      "trigger": {
+        "type": "open"
+      },
+      "lifetime": "foreground"
+    }
+  ]
+}

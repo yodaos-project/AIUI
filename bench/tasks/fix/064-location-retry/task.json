@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "id": "064-location-retry",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "Repair the location page so Locate handles a denied, unavailable, or timed-out request without breaking the page. Display Denied, Unavailable, or Timeout respectively and allow Locate to retry. A later success must display the returned coordinates and Ready. Preserve existing bound content and the About action.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "location-permission",
+        "type": "permission",
+        "value": "GEOLOCATION"
+      },
+      {
+        "id": "denied-retry",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Locate"
+          },
+          {
+            "action": "location",
+            "request": 0,
+            "error": {
+              "code": 1,
+              "message": "denied"
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "status": "Denied"
+            }
+          },
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI"
+            }
+          },
+          {
+            "action": "call",
+            "button": "Locate"
+          },
+          {
+            "action": "location",
+            "request": 1,
+            "coords": {
+              "latitude": 31.2,
+              "longitude": 121.5
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "status": "Ready",
+              "latitude": 31.2,
+              "longitude": 121.5
+            },
+            "effects": {
+              "locationRequests": 2
+            }
+          }
+        ]
+      },
+      {
+        "id": "unavailable-timeout",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "Locate"
+          },
+          {
+            "action": "location",
+            "request": 0,
+            "error": {
+              "code": 2
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "status": "Unavailable"
+            }
+          },
+          {
+            "action": "call",
+            "button": "Locate"
+          },
+          {
+            "action": "location",
+            "request": 1,
+            "error": {
+              "code": 3
+            }
+          },
+          {
+            "action": "expect",
+            "data": {
+              "status": "Timeout"
+            }
+          }
+        ]
+      }
+    ],
+    "regression": [
+      {
+        "id": "preserved-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "about-action",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "steps": [
+          {
+            "action": "call",
+            "button": "About"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "info": "AIUI",
+              "title": "Location Retry"
+            }
+          }
+        ]
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}
