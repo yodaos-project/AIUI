@@ -126,7 +126,7 @@ node bench/scripts/run-all.js \
 
 ### 设计任务与样式检查
 
-`design` 用于验证 coding agent 是否能落实 [monochrome-green 设计规范](../design/monochrome/design-system-green.md)。每个初始工作区都包含固定的 `DESIGN.md` 摘录，外部 agent 与推理运行器均可离线读取所需 token。首批 5 个任务覆盖画布与安全边距、文字层级、描边按钮、开放列表行及错误状态的冗余语义。required 检查设计属性，regression 保护数据绑定与按钮行为。
+`design` 用于验证 coding agent 是否能落实 [monochrome-green 设计规范](../design/monochrome/design-system-green.md)。设计任务复用所提供的 `aiui-dev` skill 中的 `references/design/monochrome-green.md` 和 `references/wxss.md`；推理运行器已通过 skill 工具开放这些文件。人工或外部 agent 执行时，须同时提供任务工作区、描述和 `skills/aiui-dev/` 目录（或通过 `--skill` 选择的等效 skill），包含上述参考文件。比较结果时记录 skill 版本，任务工作区无需复制指南。首批 5 个任务覆盖画布与安全边距、文字层级、描边按钮、开放列表行及错误状态的冗余语义。required 检查设计属性，regression 保护数据绑定与按钮行为。
 
 `style` 检查需要 `path`（`.ink` 文件）、`className` 和非空 `declarations` 对象（CSS 属性名到字面量字符串的映射）；可选的正整数 `minCount` 要求匹配节点的最少数量；`tag`、`text`、`binding` 限定承载该 class 的内容节点。例如：
 

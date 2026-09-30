@@ -55,13 +55,15 @@ async function solution(id, workspace) {
   return source;
 }
 
-test('design catalog contains exactly five tasks and offline public references', async () => {
+test('design catalog contains exactly five tasks and reuses the shared skill references', async () => {
   const design = (await tasks()).filter(task => task.category === 'design');
   assert.deepEqual(design.map(task => task.id), Object.keys(solutions));
+  for (const reference of ['references/design/monochrome-green.md', 'references/wxss.md']) {
+    assert.ok((await readFile(path.join(root, '../skills/aiui-dev', reference), 'utf8')).trim());
+    for (const task of design) assert.ok(task.description.includes(reference));
+  }
   for (const task of design) {
-    const guide = await readFile(path.join(task.directory, 'workspace/DESIGN.md'), 'utf8');
-    assert.match(guide, /design-system-green.md/);
-    assert.match(guide, /480x352px/);
+    assert.deepEqual((await readdir(path.join(task.directory, 'workspace'))).sort(), ['app.js', 'app.json', 'pages']);
   }
 });
 
@@ -111,7 +113,7 @@ test('list design preserves both styled rows and their bound titles', async () =
   }
 }));
 
-test('inspect and prepare expose description and reference, without private grading checks', async () => fixture('051-design-canvas', async (task, workspace) => {
+test('inspect and prepare expose the skill reference in the description without private grading checks', async () => fixture('051-design-canvas', async (task, workspace) => {
   const inspect = spawnSync(process.execPath, [path.join(root, 'src/cli.js'), 'inspect', task.id], { encoding: 'utf8' });
   assert.equal(inspect.status, 0, inspect.stderr);
   const publicTask = JSON.parse(inspect.stdout);
@@ -119,7 +121,7 @@ test('inspect and prepare expose description and reference, without private grad
   assert.equal(publicTask.description, task.description);
   assert.equal(publicTask.grading, undefined);
   assert.equal(publicTask.directory, undefined);
-  assert.deepEqual((await readdir(workspace)).sort(), ['DESIGN.md', 'app.js', 'app.json', 'pages']);
+  assert.deepEqual((await readdir(workspace)).sort(), ['app.js', 'app.json', 'pages']);
 }));
 
 const check = { className: 'title', tag: 'text', binding: 'title', declarations: { color: '#000000', 'font-size': '14px' } };

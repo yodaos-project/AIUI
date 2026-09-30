@@ -126,7 +126,7 @@ For `behavior`, supply `path`, optional `calls` (`method` or visible `button`, p
 
 ### Design tasks and style checks
 
-`design` measures implementation of the [monochrome-green specification](../design/monochrome/design-system-green.md). Each starting workspace includes a pinned `DESIGN.md` excerpt containing the required tokens, so external agents receive the same offline reference as the inference runner. The first five tasks cover canvas/safe insets, typography, outlined buttons, open list rows, and redundant error semantics. Required checks verify design properties; regression checks preserve bound data and button behavior.
+`design` measures implementation of the [monochrome-green specification](../design/monochrome/design-system-green.md). Design tasks reuse `references/design/monochrome-green.md` and `references/wxss.md` from the provided `aiui-dev` skill. The inference runner already exposes these through its skill tools. When using a human or external agent, provide the task workspace, description, and `skills/aiui-dev/` directory (or an equivalent skill selected with `--skill`), including those references. Record the skill revision when comparing runs; task workspaces do not duplicate the guide. The first five tasks cover canvas/safe insets, typography, outlined buttons, open list rows, and redundant error semantics. Required checks verify design properties; regression checks preserve bound data and button behavior.
 
 A `style` check supplies `path` (an `.ink` file), `className`, and a nonempty `declarations` object mapping CSS property names to literal strings. Optional positive integer `minCount` requires a minimum number of matching nodes; `tag`, `text`, and `binding` constrain the content node carrying the class. For example:
 
