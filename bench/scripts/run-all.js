@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Run every bench task through the public infer CLI and collect CI artifacts. */
 import { spawn } from 'node:child_process';
-import { appendFile, cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -73,7 +73,7 @@ export function markdownReport(summary) {
   });
 
   return [
-    '# AIUI Bench (DeepSeek)',
+    '# AIUI Coding Benchmark',
     '',
     `Model: \`${summary.model}\``,
     `Resolved: **${summary.resolved}/${summary.total} (${Math.round(summary.resolvedRate * 100)}%)**`,
@@ -158,7 +158,6 @@ async function main(args) {
   const report = markdownReport(summary);
   await writeFile(path.join(outputDir, 'summary.json'), `${JSON.stringify(summary, null, 2)}\n`);
   await writeFile(path.join(outputDir, 'report.md'), report);
-  if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, report);
   process.stdout.write(`Resolved ${summary.resolved}/${summary.total}; results: ${outputDir}\n`);
   if (summary.resolved !== summary.total) process.exitCode = 1;
 }

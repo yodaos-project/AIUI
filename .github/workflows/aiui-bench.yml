@@ -1,16 +1,16 @@
-name: AIUI Bench (DeepSeek)
+name: AIUI Coding Benchmark
 
 on:
   workflow_dispatch:
     inputs:
-      model:
-        description: DeepSeek model
-        type: choice
-        required: true
-        default: deepseek-flash
-        options:
-          - deepseek-flash
-          - deepseek-v4-pro
+      model_deepseek_flash:
+        description: Run with deepseek-flash
+        type: boolean
+        default: true
+      model_deepseek_v4_pro:
+        description: Run with deepseek-v4-pro
+        type: boolean
+        default: false
       max_steps:
         description: Maximum model turns per task (1-100)
         type: number
@@ -22,6 +22,7 @@ permissions:
 
 jobs:
   benchmark:
+    name: Run selected models
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
@@ -35,7 +36,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Check DeepSeek secret
+      - name: Check provider credentials
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
         run: |
@@ -51,13 +52,40 @@ jobs:
         id: bench
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          BENCH_MODEL: ${{ inputs.model }}
+          MODEL_DEEPSEEK_FLASH: ${{ inputs.model_deepseek_flash }}
+          MODEL_DEEPSEEK_V4_PRO: ${{ inputs.model_deepseek_v4_pro }}
           BENCH_MAX_STEPS: ${{ inputs.max_steps }}
         run: |
-          node bench/scripts/run-all.js \
-            --model "$BENCH_MODEL" \
-            --max-steps "$BENCH_MAX_STEPS" \
-            --output-dir bench/results/github-actions
+          models=()
+          if [[ "$MODEL_DEEPSEEK_FLASH" == 'true' ]]; then models+=(deepseek-flash); fi
+          if [[ "$MODEL_DEEPSEEK_V4_PRO" == 'true' ]]; then models+=(deepseek-v4-pro); fi
+          if (( ${#models[@]} == 0 )); then
+            echo '::error::Select at least one model.'
+            exit 2
+          fi
+
+          failed=0
+          for model in "${models[@]}"; do
+            node bench/scripts/run-all.js \
+              --model "$model" \
+              --max-steps "$BENCH_MAX_STEPS" \
+              --output-dir "bench/results/github-actions/$model" || failed=1
+          done
+          exit "$failed"
+
+      - name: Publish benchmark summary
+        if: ${{ always() }}
+        run: |
+          shopt -s nullglob
+          reports=(bench/results/github-actions/*/report.md)
+          if (( ${#reports[@]} == 0 )); then
+            echo '## AIUI Coding Benchmark' >> "$GITHUB_STEP_SUMMARY"
+            echo 'No benchmark reports were produced. Check the preceding steps.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            for report in "${reports[@]}"; do
+              cat "$report" >> "$GITHUB_STEP_SUMMARY"
+            done
+          fi
 
       - name: Upload benchmark results
         if: ${{ always() && steps.bench.outcome != 'skipped' }}
@@ -65,5 +93,5 @@ jobs:
         with:
           name: aiui-bench-${{ github.run_id }}-${{ github.run_attempt }}
           path: bench/results/github-actions/
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14

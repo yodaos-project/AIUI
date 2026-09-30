@@ -72,9 +72,9 @@ Exit codes: `grade` and `infer` return 0 for a resolved result, 1 for an unresol
 
 ### Run the complete suite in GitHub Actions
 
-Add a repository Actions secret named `DEEPSEEK_API_KEY`. In the repository's **Actions** tab, select **AIUI Bench (DeepSeek)**, click **Run workflow**, and choose the model and maximum steps. The workflow runs only when manually dispatched, executes the harness tests, then runs every task with the secret supplied as an environment variable. The workflow file must be on the repository's default branch for the **Run workflow** button to appear.
+Add a repository Actions secret named `DEEPSEEK_API_KEY`. In the repository's **Actions** tab, select **AIUI Coding Benchmark**, click **Run workflow**, check one or both model boxes, and set the maximum steps. GitHub's `choice` input supports only one selection, so each supported model has its own checkbox. The workflow runs only when manually dispatched, executes the harness tests, then runs every task once per selected model. The workflow file must be on the repository's default branch for the **Run workflow** button to appear.
 
-The run's **Summary** tab shows the resolved count and per-task status. Download the `aiui-bench-<run-id>-<attempt>` artifact for `summary.json`, `report.md`, infer traces, and generated workspaces. The job fails when any task is unresolved or errors; the artifact is still uploaded. Results do not include the API key.
+The workflow run's **Summary** page shows a separate resolved count and per-task table for each selected model. Download the `aiui-bench-<run-id>-<attempt>` artifact for each model's `summary.json`, `report.md`, infer traces, and generated workspaces. The job fails when any model has an unresolved or errored task; the artifact is still uploaded. Results do not include the API key. The workflow name and report format are provider-neutral; the current inference CLI supports DeepSeek models only.
 
 ## Add a new task
 

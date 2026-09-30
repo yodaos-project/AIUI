@@ -21,6 +21,7 @@ test('run-all counts unresolved and missing records and renders the report', () 
   assert.equal(summary.total, 3);
   assert.equal(summary.resolvedRate, 1 / 3);
   assert.deepEqual(summary.usage, { promptTokens: 18, completionTokens: 5 });
+  assert.match(markdownReport(summary), /^# AIUI Coding Benchmark/);
   assert.match(markdownReport(summary), /003-create-widget.*cli_error/);
   assert.match(markdownReport(summary), /no result file/);
 });

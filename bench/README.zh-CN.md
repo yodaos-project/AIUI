@@ -72,9 +72,9 @@ node bench/scripts/run-all.js \
 
 ### 在 GitHub Actions 跑完整任务集
 
-在仓库的 Actions secrets 中添加名为 `DEEPSEEK_API_KEY` 的密钥。进入仓库 **Actions** 页面，选择 **AIUI Bench (DeepSeek)**，点击 **Run workflow**，选择模型和最大步数。该 workflow 仅手动触发，先运行测试框架的测试，再将密钥作为环境变量执行全部任务。要在页面看到 **Run workflow** 按钮，workflow 文件须位于仓库默认分支。
+在仓库的 Actions secrets 中添加名为 `DEEPSEEK_API_KEY` 的密钥。进入仓库 **Actions** 页面，选择 **AIUI Coding Benchmark**，点击 **Run workflow**，勾选一个或两个模型，并设置最大步数。GitHub 的 `choice` 输入只能单选，因此每个支持的模型使用独立的勾选框。该 workflow 仅手动触发，先运行测试框架的测试，再对每个选中模型执行全部任务。要在页面看到 **Run workflow** 按钮，workflow 文件须位于仓库默认分支。
 
-运行页面的 **Summary** 会展示通过数量和每个任务的状态。下载 `aiui-bench-<run-id>-<attempt>` artifact，可获得 `summary.json`、`report.md`、infer 轨迹和生成的工作区。只要有任务未通过或出错，job 就会失败，但仍会上传 artifact。结果中不包含 API key。
+对应 workflow 运行页面的 **Summary** 会按模型分别展示通过数量和每个任务的状态。下载 `aiui-bench-<run-id>-<attempt>` artifact，可获得各模型的 `summary.json`、`report.md`、infer 轨迹和生成的工作区。任一模型有任务未通过或出错，job 就会失败，但仍会上传 artifact。结果中不包含 API key。workflow 名称和报告格式不限定 Provider；目前 infer CLI 仅支持 DeepSeek 模型。
 
 ## 新增任务
 
