@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "032-cap-progress",
+  "category": "modify",
+  "difficulty": "medium",
+  "description": "Add an Advance button that adds 40 to progress, capped at 100. Preserve the Home title.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Advance"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Advance"
+          }
+        ],
+        "expect": {
+          "progress": 90
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Advance"
+          },
+          {
+            "button": "Advance"
+          }
+        ],
+        "expect": {
+          "progress": 100
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "progress"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Home",
+          "progress": 50
+        }
+      },
+      {
+        "id": "title-binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      }
+    ],
+    "constraints": []
+  }
+}

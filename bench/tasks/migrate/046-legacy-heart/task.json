@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "046-legacy-heart",
+  "category": "migrate",
+  "difficulty": "medium",
+  "description": "Migrate the legacy Page registration to export default and preserve the Heart button behavior.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Heart"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Heart"
+          }
+        ],
+        "expect": {
+          "hearts": 1
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Heart"
+          },
+          {
+            "button": "Heart"
+          }
+        ],
+        "expect": {
+          "hearts": 2
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "hearts"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "hearts": 0
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

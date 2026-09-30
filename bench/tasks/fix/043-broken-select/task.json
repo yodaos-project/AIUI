@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "043-broken-select",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "The Select button mutates selected directly. Make it update rendered state through setData.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Select"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Select"
+          }
+        ],
+        "expect": {
+          "selected": true
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Select"
+          },
+          {
+            "button": "Select"
+          }
+        ],
+        "expect": {
+          "selected": true
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "selected"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "selected": false
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "040-broken-retry",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "The Retry button mutates attempts directly. Make it update rendered state through setData.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Retry"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Retry"
+          }
+        ],
+        "expect": {
+          "attempts": 1
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Retry"
+          },
+          {
+            "button": "Retry"
+          }
+        ],
+        "expect": {
+          "attempts": 2
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "attempts"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "attempts": 0
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

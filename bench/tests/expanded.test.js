@@ -57,10 +57,10 @@ const solutions = {
   },
 };
 
-test('the expanded catalog has nineteen unique numbered tasks', async () => {
+test('the expanded catalog has fifty unique numbered tasks', async () => {
   const all = await tasks();
-  assert.equal(all.length, 19);
-  assert.deepEqual(all.map(task => task.id.slice(0, 3)), Array.from({ length: 19 }, (_, index) => String(index + 1).padStart(3, '0')));
+  assert.equal(all.length, 50);
+  assert.deepEqual(all.map(task => task.id.slice(0, 3)), Array.from({ length: 50 }, (_, index) => String(index + 1).padStart(3, '0')));
 });
 for (const [id, solve] of Object.entries(solutions)) {
   test(`${id}: starting fixture fails and a behaviorally correct implementation resolves`, async () => fixture(id, async (task, workspace) => {

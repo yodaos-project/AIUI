@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "039-broken-pause",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "The Pause button mutates paused directly. Make it update rendered state through setData.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Pause"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Pause"
+          }
+        ],
+        "expect": {
+          "paused": true
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Pause"
+          },
+          {
+            "button": "Pause"
+          }
+        ],
+        "expect": {
+          "paused": true
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "paused"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "paused": false
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

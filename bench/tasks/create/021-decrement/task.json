@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "021-decrement",
+  "category": "create",
+  "difficulty": "easy",
+  "description": "Create a Page at pages/index/index with bound count initially 5. Add a Decrement button that subtracts 1 from count.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      },
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Decrement"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Decrement"
+          }
+        ],
+        "expect": {
+          "count": 4
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Decrement"
+          },
+          {
+            "button": "Decrement"
+          }
+        ],
+        "expect": {
+          "count": 3
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      }
+    ],
+    "constraints": []
+  }
+}

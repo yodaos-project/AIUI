@@ -84,7 +84,7 @@ node bench/scripts/run-all.js \
 
 ### 1. 确定 ID 并创建初始项目
 
-创建 `bench/tasks/<category>/<id>/task.json` 和 `bench/tasks/<category>/<id>/workspace/`。类别为 `create`、`modify`、`fix`、`migrate`、`constraint`；难度为 `easy`、`medium`、`hard`。ID 要在所有类别中唯一，编号放在前面，例如 `020-create-greeting`。目录名、JSON 中的 `id` 和上级类别目录必须一致。
+创建 `bench/tasks/<category>/<id>/task.json` 和 `bench/tasks/<category>/<id>/workspace/`。类别为 `create`、`modify`、`fix`、`migrate`、`constraint`；难度为 `easy`、`medium`、`hard`。ID 要在所有类别中唯一，编号放在前面，例如 `051-create-greeting`。目录名、JSON 中的 `id` 和上级类别目录必须一致。
 
 `workspace/` 中放最小 AIUI 初始项目，例如 `app.json` 和 `app.js`，但不要提前完成目标任务。不要放符号链接、密钥、评分文件或模型输出。描述应准确写明要实现和保留的行为，只引用 fixture 中真实存在的文件，并避免在运行时没有要求的情况下限定唯一实现方式。
 
@@ -95,7 +95,7 @@ node bench/scripts/run-all.js \
 ```json
 {
   "schemaVersion": 1,
-  "id": "020-create-greeting",
+  "id": "051-create-greeting",
   "category": "create",
   "difficulty": "easy",
   "description": "Create a Page at pages/index/index that displays Hello AIUI from bound data. Use AIUI APIs, not browser DOM APIs.",
@@ -130,11 +130,11 @@ node bench/scripts/run-all.js \
 
 ```sh
 npm run bench:test
-npm run --silent bench -- inspect 020-create-greeting
-npm run --silent bench -- grade 020-create-greeting
-npm run --silent bench -- prepare 020-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- inspect 051-create-greeting
+npm run --silent bench -- grade 051-create-greeting
+npm run --silent bench -- prepare 051-create-greeting --workspace /tmp/aiui-greeting
 # 在 /tmp/aiui-greeting 写入解法后：
-npm run --silent bench -- grade 020-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- grade 051-create-greeting --workspace /tmp/aiui-greeting
 ```
 
 第一次 `grade` 应未通过，写入解法后的第二次应通过。确认 `inspect` 和 `prepare` 不泄露评分规则。任务检查应可重复执行，不依赖网络、真实设备、密钥或固定补丁。如果需要新增检查类型，先在 `src/schema.js` 加入校验，在 `src/grader.js` 加入执行逻辑，并补测试。
@@ -143,12 +143,12 @@ npm run --silent bench -- grade 020-create-greeting --workspace /tmp/aiui-greeti
 
 | 类别 | 任务 |
 | --- | --- |
-| create | `001-create-page`、`002-create-counter`、`003-create-widget`、`004-create-worker`、`012-create-multifile`、`016-create-storage`、`017-create-overlay` |
-| modify | `005-modify-toggle`、`006-modify-second-page`、`013-modify-watch`、`018-modify-voice-wakeup` |
-| fix | `007-fix-state`、`008-fix-event`、`014-fix-worker-open`、`015-fix-widget-lifecycle` |
-| migrate | `009-migrate-worker`、`019-migrate-page` |
-| constraint | `010-constraint-location`、`011-constraint-no-dom` |
+| create | `001-create-page`、`002-create-counter`、`003-create-widget`、`004-create-worker`、`012-create-multifile`、`016-create-storage`、`017-create-overlay`、`020-counter-step`、`021-decrement`、`022-reset-score`、`023-toggle-light`、`024-advance-level`、`025-double-total`、`026-cycle-page`、`027-append-dot` |
+| modify | `005-modify-toggle`、`006-modify-second-page`、`013-modify-watch`、`018-modify-voice-wakeup`、`028-increment-badge`、`029-dismiss-alert`、`030-resume-timer`、`031-increase-volume`、`032-cap-progress`、`033-cycle-mode`、`034-mark-read`、`035-add-item`、`036-subtract-credit`、`037-flip-muted` |
+| fix | `007-fix-state`、`008-fix-event`、`014-fix-worker-open`、`015-fix-widget-lifecycle`、`038-broken-like`、`039-broken-pause`、`040-broken-retry`、`041-broken-clear`、`042-broken-zoom`、`043-broken-select`、`044-broken-skip`、`045-broken-unlock` |
+| migrate | `009-migrate-worker`、`019-migrate-page`、`046-legacy-heart`、`047-legacy-next`、`048-legacy-finish` |
+| constraint | `010-constraint-location`、`011-constraint-no-dom`、`049-no-dom-activate`、`050-no-dom-refresh` |
 
-现有 19 个任务覆盖单文件和多文件 Page、Widget、Worker、定位、存储、Overlay、语音事件、迁移与平台边界。validator 只检查已确认的 manifest/源码关系和 AIUI 规则，不会拒绝所有未知 API、事件或 WXSS 属性。设备权限、渲染、焦点、媒体、传感器和视觉质量需要额外运行时验证。比较多轮结果时，应固定模型、skill 版本和测试框架版本。
+现有 50 个任务覆盖 Page 状态和事件处理、Widget、Worker、定位、存储、Overlay、语音事件、迁移与平台边界。validator 只检查已确认的 manifest/源码关系和 AIUI 规则，不会拒绝所有未知 API、事件或 WXSS 属性。设备权限、渲染、焦点、媒体、传感器和视觉质量需要额外运行时验证。比较多轮结果时，应固定模型、skill 版本和测试框架版本。
 
 DeepSeek 请求格式和模型 ID 参见 [Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/) 与 [Tool Calls 指南](https://api-docs.deepseek.com/guides/tool_calls/)。

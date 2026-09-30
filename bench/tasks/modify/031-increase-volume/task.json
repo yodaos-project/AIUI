@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "031-increase-volume",
+  "category": "modify",
+  "difficulty": "medium",
+  "description": "Add a Louder button that increases volume by 10. Preserve the Home title.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Louder"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Louder"
+          }
+        ],
+        "expect": {
+          "volume": 30
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Louder"
+          },
+          {
+            "button": "Louder"
+          }
+        ],
+        "expect": {
+          "volume": 40
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "volume"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Home",
+          "volume": 20
+        }
+      },
+      {
+        "id": "title-binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      }
+    ],
+    "constraints": []
+  }
+}

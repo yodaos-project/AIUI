@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "id": "033-cycle-mode",
+  "category": "modify",
+  "difficulty": "medium",
+  "description": "Add a Change Mode button that cycles mode from auto to manual and back. Preserve the Home title.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Change Mode"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Change Mode"
+          }
+        ],
+        "expect": {
+          "mode": "manual"
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Change Mode"
+          },
+          {
+            "button": "Change Mode"
+          }
+        ],
+        "expect": {
+          "mode": "auto"
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "mode"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Home",
+          "mode": "auto"
+        }
+      },
+      {
+        "id": "title-binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      }
+    ],
+    "constraints": []
+  }
+}

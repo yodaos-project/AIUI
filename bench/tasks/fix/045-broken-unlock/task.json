@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "id": "045-broken-unlock",
+  "category": "fix",
+  "difficulty": "medium",
+  "description": "The Unlock button mutates locked directly. Make it update rendered state through setData.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Unlock"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Unlock"
+          }
+        ],
+        "expect": {
+          "locked": false
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Unlock"
+          },
+          {
+            "button": "Unlock"
+          }
+        ],
+        "expect": {
+          "locked": false
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "locked"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "locked": true
+        }
+      }
+    ],
+    "constraints": []
+  }
+}

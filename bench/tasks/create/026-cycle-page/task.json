@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "026-cycle-page",
+  "category": "create",
+  "difficulty": "easy",
+  "description": "Create a Page at pages/index/index with bound page initially 1. Add a Next button that cycles page from 1 through 3 and back to 1.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      },
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Next"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Next"
+          }
+        ],
+        "expect": {
+          "page": 2
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Next"
+          },
+          {
+            "button": "Next"
+          }
+        ],
+        "expect": {
+          "page": 3
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      }
+    ],
+    "constraints": []
+  }
+}

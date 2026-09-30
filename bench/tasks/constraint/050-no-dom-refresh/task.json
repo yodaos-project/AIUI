@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "050-no-dom-refresh",
+  "category": "constraint",
+  "difficulty": "medium",
+  "description": "The existing Page shows refreshes initially 0. Add a Refresh button that increases refreshes using AIUI events and setData; avoid browser DOM APIs.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Refresh"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Refresh"
+          }
+        ],
+        "expect": {
+          "refreshes": 1
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Refresh"
+          },
+          {
+            "button": "Refresh"
+          }
+        ],
+        "expect": {
+          "refreshes": 2
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "refreshes"
+      },
+      {
+        "id": "initial",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "refreshes": 0
+        }
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

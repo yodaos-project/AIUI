@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "id": "022-reset-score",
+  "category": "create",
+  "difficulty": "easy",
+  "description": "Create a Page at pages/index/index with bound score initially 9. Add a Clear button that resets score to 0.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "page",
+        "type": "file",
+        "path": "pages/index/index.ink"
+      },
+      {
+        "id": "button",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "tag": "button",
+        "eventLabel": "Clear"
+      },
+      {
+        "id": "first-tap",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Clear"
+          }
+        ],
+        "expect": {
+          "score": 0
+        },
+        "minPatches": 1
+      },
+      {
+        "id": "two-taps",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "calls": [
+          {
+            "button": "Clear"
+          },
+          {
+            "button": "Clear"
+          }
+        ],
+        "expect": {
+          "score": 0
+        },
+        "minPatches": 2
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      }
+    ],
+    "constraints": []
+  }
+}

@@ -84,7 +84,7 @@ Costs are estimates from the API's per-request cache-hit, cache-miss, and output
 
 ### 1. Choose an ID and starting project
 
-Create `bench/tasks/<category>/<id>/task.json` and `bench/tasks/<category>/<id>/workspace/`. Supported categories are `create`, `modify`, `fix`, `migrate`, and `constraint`; difficulties are `easy`, `medium`, and `hard`. Use a globally unique, leading three-digit ID such as `020-create-greeting`. The directory name, JSON `id`, and parent category must agree. Put a minimal runnable AIUI project in `workspace/` (for example `app.json` and `app.js`), with the requested work still undone. Do not include symlinks, credentials, grading files, or model outputs.
+Create `bench/tasks/<category>/<id>/task.json` and `bench/tasks/<category>/<id>/workspace/`. Supported categories are `create`, `modify`, `fix`, `migrate`, and `constraint`; difficulties are `easy`, `medium`, and `hard`. Use a globally unique, leading three-digit ID such as `051-create-greeting`. The directory name, JSON `id`, and parent category must agree. Put a minimal runnable AIUI project in `workspace/` (for example `app.json` and `app.js`), with the requested work still undone. Do not include symlinks, credentials, grading files, or model outputs.
 
 Keep the description specific enough to tell the solver what to build and preserve. Refer only to files actually present in the fixture. Describe observable behavior and platform constraints; avoid prescribing one exact implementation unless the runtime requires it.
 
@@ -95,7 +95,7 @@ Here is a small `task.json` for a Page creation task. Its `workspace/` would sta
 ```json
 {
   "schemaVersion": 1,
-  "id": "020-create-greeting",
+  "id": "051-create-greeting",
   "category": "create",
   "difficulty": "easy",
   "description": "Create a Page at pages/index/index that displays Hello AIUI from bound data. Use AIUI APIs, not browser DOM APIs.",
@@ -130,11 +130,11 @@ Add a focused test under `bench/tests/` that prepares the fixture, confirms the 
 
 ```sh
 npm run bench:test
-npm run --silent bench -- inspect 020-create-greeting
-npm run --silent bench -- grade 020-create-greeting
-npm run --silent bench -- prepare 020-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- inspect 051-create-greeting
+npm run --silent bench -- grade 051-create-greeting
+npm run --silent bench -- prepare 051-create-greeting --workspace /tmp/aiui-greeting
 # Write a solution into /tmp/aiui-greeting, then:
-npm run --silent bench -- grade 020-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- grade 051-create-greeting --workspace /tmp/aiui-greeting
 ```
 
 The first `grade` should report unresolved; the second should report resolved. Verify that `inspect` and `prepare` expose only the description and workspace, not checks. Keep the task deterministic: no network calls, real device state, credentials, or checks that require one golden patch. If the new task needs a new check type, add its schema validation in `src/schema.js`, evaluator in `src/grader.js`, and focused tests before using it in `task.json`.
@@ -143,12 +143,12 @@ The first `grade` should report unresolved; the second should report resolved. V
 
 | Category | Tasks |
 | --- | --- |
-| create | `001-create-page`, `002-create-counter`, `003-create-widget`, `004-create-worker`, `012-create-multifile`, `016-create-storage`, `017-create-overlay` |
-| modify | `005-modify-toggle`, `006-modify-second-page`, `013-modify-watch`, `018-modify-voice-wakeup` |
-| fix | `007-fix-state`, `008-fix-event`, `014-fix-worker-open`, `015-fix-widget-lifecycle` |
-| migrate | `009-migrate-worker`, `019-migrate-page` |
-| constraint | `010-constraint-location`, `011-constraint-no-dom` |
+| create | `001-create-page`, `002-create-counter`, `003-create-widget`, `004-create-worker`, `012-create-multifile`, `016-create-storage`, `017-create-overlay`, `020-counter-step`, `021-decrement`, `022-reset-score`, `023-toggle-light`, `024-advance-level`, `025-double-total`, `026-cycle-page`, `027-append-dot` |
+| modify | `005-modify-toggle`, `006-modify-second-page`, `013-modify-watch`, `018-modify-voice-wakeup`, `028-increment-badge`, `029-dismiss-alert`, `030-resume-timer`, `031-increase-volume`, `032-cap-progress`, `033-cycle-mode`, `034-mark-read`, `035-add-item`, `036-subtract-credit`, `037-flip-muted` |
+| fix | `007-fix-state`, `008-fix-event`, `014-fix-worker-open`, `015-fix-widget-lifecycle`, `038-broken-like`, `039-broken-pause`, `040-broken-retry`, `041-broken-clear`, `042-broken-zoom`, `043-broken-select`, `044-broken-skip`, `045-broken-unlock` |
+| migrate | `009-migrate-worker`, `019-migrate-page`, `046-legacy-heart`, `047-legacy-next`, `048-legacy-finish` |
+| constraint | `010-constraint-location`, `011-constraint-no-dom`, `049-no-dom-activate`, `050-no-dom-refresh` |
 
-These 19 tasks cover Pages (single-file and multi-file), Widgets, Workers, geolocation, storage, overlays, voice events, migration, and platform boundaries. The validator checks known manifest/source relationships and supported AIUI rules; it intentionally does not reject every unknown API, event, or WXSS property. Device permissions, rendering, focus, media, sensors, and visual quality require separate runtime checks. Pin the model, skill revision, and harness version when comparing benchmark runs.
+These 50 tasks cover Page state and event handling, Widgets, Workers, geolocation, storage, overlays, voice events, migration, and platform boundaries. The validator checks known manifest/source relationships and supported AIUI rules; it intentionally does not reject every unknown API, event, or WXSS property. Device permissions, rendering, focus, media, sensors, and visual quality require separate runtime checks. Pin the model, skill revision, and harness version when comparing benchmark runs.
 
 The DeepSeek request format and model IDs follow the [Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/) and [Tool Calls guide](https://api-docs.deepseek.com/guides/tool_calls/).
