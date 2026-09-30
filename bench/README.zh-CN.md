@@ -58,25 +58,23 @@ npm run --silent bench -- grade-all \
   --workspaces /tmp/aiui-bench-manual --output-dir bench/results/manual
 ```
 
-内置 DeepSeek 驱动没有 `infer-all` 命令。下面的循环为每个任务创建独立工作区和结果文件：
+使用 DeepSeek 时，批量脚本会在独立工作区逐个调用 `infer`，生成 `summary.json`、`report.md`、每个任务的 infer 轨迹和工作区。先在环境变量中设置 `DEEPSEEK_API_KEY`：
 
 ```sh
-workspaces=$(mktemp -d /tmp/aiui-bench.XXXXXX)
-results=bench/results/local-$(date -u +%Y%m%dT%H%M%SZ)
-mkdir -p "$results"
-for task_file in bench/tasks/*/*/task.json; do
-  id=$(basename "$(dirname "$task_file")")
-  npm run --silent bench -- infer "$id" \
-    --workspace "$workspaces/$id" \
-    --api-key-file /path/to/deepseek.key \
-    --output "$results/$id.infer.json" || printf 'Check %s\n' "$id" >&2
-done
-npm run --silent bench -- summary "$results"/*.infer.json
+node bench/scripts/run-all.js \
+  --model deepseek-flash --max-steps 30 \
+  --output-dir bench/results/local-run
 ```
 
-核对汇总中的 `total` 是否等于任务总数：如果 CLI 在生成结果文件前出错，汇总会缺少该任务。`summary` 可汇总 `grade` 和 `infer` 结果；只有状态为 `completed` 且评分通过的 infer 才计为 resolved。有 AIX CLI 时，还可以对工作区执行 `aix check <workspace> --format json` 和 `aix pack <workspace> --output <file.aix>`，检查源码与打包。
+每轮使用新的输出目录。某个任务未通过或 CLI 出错时，批量脚本仍继续执行，并在 `summary.json` 中记录全部任务；只要有未通过的任务，脚本就以非零状态退出。普通的 `summary` 命令可汇总 `grade` 和 `infer` 结果；只有状态为 `completed` 且评分通过的 infer 才计为 resolved。有 AIX CLI 时，还可以对工作区执行 `aix check <workspace> --format json` 和 `aix pack <workspace> --output <file.aix>`，检查源码与打包。
 
 退出码：`grade` 和 `infer` 在任务通过时返回 0，未通过或未完成时返回 1，命令或 Provider 出错时返回 2；`grade-all` 只要有任务未通过就返回 1。`infer` 状态为 `completed`、`max_steps` 或 `error`；评分器自身出错时，结果中的 grading 可能是 `null`。
+
+### 在 GitHub Actions 跑完整任务集
+
+在仓库的 Actions secrets 中添加名为 `DEEPSEEK_API_KEY` 的密钥。进入仓库 **Actions** 页面，选择 **AIUI Bench (DeepSeek)**，点击 **Run workflow**，选择模型和最大步数。该 workflow 仅手动触发，先运行测试框架的测试，再将密钥作为环境变量执行全部任务。要在页面看到 **Run workflow** 按钮，workflow 文件须位于仓库默认分支。
+
+运行页面的 **Summary** 会展示通过数量和每个任务的状态。下载 `aiui-bench-<run-id>-<attempt>` artifact，可获得 `summary.json`、`report.md`、infer 轨迹和生成的工作区。只要有任务未通过或出错，job 就会失败，但仍会上传 artifact。结果中不包含 API key。
 
 ## 新增任务
 
