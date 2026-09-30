@@ -79,17 +79,24 @@ test('summary counts completed infer records and plain grade results', async () 
     const inferFile = path.join(parent, 'infer.json');
     const incompleteFile = path.join(parent, 'incomplete.json');
     await writeFile(gradeFile, JSON.stringify({ resolved: true }));
-    await writeFile(inferFile, JSON.stringify({ status: 'completed', grading: { resolved: true } }));
-    await writeFile(incompleteFile, JSON.stringify({ status: 'max_steps', grading: { resolved: true } }));
+    await writeFile(inferFile, JSON.stringify({ task: '001-create-page', status: 'completed', grading: { resolved: true }, cost: { complete: true, knownUsd: 0.01, estimatedUsd: 0.01 } }));
+    await writeFile(incompleteFile, JSON.stringify({ task: '002-create-counter', status: 'max_steps', grading: { resolved: true }, cost: { complete: true, knownUsd: 0.02, estimatedUsd: 0.02 } }));
 
     const result = run(['summary', gradeFile, inferFile, incompleteFile]);
     assert.equal(result.status, 0);
-    assert.deepEqual(JSON.parse(result.stdout), {
-      resolved: 2,
-      total: 3,
-      resolvedRate: 2 / 3,
-      display: 'Resolved: 2 / 3\nResolved Rate: 67%',
-    });
+    const summary = JSON.parse(result.stdout);
+    assert.equal(summary.resolved, 2);
+    assert.equal(summary.total, 3);
+    assert.equal(summary.resolvedRate, 2 / 3);
+    assert.equal(summary.cost.estimatedUsd, null);
+    assert.ok(Math.abs(summary.cost.knownUsd - 0.03) < 1e-12);
+    assert.equal(summary.cost.unpricedTasks, 1);
+    assert.deepEqual(summary.cost.taskCosts, [
+      { task: 'grade', estimatedUsd: null },
+      { task: '001-create-page', estimatedUsd: 0.01 },
+      { task: '002-create-counter', estimatedUsd: 0.02 },
+    ]);
+    assert.match(summary.display, /Estimated API cost \(USD\): N\/A/);
   } finally {
     await rm(parent, { recursive: true, force: true });
   }

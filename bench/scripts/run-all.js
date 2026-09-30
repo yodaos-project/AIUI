@@ -32,6 +32,7 @@ function resultFor(task, infer, exitCode, stderr) {
     },
     constraintViolations: infer.grading?.constraints?.violations ?? null,
     usage: infer.usage || { promptTokens: 0, completionTokens: 0 },
+    cost: infer.cost || null,
     ...(infer.error ? { error: infer.error } : {}),
   };
 }
@@ -46,6 +47,8 @@ export function summarizeRuns(results, model, startedAt, finishedAt) {
     promptTokens: total.promptTokens + (result.usage?.promptTokens || 0),
     completionTokens: total.completionTokens + (result.usage?.completionTokens || 0),
   }), { promptTokens: 0, completionTokens: 0 });
+  const knownUsd = results.reduce((total, result) => total + (result.cost?.knownUsd || 0), 0);
+  const unpricedTasks = results.filter(result => !result.cost?.complete).length;
 
   return {
     schemaVersion: 1,
@@ -56,8 +59,22 @@ export function summarizeRuns(results, model, startedAt, finishedAt) {
     total: results.length,
     resolvedRate: resolvedRate(resolved, results.length),
     usage,
+    cost: {
+      currency: 'USD',
+      estimatedUsd: unpricedTasks ? null : knownUsd,
+      knownUsd,
+      complete: unpricedTasks === 0,
+      unpricedTasks,
+      pricingSource: results.find(result => result.cost?.pricingSource)?.cost.pricingSource ?? null,
+      pricingAsOf: results.find(result => result.cost?.pricingAsOf)?.cost.pricingAsOf ?? null,
+    },
     results,
   };
+}
+
+/** Keep small token charges visible without rounding the stored USD amount. */
+function displayUsd(amount) {
+  return Number.isFinite(amount) ? `$${amount.toFixed(6)}` : 'N/A';
 }
 
 /** Render a GitHub job summary and a matching artifact report. */
@@ -65,7 +82,7 @@ export function markdownReport(summary) {
   const rows = summary.results.map(result => {
     const required = result.required ? `${result.required.passed}/${result.required.total}` : '—';
     const regression = result.regression ? `${result.regression.passed}/${result.regression.total}` : '—';
-    return `| \`${result.task}\` | ${result.status} | ${result.resolved ? 'yes' : 'no'} | ${required} | ${regression} | ${result.constraintViolations ?? '—'} |`;
+    return `| \`${result.task}\` | ${result.status} | ${result.resolved ? 'yes' : 'no'} | ${required} | ${regression} | ${result.constraintViolations ?? '—'} | ${displayUsd(result.cost?.estimatedUsd)} |`;
   });
   const failures = summary.results.filter(result => !result.resolved).map(result => {
     const failed = result.error || `required ${result.required?.passed ?? '—'}/${result.required?.total ?? '—'}, constraints ${result.constraintViolations ?? '—'}`;
@@ -78,9 +95,11 @@ export function markdownReport(summary) {
     `Model: \`${summary.model}\``,
     `Resolved: **${summary.resolved}/${summary.total} (${Math.round(summary.resolvedRate * 100)}%)**`,
     `Tokens: ${summary.usage.promptTokens} prompt, ${summary.usage.completionTokens} completion`,
+    `Estimated API cost (USD): **${displayUsd(summary.cost.estimatedUsd)}**${summary.cost.complete ? '' : ` (known subtotal ${displayUsd(summary.cost.knownUsd)}; ${summary.cost.unpricedTasks} task(s) unavailable)`}`,
+    `Pricing: [published DeepSeek USD token rates](${summary.cost.pricingSource || 'https://api-docs.deepseek.com/quick_start/pricing/'}), snapshot ${summary.cost.pricingAsOf || 'unknown'}; cache hit/miss and UTC peak hours are applied per request. Estimates may differ from billed charges.`,
     '',
-    '| Task | Status | Resolved | Required | Regression | Violations |',
-    '| --- | --- | --- | ---: | ---: | ---: |',
+    '| Task | Status | Resolved | Required | Regression | Violations | Est. cost (USD) |',
+    '| --- | --- | --- | ---: | ---: | ---: | ---: |',
     ...rows,
     ...(failures.length ? ['', '## Unresolved or failed', '', ...failures] : []),
     '',

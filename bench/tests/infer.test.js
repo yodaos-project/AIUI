@@ -24,8 +24,8 @@ const solution = `<script def>{"navigationBarTitleText":"Hello"}</script>
 test('DeepSeek infer writes workspace through tools then grades it', async () => withWorkspace(async (task, workspace) => {
   const requests = [];
   const replies = [
-    { choices: [{ finish_reason: 'tool_calls', message: { role: 'assistant', content: '', tool_calls: [{ id: 'call_1', type: 'function', function: { name: 'write_workspace', arguments: JSON.stringify({ path: 'pages/index/index.ink', content: solution }) } }] } }], usage: { prompt_tokens: 100, completion_tokens: 20 } },
-    { choices: [{ finish_reason: 'stop', message: { role: 'assistant', content: 'Done.' } }], usage: { prompt_tokens: 120, completion_tokens: 5 } },
+    { choices: [{ finish_reason: 'tool_calls', message: { role: 'assistant', content: '', tool_calls: [{ id: 'call_1', type: 'function', function: { name: 'write_workspace', arguments: JSON.stringify({ path: 'pages/index/index.ink', content: solution }) } }] } }], usage: { prompt_tokens: 100, prompt_cache_hit_tokens: 20, prompt_cache_miss_tokens: 80, completion_tokens: 20 } },
+    { choices: [{ finish_reason: 'stop', message: { role: 'assistant', content: 'Done.' } }], usage: { prompt_tokens: 120, prompt_cache_hit_tokens: 40, prompt_cache_miss_tokens: 80, completion_tokens: 5 } },
   ];
   const fetchImpl = async (url, options) => {
     requests.push({ url, options });
@@ -37,6 +37,13 @@ test('DeepSeek infer writes workspace through tools then grades it', async () =>
   assert.equal(result.model, 'deepseek-v4-pro');
   assert.equal(JSON.parse(requests[0].options.body).model, 'deepseek-v4-pro');
   assert.equal(result.usage.promptTokens, 220);
+  assert.equal(result.usage.promptCacheHitTokens, 60);
+  assert.equal(result.usage.promptCacheMissTokens, 160);
+  assert.equal(result.cost.currency, 'USD');
+  assert.equal(result.cost.complete, true);
+  assert.equal(result.cost.pricedRequests, 2);
+  assert.ok(result.cost.estimatedUsd > 0);
+  assert.equal(result.cost.estimatedUsd, result.trace.filter(entry => entry.cost).reduce((total, entry) => total + entry.cost.estimatedUsd, 0));
   assert.equal(requests.length, 2);
   assert.equal(JSON.parse(requests[1].options.body).messages.at(-1).role, 'tool');
   assert.ok(!JSON.stringify(result).includes('test-key'));
@@ -74,6 +81,8 @@ test('provider failure is recorded without pretending the task completed', async
   assert.equal(result.status, 'error');
   assert.equal(result.error, 'DeepSeek API returned HTTP 401');
   assert.equal(result.grading.resolved, false);
+  assert.equal(result.cost.complete, false);
+  assert.equal(result.cost.estimatedUsd, null);
   assert.equal(request.model, 'deepseek-flash');
   assert.deepEqual(request.thinking, { type: 'disabled' });
 }));

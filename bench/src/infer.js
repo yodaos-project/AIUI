@@ -9,6 +9,7 @@ import { readFile, readdir, realpath } from 'node:fs/promises';
 import path from 'node:path';
 import { executeTool, toolDefinitions } from './agent-tools.js';
 import { grade } from './grader.js';
+import { estimateRequestCost, PRICING_AS_OF, PRICING_SOURCE } from './pricing.js';
 
 const API_URL = 'https://api.deepseek.com/chat/completions';
 /** Normalize Error and non-Error throws before putting them in a result. */
@@ -46,10 +47,11 @@ async function skillFingerprint(skill) {
 /**
  * Make one non-streaming Chat Completions request with the workspace tools.
  * @param {{apiKey: string, model: string, messages: object[], fetchImpl?: typeof fetch}} options
- * @returns {Promise<{message: object, finishReason: string, usage: object | null}>}
+ * @returns {Promise<{message: object, finishReason: string, usage: object | null, requestedAt: Date}>}
  * @throws {Error} On HTTP failure or an unsupported response shape.
  */
 export async function deepseekCompletion({ apiKey, model, messages, fetchImpl = fetch }) {
+  const requestedAt = new Date();
   const response = await fetchImpl(API_URL, {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
@@ -71,7 +73,7 @@ export async function deepseekCompletion({ apiKey, model, messages, fetchImpl = 
   if (!choice?.message || !['stop', 'tool_calls'].includes(choice.finish_reason)) {
     throw new Error(`DeepSeek returned unsupported finish reason: ${choice?.finish_reason ?? 'missing'}`);
   }
-  return { message: choice.message, finishReason: choice.finish_reason, usage: body.usage || null };
+  return { message: choice.message, finishReason: choice.finish_reason, usage: body.usage || null, requestedAt };
 }
 
 /** Convert a tool exception into a response the model can inspect and repair. */
@@ -111,7 +113,17 @@ export async function infer(task, workspace, { apiKey, model = 'deepseek-flash',
     { role: 'user', content: `Task: ${task.description}\n\nAIUI skill entrypoint:\n${skillText}\n\nUse list_skill/read_skill for linked references. Use list_workspace/read_workspace/write_workspace for project files.` },
   ];
   const trace = [];
-  const usage = { promptTokens: 0, completionTokens: 0 };
+  const usage = { promptTokens: 0, completionTokens: 0, promptCacheHitTokens: 0, promptCacheMissTokens: 0 };
+  const cost = {
+    currency: 'USD',
+    estimatedUsd: 0,
+    knownUsd: 0,
+    complete: true,
+    pricedRequests: 0,
+    unpricedRequests: 0,
+    pricingSource: PRICING_SOURCE,
+    pricingAsOf: PRICING_AS_OF,
+  };
   let status = 'max_steps';
   let finalMessage = '';
   let errorMessage;
@@ -123,11 +135,27 @@ export async function infer(task, workspace, { apiKey, model = 'deepseek-flash',
     } catch (error) {
       status = 'error';
       errorMessage = errorText(error);
+      cost.complete = false;
+      cost.unpricedRequests++;
       break;
     }
 
     usage.promptTokens += completion.usage?.prompt_tokens || 0;
     usage.completionTokens += completion.usage?.completion_tokens || 0;
+    const cacheHit = completion.usage?.prompt_cache_hit_tokens
+      ?? completion.usage?.prompt_tokens_details?.cached_tokens;
+    const cacheMiss = completion.usage?.prompt_cache_miss_tokens
+      ?? (Number.isInteger(cacheHit) ? completion.usage.prompt_tokens - cacheHit : undefined);
+    usage.promptCacheHitTokens += cacheHit ?? 0;
+    usage.promptCacheMissTokens += cacheMiss ?? 0;
+    const requestCost = estimateRequestCost({ model, usage: completion.usage, at: completion.requestedAt });
+    if (requestCost) {
+      cost.knownUsd += requestCost.estimatedUsd;
+      cost.pricedRequests++;
+    } else {
+      cost.complete = false;
+      cost.unpricedRequests++;
+    }
     const assistant = completion.message;
     const calls = assistant.tool_calls || [];
 
@@ -140,6 +168,7 @@ export async function infer(task, workspace, { apiKey, model = 'deepseek-flash',
         arguments: call.function?.arguments,
       })),
       usage: completion.usage,
+      cost: requestCost,
     });
     messages.push({
       role: 'assistant',
@@ -164,6 +193,9 @@ export async function infer(task, workspace, { apiKey, model = 'deepseek-flash',
       messages.push({ role: 'tool', tool_call_id: call.id, content: JSON.stringify(result) });
     }
   }
+
+  if (!cost.complete) cost.estimatedUsd = null;
+  else cost.estimatedUsd = cost.knownUsd;
 
   let grading = null;
   let fingerprint = null;
@@ -193,6 +225,7 @@ export async function infer(task, workspace, { apiKey, model = 'deepseek-flash',
     ...(errorMessage ? { error: errorMessage } : {}),
     steps: messages.filter(message => message.role === 'assistant').length,
     usage,
+    cost,
     finalMessage,
     grading,
     trace,

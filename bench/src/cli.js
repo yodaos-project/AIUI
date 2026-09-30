@@ -139,6 +139,7 @@ async function inferTask(id, options) {
       total: result.grading.regression.total,
     },
     constraintViolations: result.grading?.constraints.violations ?? null,
+    cost: result.cost,
     output: outputPath,
   });
 
@@ -165,11 +166,19 @@ async function summarize(files) {
   const resolved = results.filter(result =>
     result.grading ? result.status === 'completed' && result.grading.resolved : result.resolved).length;
   const rate = resolvedRate(resolved, results.length);
+  const knownUsd = results.reduce((total, result) => total + (result.cost?.knownUsd || 0), 0);
+  const taskCosts = results.map((result, index) => ({
+    task: result.task || path.basename(files[index], '.json'),
+    estimatedUsd: result.cost?.complete ? result.cost.estimatedUsd : null,
+  }));
+  const unpricedTasks = taskCosts.filter(result => result.estimatedUsd === null).length;
+  const estimatedUsd = unpricedTasks ? null : knownUsd;
   print({
     resolved,
     total: results.length,
     resolvedRate: rate,
-    display: `Resolved: ${resolved} / ${results.length}\nResolved Rate: ${Math.round(rate * 100)}%`,
+    cost: { currency: 'USD', estimatedUsd, knownUsd, complete: unpricedTasks === 0, unpricedTasks, taskCosts },
+    display: `Resolved: ${resolved} / ${results.length}\nResolved Rate: ${Math.round(rate * 100)}%\nEstimated API cost (USD): ${estimatedUsd === null ? 'N/A' : `$${estimatedUsd.toFixed(6)}`}`,
   });
 }
 

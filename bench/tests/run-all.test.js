@@ -11,8 +11,8 @@ const runner = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../sc
 
 test('run-all counts unresolved and missing records and renders the report', () => {
   const results = [
-    { task: '001-create-page', status: 'completed', resolved: true, required: { passed: 2, total: 2 }, regression: { passed: 0, total: 0 }, constraintViolations: 0, usage: { promptTokens: 10, completionTokens: 3 } },
-    { task: '002-create-counter', status: 'max_steps', resolved: false, required: { passed: 1, total: 2 }, regression: { passed: 0, total: 0 }, constraintViolations: 0, usage: { promptTokens: 8, completionTokens: 2 } },
+    { task: '001-create-page', status: 'completed', resolved: true, required: { passed: 2, total: 2 }, regression: { passed: 0, total: 0 }, constraintViolations: 0, usage: { promptTokens: 10, completionTokens: 3 }, cost: { estimatedUsd: 0.015, knownUsd: 0.015, complete: true, pricingSource: 'https://example.test/pricing', pricingAsOf: '2026-09-30' } },
+    { task: '002-create-counter', status: 'max_steps', resolved: false, required: { passed: 1, total: 2 }, regression: { passed: 0, total: 0 }, constraintViolations: 0, usage: { promptTokens: 8, completionTokens: 2 }, cost: { estimatedUsd: 0.02, knownUsd: 0.02, complete: true } },
     { task: '003-create-widget', status: 'cli_error', resolved: false, error: 'no result file' },
   ];
   const summary = summarizeRuns(results, 'deepseek-flash', 'start', 'finish');
@@ -21,9 +21,27 @@ test('run-all counts unresolved and missing records and renders the report', () 
   assert.equal(summary.total, 3);
   assert.equal(summary.resolvedRate, 1 / 3);
   assert.deepEqual(summary.usage, { promptTokens: 18, completionTokens: 5 });
+  assert.equal(summary.cost.estimatedUsd, null);
+  assert.equal(summary.cost.unpricedTasks, 1);
+  assert.ok(Math.abs(summary.cost.knownUsd - 0.035) < 1e-12);
   assert.match(markdownReport(summary), /^# AIUI Coding Benchmark/);
+  assert.match(markdownReport(summary), /Est\. cost \(USD\)/);
+  assert.match(markdownReport(summary), /001-create-page.*\$0\.015000/);
+  assert.match(markdownReport(summary), /003-create-widget.*N\/A/);
+  assert.match(markdownReport(summary), /known subtotal \$0\.035000/);
   assert.match(markdownReport(summary), /003-create-widget.*cli_error/);
   assert.match(markdownReport(summary), /no result file/);
+});
+
+test('run-all totals USD estimates when every task has complete usage', () => {
+  const results = [
+    { task: '001-create-page', resolved: true, cost: { complete: true, knownUsd: 0.015, estimatedUsd: 0.015 } },
+    { task: '002-create-counter', resolved: false, cost: { complete: true, knownUsd: 0.02, estimatedUsd: 0.02 } },
+  ];
+  const summary = summarizeRuns(results, 'deepseek-flash', 'start', 'finish');
+  assert.equal(summary.cost.complete, true);
+  assert.ok(Math.abs(summary.cost.estimatedUsd - 0.035) < 1e-12);
+  assert.match(markdownReport(summary), /Estimated API cost \(USD\): \*\*\$0\.035000\*\*/);
 });
 
 test('run-all rejects a missing secret before creating result files', async () => {
