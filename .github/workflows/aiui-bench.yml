@@ -82,16 +82,7 @@ jobs:
       - name: Publish benchmark summary
         if: ${{ always() }}
         run: |
-          shopt -s nullglob
-          reports=(bench/results/github-actions/*/report.md)
-          if (( ${#reports[@]} == 0 )); then
-            echo '## AIUI Coding Benchmark' >> "$GITHUB_STEP_SUMMARY"
-            echo 'No benchmark reports were produced. Check the preceding steps.' >> "$GITHUB_STEP_SUMMARY"
-          else
-            for report in "${reports[@]}"; do
-              cat "$report" >> "$GITHUB_STEP_SUMMARY"
-            done
-          fi
+          node bench/scripts/github-summary.js bench/results/github-actions >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload benchmark results
         if: ${{ always() && steps.bench.outcome != 'skipped' }}
