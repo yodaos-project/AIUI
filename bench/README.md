@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md)
 
-`bench/` measures whether an AI coding agent can create, modify, fix, and migrate AIUI projects. It also serves as a regression suite for the `aiui-dev` skill. A task is **resolved** only when every `required` and `regression` check passes and there are no `constraints` violations. The aggregate metric is resolved tasks divided by graded tasks.
+`bench/` measures whether an AI coding agent can create, modify, fix, migrate, and align AIUI projects with design specifications. It also serves as a regression suite for the `aiui-dev` skill. A task is **resolved** only when every `required` and `regression` check passes and there are no `constraints` violations. The aggregate metric is resolved tasks divided by graded tasks.
 
 The grader checks source, manifest facts, and selected handler behavior. It does not compare a golden patch or verify device rendering. Keep task checks hidden from the agent: only the description and a prepared workspace are public inputs.
 
@@ -84,7 +84,7 @@ Costs are estimates from the API's per-request cache-hit, cache-miss, and output
 
 ### 1. Choose an ID and starting project
 
-Create `bench/tasks/<category>/<id>/task.json` and `bench/tasks/<category>/<id>/workspace/`. Supported categories are `create`, `modify`, `fix`, `migrate`, and `constraint`; difficulties are `easy`, `medium`, and `hard`. Use a globally unique, leading three-digit ID such as `051-create-greeting`. The directory name, JSON `id`, and parent category must agree. Put a minimal runnable AIUI project in `workspace/` (for example `app.json` and `app.js`), with the requested work still undone. Do not include symlinks, credentials, grading files, or model outputs.
+Create `bench/tasks/<category>/<id>/task.json` and `bench/tasks/<category>/<id>/workspace/`. Supported categories are `create`, `modify`, `fix`, `migrate`, `constraint`, and `design`; difficulties are `easy`, `medium`, and `hard`. Use a globally unique, leading three-digit ID such as `056-create-greeting`. The directory name, JSON `id`, and parent category must agree. Put a minimal runnable AIUI project in `workspace/` (for example `app.json` and `app.js`), with the requested work still undone. Do not include symlinks, credentials, grading files, or model outputs.
 
 Keep the description specific enough to tell the solver what to build and preserve. Refer only to files actually present in the fixture. Describe observable behavior and platform constraints; avoid prescribing one exact implementation unless the runtime requires it.
 
@@ -95,7 +95,7 @@ Here is a small `task.json` for a Page creation task. Its `workspace/` would sta
 ```json
 {
   "schemaVersion": 1,
-  "id": "051-create-greeting",
+  "id": "056-create-greeting",
   "category": "create",
   "difficulty": "easy",
   "description": "Create a Page at pages/index/index that displays Hello AIUI from bound data. Use AIUI APIs, not browser DOM APIs.",
@@ -119,10 +119,22 @@ Here is a small `task.json` for a Page creation task. Its `workspace/` would sta
 | Check family | Types | What they observe |
 | --- | --- | --- |
 | Files and manifest | `file`, `route`, `widget`, `worker`, `permission`, `manifestField`, `routeOrder` | Files, app declarations, permissions, ordering |
-| Template and layout | `template`, `widgetLayout`, `noDom` | Tags, text, bindings, tap labels, simple layout or DOM restrictions |
+| Template and layout | `template`, `widgetLayout`, `style`, `noDom` | Tags, text, bindings, tap labels, simple layout or DOM restrictions |
 | Handler behavior | `behavior`, `workerBehavior`, `locationBehavior`, `watchBehavior`, `storageBehavior`, `overlayBehavior`, `voiceBehavior` | State after invoking handlers with deterministic mocks |
 
 For `behavior`, supply `path`, optional `calls` (`method` or visible `button`, plus optional `arg`), `expect`, and optionally `minPatches`. For multi-file Pages, use the `.js` logic `path` and a `templatePath` pointing to `.wxml` when a check looks up a button. The behavior runner supports a limited JavaScript/ESM subset and explicit runtime mocks; it does not execute TypeScript or arbitrary modules. See existing tasks in the same category for the exact fields of specialized checks.
+
+### Design tasks and style checks
+
+`design` measures implementation of the [monochrome-green specification](../design/monochrome/design-system-green.md). Each starting workspace includes a pinned `DESIGN.md` excerpt containing the required tokens, so external agents receive the same offline reference as the inference runner. The first five tasks cover canvas/safe insets, typography, outlined buttons, open list rows, and redundant error semantics. Required checks verify design properties; regression checks preserve bound data and button behavior.
+
+A `style` check supplies `path` (an `.ink` file), `className`, and a nonempty `declarations` object mapping CSS property names to literal strings. Optional positive integer `minCount` requires a minimum number of matching nodes; `tag`, `text`, and `binding` constrain the content node carrying the class. For example:
+
+```json
+{ "id": "body-copy", "type": "style", "path": "pages/index/index.ink", "className": "title", "tag": "text", "binding": "title", "declarations": { "font-size": "14px", "color": "rgba(64,255,94,0.72)" } }
+```
+
+The bounded checker reads inline `.ink` style blocks and requires the class on real Page/Widget template nodes. All nodes with that class must meet the check. It handles flat `.class` selectors, comma lists, repeated rules/declarations in source order, multiple classes, and literal inline longhands. It ignores comments/scripts, normalizes case, whitespace, short hex colors and decimal alpha formatting, and checks text/binding on the selected node. The tasks explicitly request this syntax: complex selectors, at-rules/imports, variables, dynamic styles, `!important`, and common shorthands fail closed. Properties must be declared directly; inheritance, general shorthand expansion, layout, rendering, and perceptual quality are outside its scope. This is a deterministic source benchmark, not a full CSS engine or visual comparison.
 
 ### 3. Add positive and negative tests
 
@@ -130,11 +142,11 @@ Add a focused test under `bench/tests/` that prepares the fixture, confirms the 
 
 ```sh
 npm run bench:test
-npm run --silent bench -- inspect 051-create-greeting
-npm run --silent bench -- grade 051-create-greeting
-npm run --silent bench -- prepare 051-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- inspect 056-create-greeting
+npm run --silent bench -- grade 056-create-greeting
+npm run --silent bench -- prepare 056-create-greeting --workspace /tmp/aiui-greeting
 # Write a solution into /tmp/aiui-greeting, then:
-npm run --silent bench -- grade 051-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- grade 056-create-greeting --workspace /tmp/aiui-greeting
 ```
 
 The first `grade` should report unresolved; the second should report resolved. Verify that `inspect` and `prepare` expose only the description and workspace, not checks. Keep the task deterministic: no network calls, real device state, credentials, or checks that require one golden patch. If the new task needs a new check type, add its schema validation in `src/schema.js`, evaluator in `src/grader.js`, and focused tests before using it in `task.json`.
@@ -148,7 +160,8 @@ The first `grade` should report unresolved; the second should report resolved. V
 | fix | `007-fix-state`, `008-fix-event`, `014-fix-worker-open`, `015-fix-widget-lifecycle`, `038-broken-like`, `039-broken-pause`, `040-broken-retry`, `041-broken-clear`, `042-broken-zoom`, `043-broken-select`, `044-broken-skip`, `045-broken-unlock` |
 | migrate | `009-migrate-worker`, `019-migrate-page`, `046-legacy-heart`, `047-legacy-next`, `048-legacy-finish` |
 | constraint | `010-constraint-location`, `011-constraint-no-dom`, `049-no-dom-activate`, `050-no-dom-refresh` |
+| design | `051-design-canvas`, `052-design-typography`, `053-design-button`, `054-design-list`, `055-design-error-state` |
 
-These 50 tasks cover Page state and event handling, Widgets, Workers, geolocation, storage, overlays, voice events, migration, and platform boundaries. The validator checks known manifest/source relationships and supported AIUI rules; it intentionally does not reject every unknown API, event, or WXSS property. Device permissions, rendering, focus, media, sensors, and visual quality require separate runtime checks. Pin the model, skill revision, and harness version when comparing benchmark runs.
+These 55 tasks cover Page state and event handling, Widgets, Workers, geolocation, storage, overlays, voice events, migration, platform boundaries, and monochrome-green design tokens. The validator checks known manifest/source relationships and supported AIUI rules; it intentionally does not reject every unknown API, event, or WXSS property. Device permissions, rendering, focus, media, sensors, and visual quality require separate runtime checks. Pin the model, skill revision, and harness version when comparing benchmark runs.
 
 The DeepSeek request format and model IDs follow the [Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/) and [Tool Calls guide](https://api-docs.deepseek.com/guides/tool_calls/).

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "id": "052-design-typography",
+  "category": "design",
+  "difficulty": "medium",
+  "description": "Restyle the telemetry typography in pages/index/index.ink: title uses the display token (22px/500 sans-serif, 72% green), numerical value uses data (13px/500 monospace, full green), and metadata uses readable secondary body-sm (12px/400 sans-serif, 48% green). Refresh must still add 1 to value, starting at 42; preserve title Telemetry and metadata Sensor A. Use the local DESIGN.md excerpt of the monochrome-green specification. Keep the supplied class names on their existing content nodes. For deterministic source grading, use flat .class selectors (comma lists are allowed) and explicit longhand properties in the inline <style> block; do not use imports, variables, shorthands, complex selectors, or !important. Preserve the route, bound content, initial state, and existing button behavior. Use AIUI APIs, not browser DOM APIs.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "display-title",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "title",
+        "tag": "text",
+        "declarations": {
+          "font-family": "sans-serif",
+          "font-size": "22px",
+          "font-weight": "500",
+          "color": "rgba(64,255,94,0.72)"
+        },
+        "binding": "title"
+      },
+      {
+        "id": "numeric-data",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "value",
+        "tag": "text",
+        "declarations": {
+          "font-family": "monospace",
+          "font-size": "13px",
+          "font-weight": "500",
+          "color": "#40ff5e"
+        },
+        "binding": "value"
+      },
+      {
+        "id": "secondary-metadata",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "metadata",
+        "tag": "text",
+        "declarations": {
+          "font-family": "sans-serif",
+          "font-size": "12px",
+          "font-weight": "400",
+          "color": "rgba(64,255,94,0.48)"
+        },
+        "binding": "metadata"
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "initial-state",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Telemetry",
+          "value": 42,
+          "metadata": "Sensor A"
+        },
+        "calls": []
+      },
+      {
+        "id": "existing-action",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Telemetry",
+          "value": 43,
+          "metadata": "Sensor A"
+        },
+        "calls": [
+          {
+            "button": "Refresh"
+          }
+        ]
+      },
+      {
+        "id": "bound-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "bound-value",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "value"
+      },
+      {
+        "id": "bound-metadata",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "metadata"
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

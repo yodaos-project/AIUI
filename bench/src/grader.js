@@ -10,6 +10,7 @@ import path from 'node:path';
 import { readWorkspace, safePath } from './workspace.js';
 import { loadLogic } from './behavior.js';
 import { validateWorkspace } from './validator.js';
+import { matchesStyle } from './style.js';
 
 /**
  * Find the tap handler for a button with the requested visible label. The
@@ -145,6 +146,8 @@ async function evaluate(check, workspace, manifest) {
     }
     case 'noDom':
       return !await hasDomSource(workspace);
+    case 'style':
+      return matchesStyle(await read(check.path), check);
     case 'widgetLayout': {
       const source = await read(check.path);
       const style = source.match(/<style[^>]*>([\s\S]*?)<\/style>/)?.[1] || '';

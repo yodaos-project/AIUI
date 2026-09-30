@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "id": "053-design-button",
+  "category": "design",
+  "difficulty": "medium",
+  "description": "Replace the oversized filled Toggle control in pages/index/index.ink with the default outlined button: minimum height 32px, transparent fill, 1px solid 48% green boundary, 4px radius, 72% green text, and uppercase 11px/500 sans-serif label. The status text must use readable 14px/400 sans-serif at 72% green. Toggle must continue to switch enabled false to true and back. Use the local DESIGN.md excerpt of the monochrome-green specification. Keep the supplied class names on their existing content nodes. For deterministic source grading, use flat .class selectors (comma lists are allowed) and explicit longhand properties in the inline <style> block; do not use imports, variables, shorthands, complex selectors, or !important. Preserve the route, bound content, initial state, and existing button behavior. Use AIUI APIs, not browser DOM APIs.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "outlined-action",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "action",
+        "tag": "button",
+        "declarations": {
+          "min-height": "32px",
+          "background-color": "transparent",
+          "border-width": "1px",
+          "border-style": "solid",
+          "border-color": "rgba(64,255,94,0.48)",
+          "border-radius": "4px",
+          "color": "rgba(64,255,94,0.72)",
+          "font-family": "sans-serif",
+          "font-size": "11px",
+          "font-weight": "500",
+          "text-transform": "uppercase"
+        },
+        "text": "Toggle"
+      },
+      {
+        "id": "status-copy",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "status",
+        "tag": "text",
+        "declarations": {
+          "font-family": "sans-serif",
+          "font-size": "14px",
+          "font-weight": "400",
+          "color": "rgba(64,255,94,0.72)"
+        },
+        "binding": "enabled"
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "initial-state",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "enabled": false
+        },
+        "calls": []
+      },
+      {
+        "id": "existing-action",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "enabled": true
+        },
+        "calls": [
+          {
+            "button": "Toggle"
+          }
+        ]
+      },
+      {
+        "id": "toggle-back",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "enabled": false
+        },
+        "calls": [
+          {
+            "button": "Toggle"
+          },
+          {
+            "button": "Toggle"
+          }
+        ]
+      },
+      {
+        "id": "bound-enabled",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "enabled"
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

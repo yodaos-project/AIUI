@@ -25,12 +25,12 @@ import { fileURLToPath } from 'node:url';
 
 /** Absolute path to bench/, derived from this module rather than process.cwd(). */
 export const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const categories = new Set(['create', 'modify', 'fix', 'migrate', 'constraint']);
+const categories = new Set(['create', 'modify', 'fix', 'migrate', 'constraint', 'design']);
 const checks = new Set([
   'file', 'route', 'widget', 'worker', 'permission', 'template',
   'behavior', 'workerBehavior', 'locationBehavior', 'watchBehavior',
   'storageBehavior', 'overlayBehavior', 'voiceBehavior',
-  'manifestField', 'routeOrder', 'widgetLayout', 'noDom',
+  'manifestField', 'routeOrder', 'widgetLayout', 'noDom', 'style',
 ]);
 // Fields used as workspace-relative paths by a check. Presence is type-specific;
 // optional path fields are still validated whenever a task supplies them.
@@ -42,6 +42,7 @@ const pathFields = {
   routeOrder: ['before', 'after'],
   widgetLayout: ['path'],
   template: ['path'],
+  style: ['path'],
   behavior: ['path'],
   workerBehavior: ['path'],
   locationBehavior: ['path'],
@@ -78,6 +79,16 @@ function validateCheck(taskId, check) {
   for (const field of new Set([...(pathFields[check.type] || []), ...optionalPaths])) {
     validateCheckPath(taskId, check, field);
   }
+  if (check.type === 'style' && (
+    !/^[a-zA-Z_][\w-]*$/.test(check.className || '')
+    || !check.declarations || typeof check.declarations !== 'object'
+    || Array.isArray(check.declarations) || !Object.keys(check.declarations).length
+    || Object.entries(check.declarations).some(([property, value]) =>
+      !/^[a-z][a-z-]*$/.test(property) || typeof value !== 'string' || !value.trim())
+    || (check.tag !== undefined && !/^[a-z][\w-]*$/.test(check.tag))
+    || (check.minCount !== undefined && (!Number.isInteger(check.minCount) || check.minCount < 1))
+    || ['text', 'binding'].some(field => check[field] !== undefined && typeof check[field] !== 'string')
+  )) throw new Error(`invalid style check in ${taskId}: ${check.id}`);
 }
 
 /**

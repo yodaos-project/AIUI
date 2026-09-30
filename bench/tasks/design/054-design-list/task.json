@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "id": "054-design-list",
+  "category": "design",
+  "difficulty": "medium",
+  "description": "Remove the filled card treatment from both fixed device rows in pages/index/index.ink. Each .device-row must use transparent background, minimum height 40px, 8px top/bottom padding, 0px left/right padding, 1px solid bottom divider at 24% green, and 0px radius. Their .device-title texts must use 14px/400 sans-serif at 72% green. Keep the bound names Glasses and Phone; Scan must increment scans from 0. Use the local DESIGN.md excerpt of the monochrome-green specification. Keep the supplied class names on their existing content nodes. For deterministic source grading, use flat .class selectors (comma lists are allowed) and explicit longhand properties in the inline <style> block; do not use imports, variables, shorthands, complex selectors, or !important. Preserve the route, bound content, initial state, and existing button behavior. Use AIUI APIs, not browser DOM APIs.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "open-rows",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "device-row",
+        "tag": "view",
+        "declarations": {
+          "background-color": "transparent",
+          "min-height": "40px",
+          "padding-top": "8px",
+          "padding-bottom": "8px",
+          "padding-left": "0px",
+          "padding-right": "0px",
+          "border-bottom-width": "1px",
+          "border-bottom-style": "solid",
+          "border-bottom-color": "rgba(64,255,94,0.24)",
+          "border-radius": "0px"
+        },
+        "minCount": 2
+      },
+      {
+        "id": "first-title",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "first-title",
+        "tag": "text",
+        "binding": "first",
+        "declarations": {
+          "font-family": "sans-serif",
+          "font-size": "14px",
+          "font-weight": "400",
+          "color": "rgba(64,255,94,0.72)"
+        }
+      },
+      {
+        "id": "second-title",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "second-title",
+        "tag": "text",
+        "binding": "second",
+        "declarations": {
+          "font-family": "sans-serif",
+          "font-size": "14px",
+          "font-weight": "400",
+          "color": "rgba(64,255,94,0.72)"
+        }
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "initial-state",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "first": "Glasses",
+          "second": "Phone",
+          "scans": 0
+        },
+        "calls": []
+      },
+      {
+        "id": "existing-action",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "first": "Glasses",
+          "second": "Phone",
+          "scans": 1
+        },
+        "calls": [
+          {
+            "button": "Scan"
+          }
+        ]
+      },
+      {
+        "id": "bound-first",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "first"
+      },
+      {
+        "id": "bound-second",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "second"
+      },
+      {
+        "id": "bound-scans",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "scans"
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

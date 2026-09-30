@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "id": "051-design-canvas",
+  "category": "design",
+  "difficulty": "easy",
+  "description": "Bring the HUD canvas in pages/index/index.ink into conformance: 480x352px border-box, pure-black transparent floor, 16px horizontal and 12px vertical safe insets. Keep the Home title readable at 14px/400 sans-serif and 72% green. Advance must still increment count from 0. Use the local DESIGN.md excerpt of the monochrome-green specification. Keep the supplied class names on their existing content nodes. For deterministic source grading, use flat .class selectors (comma lists are allowed) and explicit longhand properties in the inline <style> block; do not use imports, variables, shorthands, complex selectors, or !important. Preserve the route, bound content, initial state, and existing button behavior. Use AIUI APIs, not browser DOM APIs.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "safe-canvas",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "canvas",
+        "tag": "view",
+        "declarations": {
+          "width": "480px",
+          "height": "352px",
+          "box-sizing": "border-box",
+          "padding-top": "12px",
+          "padding-bottom": "12px",
+          "padding-left": "16px",
+          "padding-right": "16px",
+          "background-color": "#000000"
+        }
+      },
+      {
+        "id": "readable-title",
+        "type": "style",
+        "path": "pages/index/index.ink",
+        "className": "title",
+        "tag": "text",
+        "declarations": {
+          "color": "rgba(64,255,94,0.72)",
+          "font-family": "sans-serif",
+          "font-size": "14px",
+          "font-weight": "400"
+        },
+        "binding": "title"
+      }
+    ],
+    "regression": [
+      {
+        "id": "route",
+        "type": "route",
+        "value": "pages/index/index"
+      },
+      {
+        "id": "initial-state",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Home",
+          "count": 0
+        },
+        "calls": []
+      },
+      {
+        "id": "existing-action",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Home",
+          "count": 1
+        },
+        "calls": [
+          {
+            "button": "Advance"
+          }
+        ]
+      },
+      {
+        "id": "bound-title",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      },
+      {
+        "id": "bound-count",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "count"
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

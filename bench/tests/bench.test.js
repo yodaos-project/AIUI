@@ -15,7 +15,7 @@ async function fixture(id, callback) {
   finally { await rm(base, { recursive: true, force: true }); }
 }
 
-test('all 50 task schemas load', async () => { assert.equal((await tasks()).length, 50); });
+test('all 55 task schemas load', async () => { assert.equal((await tasks()).length, 55); });
 test('initial broken state fails required but preserves regression', async () => fixture('007-fix-state', async (task, workspace) => {
   const result = await grade(task, workspace);
   assert.equal(result.resolved, false);

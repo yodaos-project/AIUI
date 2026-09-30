@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-`bench/` 用于衡量 AI 编码代理创建、修改、修复和迁移 AIUI 项目的能力，也用于回归测试 `aiui-dev` skill。只有 `required`、`regression` 检查全部通过，且 `constraints` 没有违规，任务才算 **resolved**。总体指标为通过任务数除以已评分任务数。
+`bench/` 用于衡量 AI 编码代理创建、修改、修复、迁移 AIUI 项目，以及对齐设计规范的能力，也用于回归测试 `aiui-dev` skill。只有 `required`、`regression` 检查全部通过，且 `constraints` 没有违规，任务才算 **resolved**。总体指标为通过任务数除以已评分任务数。
 
 评分器检查项目源码、manifest 和部分处理函数的行为，不比较固定补丁，也不验证设备渲染。交给模型的公开输入只有任务描述和准备好的工作区；`task.json` 中的评分规则应对模型隐藏。
 
@@ -84,7 +84,7 @@ node bench/scripts/run-all.js \
 
 ### 1. 确定 ID 并创建初始项目
 
-创建 `bench/tasks/<category>/<id>/task.json` 和 `bench/tasks/<category>/<id>/workspace/`。类别为 `create`、`modify`、`fix`、`migrate`、`constraint`；难度为 `easy`、`medium`、`hard`。ID 要在所有类别中唯一，编号放在前面，例如 `051-create-greeting`。目录名、JSON 中的 `id` 和上级类别目录必须一致。
+创建 `bench/tasks/<category>/<id>/task.json` 和 `bench/tasks/<category>/<id>/workspace/`。类别为 `create`、`modify`、`fix`、`migrate`、`constraint`、`design`；难度为 `easy`、`medium`、`hard`。ID 要在所有类别中唯一，编号放在前面，例如 `056-create-greeting`。目录名、JSON 中的 `id` 和上级类别目录必须一致。
 
 `workspace/` 中放最小 AIUI 初始项目，例如 `app.json` 和 `app.js`，但不要提前完成目标任务。不要放符号链接、密钥、评分文件或模型输出。描述应准确写明要实现和保留的行为，只引用 fixture 中真实存在的文件，并避免在运行时没有要求的情况下限定唯一实现方式。
 
@@ -95,7 +95,7 @@ node bench/scripts/run-all.js \
 ```json
 {
   "schemaVersion": 1,
-  "id": "051-create-greeting",
+  "id": "056-create-greeting",
   "category": "create",
   "difficulty": "easy",
   "description": "Create a Page at pages/index/index that displays Hello AIUI from bound data. Use AIUI APIs, not browser DOM APIs.",
@@ -119,10 +119,22 @@ node bench/scripts/run-all.js \
 | 检查类别 | 类型 | 验证内容 |
 | --- | --- | --- |
 | 文件与 manifest | `file`、`route`、`widget`、`worker`、`permission`、`manifestField`、`routeOrder` | 文件、声明、权限、顺序 |
-| 模板与布局 | `template`、`widgetLayout`、`noDom` | 标签、文字、绑定、按钮标签、布局及 DOM 限制 |
+| 模板与布局 | `template`、`widgetLayout`、`style`、`noDom` | 标签、文字、绑定、按钮标签、布局及 DOM 限制 |
 | 处理函数行为 | `behavior`、`workerBehavior`、`locationBehavior`、`watchBehavior`、`storageBehavior`、`overlayBehavior`、`voiceBehavior` | 在确定性 mock 中调用处理函数后的状态 |
 
 `behavior` 可使用 `path`、可选 `calls`（`method` 或可见按钮文字 `button`，以及可选 `arg`）、`expect` 和可选 `minPatches`。多文件 Page 的 `path` 指向 `.js` 逻辑文件；需要按按钮定位时，再用 `templatePath` 指向 `.wxml`。行为模拟器只支持部分 JavaScript/ESM 语法和显式 mock，不执行 TypeScript 或任意模块。特殊检查的字段请参考同类别已有任务。
+
+### 设计任务与样式检查
+
+`design` 用于验证 coding agent 是否能落实 [monochrome-green 设计规范](../design/monochrome/design-system-green.md)。每个初始工作区都包含固定的 `DESIGN.md` 摘录，外部 agent 与推理运行器均可离线读取所需 token。首批 5 个任务覆盖画布与安全边距、文字层级、描边按钮、开放列表行及错误状态的冗余语义。required 检查设计属性，regression 保护数据绑定与按钮行为。
+
+`style` 检查需要 `path`（`.ink` 文件）、`className` 和非空 `declarations` 对象（CSS 属性名到字面量字符串的映射）；可选的正整数 `minCount` 要求匹配节点的最少数量；`tag`、`text`、`binding` 限定承载该 class 的内容节点。例如：
+
+```json
+{ "id": "body-copy", "type": "style", "path": "pages/index/index.ink", "className": "title", "tag": "text", "binding": "title", "declarations": { "font-size": "14px", "color": "rgba(64,255,94,0.72)" } }
+```
+
+检查器读取 `.ink` 内联样式块，要求 class 应用在真实 Page/Widget 模板节点上，且所有同 class 节点都通过。支持简单 `.class` 选择器、逗号列表、按源码顺序覆盖的重复规则/声明、多 class 以及字面量内联长属性；忽略注释和脚本，规范化大小写、空白、短十六进制颜色与透明度小数格式，并检查选中节点上的文字/绑定。任务明确要求这种语法；复杂选择器、at-rule/import、变量、动态样式、`!important` 和常见简写会被拒绝。属性须直接声明；继承、通用简写展开、布局、设备渲染和感知质量不在评分范围内。这是确定性的源码 benchmark，不是完整 CSS 引擎或视觉比对。
 
 ### 3. 补充正反向测试
 
@@ -130,11 +142,11 @@ node bench/scripts/run-all.js \
 
 ```sh
 npm run bench:test
-npm run --silent bench -- inspect 051-create-greeting
-npm run --silent bench -- grade 051-create-greeting
-npm run --silent bench -- prepare 051-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- inspect 056-create-greeting
+npm run --silent bench -- grade 056-create-greeting
+npm run --silent bench -- prepare 056-create-greeting --workspace /tmp/aiui-greeting
 # 在 /tmp/aiui-greeting 写入解法后：
-npm run --silent bench -- grade 051-create-greeting --workspace /tmp/aiui-greeting
+npm run --silent bench -- grade 056-create-greeting --workspace /tmp/aiui-greeting
 ```
 
 第一次 `grade` 应未通过，写入解法后的第二次应通过。确认 `inspect` 和 `prepare` 不泄露评分规则。任务检查应可重复执行，不依赖网络、真实设备、密钥或固定补丁。如果需要新增检查类型，先在 `src/schema.js` 加入校验，在 `src/grader.js` 加入执行逻辑，并补测试。
@@ -148,7 +160,8 @@ npm run --silent bench -- grade 051-create-greeting --workspace /tmp/aiui-greeti
 | fix | `007-fix-state`、`008-fix-event`、`014-fix-worker-open`、`015-fix-widget-lifecycle`、`038-broken-like`、`039-broken-pause`、`040-broken-retry`、`041-broken-clear`、`042-broken-zoom`、`043-broken-select`、`044-broken-skip`、`045-broken-unlock` |
 | migrate | `009-migrate-worker`、`019-migrate-page`、`046-legacy-heart`、`047-legacy-next`、`048-legacy-finish` |
 | constraint | `010-constraint-location`、`011-constraint-no-dom`、`049-no-dom-activate`、`050-no-dom-refresh` |
+| design | `051-design-canvas`、`052-design-typography`、`053-design-button`、`054-design-list`、`055-design-error-state` |
 
-现有 50 个任务覆盖 Page 状态和事件处理、Widget、Worker、定位、存储、Overlay、语音事件、迁移与平台边界。validator 只检查已确认的 manifest/源码关系和 AIUI 规则，不会拒绝所有未知 API、事件或 WXSS 属性。设备权限、渲染、焦点、媒体、传感器和视觉质量需要额外运行时验证。比较多轮结果时，应固定模型、skill 版本和测试框架版本。
+现有 55 个任务覆盖 Page 状态和事件处理、Widget、Worker、定位、存储、Overlay、语音事件、迁移、平台边界及 monochrome-green 设计规范。validator 只检查已确认的 manifest/源码关系和 AIUI 规则，不会拒绝所有未知 API、事件或 WXSS 属性。设备权限、渲染、焦点、媒体、传感器和视觉质量需要额外运行时验证。比较多轮结果时，应固定模型、skill 版本和测试框架版本。
 
 DeepSeek 请求格式和模型 ID 参见 [Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/) 与 [Tool Calls 指南](https://api-docs.deepseek.com/guides/tool_calls/)。
