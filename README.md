@@ -1,129 +1,54 @@
-# AIUI Developer Tools & Skills
+# AIUI
 
-[简体中文](./README.zh-CN.md)
+**Build interactive agents for display-equipped AI glasses.**
 
-This repository provides developer tools, CLIs, and AI agent skills for building applications on **AIUI** (Artificial Intelligence User Interface) — an agentic runtime designed for AI glasses with displays.
+AIUI brings together documentation, a starter project, design guidance, examples, and developer skills for building agents on Rokid Glasses.
 
-Explore the broader AIUI ecosystem through [Awesome AIUI](https://github.com/jsar-project/awesome-aiui), a curated collection of related resources, projects, tools, and examples.
+[简体中文](./README.zh-CN.md) · [Quick start](./documentation/0-guide/quickstart/quickstart.en-US.md) · [Documentation](./documentation/) · [Examples](./samples/) · [Awesome AIUI](https://github.com/jsar-project/awesome-aiui)
 
-## 🚀 Quick Start
-
-### Create a new AIUI Agent
-
-You can quickly scaffold a new AIUI Agent project using our official CLI tool. Run the following command and follow the prompts:
+## Start building
 
 ```bash
 npm create @yodaos-pkg/aiui-agent@latest my-agent
 ```
 
-This will generate a ready-to-use AIUI project template including:
-- `app.js` and `app.json` for global configuration.
-- `AGENTS.md` for agent capability manifestation.
-- A modern Single File Component (SFC) `index.ink` page setup.
+The starter contains `app.js`, `app.json`, `AGENTS.md`, and an Ink page at `pages/index/index.ink`. Follow the [quick start](./documentation/0-guide/quickstart/quickstart.en-US.md) for the Craft, AIUI Studio, and device debugging workflow.
 
-For the complete workflow, including Craft development, uploading to AIUI Studio, and debugging on glasses, see the [`Quick Start guide`](./documentation/0-guide/quickstart/quickstart.en-US.md).
+## Explore
 
-## 🧪 Samples
+| Resource | What it offers |
+| --- | --- |
+| [Documentation](./documentation/) | Guides, components, APIs, tutorials, tools, and release notes in English and Chinese. |
+| [Samples](./samples/) | Runnable UI, device API, games, audio, scanner, and Bluetooth projects. |
+| [Design system](./design/) | Monochrome display guidance and a [green display preview](./design/monochrome/preview-green.html). |
+| [Developer skill](./skills/aiui-dev/SKILL.md) | AI coding guidance for Ink, components, APIs, and project structure. |
+| [Cloud integration](./packages/cloud-integration/) | A Node.js package for third-party agents and Rokid Glasses notifications. |
+| [Coding benchmark](./bench/) | Tasks and a grader for AI agents that create or modify AIUI projects. |
 
-The [`samples/`](./samples/) directory contains runnable example projects that demonstrate AIUI features and provide reference implementations for common UI patterns.
+Start with the [capabilities showcase](./samples/capabilities/), or explore focused [gyroscope](./samples/gyroscope-test/), [device info](./samples/navigator-info/), [scanner](./samples/scanner/), and [text-to-speech](./samples/tts/) examples.
 
-The repository currently provides these samples:
-
-- [`samples/capabilities/`](./samples/capabilities/): A complete capability showcase covering page structure, static assets, helper modules, and feature demos.
-- [`samples/gyroscope-test/`](./samples/gyroscope-test/): A device diagnostic named “Gyroscope Test” that uses `AbsoluteOrientationSensor` to validate pose quaternions, sampling frequency, axis mapping, and recentering error.
-- [`samples/navigator-info/`](./samples/navigator-info/): A single-page “Device Info” agent that reads Navigator to surface runtime versions, locale, capability mounts, and battery status, with UI language (Simplified/Traditional Chinese or English) auto-selected from `navigator.languages` via IETF BCP 47 matching, plus temple long-press and 5-second auto refresh.
-
-The main directories in the [`samples/capabilities/`](./samples/capabilities/) sample are:
-
-- `pages/`: Example pages covering a range of AIUI capabilities and UI patterns.
-- `assets/`: Static resources used by the demos, such as images, SVGs, and audio files.
-- `lib/`: Helper modules shared by sample pages.
-
-Representative demos inside[`samples/capabilities/pages/`](./samples/capabilities/pages/)  include:
-- `layout`, `grid`, `position`: Layout and positioning patterns.
-- `image`, `list`, `input_textarea`: Common UI building blocks.
-- `canvas`, `canvas_api`, `chart`, `lottie`: Rendering and visual content examples.
-- `media_query`, `css_vars`, `filter`, `transform`: Styling and responsive behavior examples.
-
-## 📚 Documentation
-
-The [`documentation/`](./documentation/) directory contains the official AIUI docs in both Chinese and English. It covers onboarding, framework concepts, built-in components, runtime and Web-style APIs, design guidance, developer tools, and release notes.
-
-- `0-guide/`: Getting started, runtime basics, configuration, debugging, performance, and AIUI app structure.
-- `1-framework/`: Framework fundamentals including project structure, config, WXML, and WXSS.
-- `2-components/`: Built-in component references such as `view`, `text`, `image`, `input`, `swiper`, `canvas`, and more.
-- `3-api/`: API references for framework, AI, media, device, network, storage, and compatible Web/Weixin APIs.
-- `4-tutorials/`: Categorized introductory tutorials and their `tutorials.json` catalog.
-- `5-cloud/`: Cloud integration for third-party agents and Rokid Glasses notifications.
-- `6-design/`: Interaction and visual design guidance.
-- `7-tools/`: CLI, Craft, and debugging tool documentation.
-- `8-changelog/`: Latest release notes and change history.
-
-## 🎨 Design System
-
-The [`design/`](./design/) directory holds AIUI's visual design language specs, organized by **display type**:
-
-- [`design/monochrome/`](./design/monochrome/) — specs for **single-color display** hardware. The active [`green`](./design/monochrome/design-system-green.md) variant targets RokidGlasses1 / RokidGlasses2, whose hardware can only reproduce one luminous green channel over pure black. Covers colors (one green across four opacity tiers), typography, spacing, radii, border widths, component chrome, and Do's & Don'ts.
-  - [`design-system-green.md`](./design/monochrome/design-system-green.md) — full token spec.
-  - [`preview-green.html`](./design/monochrome/preview-green.html) — self-contained, browsable visual showcase (no build step).
-- `design/fullcolor/` — **planned**, for full-RGB display hardware. Not yet authored.
-
-> The design system **currently applies only to single-green monochrome display devices**. The `design/` layout keeps the current green spec stable and leaves room for the planned full-color variant.
-
-The same monochrome-green spec is also bundled inside the `aiui-dev` skill (see below), so AI agents generating AIUI code align with these tokens automatically.
-
-## 🤖 AI Agent Skills
-
-We provide built-in instructions and context files to help LLMs (Large Language Models) or AI coding assistants write AIUI code effectively.
-
-### Install via CLI
-
-You can easily install the AIUI developer skill into your project using the `npx skills add` command. This will fetch the necessary context files and make them available to your AI coding assistant:
+## Develop with an AI coding assistant
 
 ```bash
 npx skills add https://github.com/jsar-project/AIUI/tree/main/skills/aiui-dev
 ```
 
-If you want to install a specific released version of the skill instead of the latest `main` branch, replace `main` with the desired tag name:
+The [cloud integration skill](./skills/aiui-cloud-integration/SKILL.md) covers notification workflows; the [cloud APIs skill](./skills/aiui-cloud-apis/SKILL.md) covers cloud API usage.
 
-```bash
-npx skills add https://github.com/jsar-project/AIUI/tree/v0.1.0/skills/aiui-dev
-```
+## Repository map
 
-- **`aiui-dev` Skill**: Located in [`skills/aiui-dev/SKILL.md`](./skills/aiui-dev/SKILL.md), this document contains comprehensive API references, project structure guidelines, and `.ink` SFC specifications. You can feed this file to your AI assistant to grant it the "skill" of developing AIUI applications.
-- **`aiui-cloud-integration` Skill**: Located in [`skills/aiui-cloud-integration/SKILL.md`](./skills/aiui-cloud-integration/SKILL.md), this guide helps integrate third-party agents with Rokid Glasses cloud notifications through the npm package or direct HTTP/`curl` requests.
+| Directory | Purpose |
+| --- | --- |
+| [`documentation/`](./documentation/) | Product and developer documentation |
+| [`samples/`](./samples/) | Runnable example agents |
+| [`design/`](./design/) | Display design guidance |
+| [`packages/create-aiui-agent/`](./packages/create-aiui-agent/) | Project scaffolding CLI |
+| [`packages/cloud-integration/`](./packages/cloud-integration/) | Server-side cloud integration |
+| [`skills/`](./skills/) | AI coding instructions and references |
+| [`bench/`](./bench/) | AIUI coding benchmark |
 
-## Feedback
+## Help and feedback
 
-If you'd like to request a feature or report a bug, please use the GitHub issue templates:
+[Report a bug](https://github.com/jsar-project/AIUI/issues/new?template=bug_report.yml) · [Request a feature](https://github.com/jsar-project/AIUI/issues/new?template=feature_request.yml) · [Explore the ecosystem](https://github.com/jsar-project/awesome-aiui)
 
-- [Feature Request](https://github.com/jsar-project/AIUI/issues/new?template=feature_request.yml)
-- [Bug Report](https://github.com/jsar-project/AIUI/issues/new?template=bug_report.yml)
-
-## Repository Structure
-
-```text
-.
-├── documentation/                  # official AIUI documentation (zh-CN / en-US)
-├── design/
-│   ├── README.md                       # design language index (by display type)
-│   ├── monochrome/                     # single-color display specs
-│   │   ├── README.md                   # monochrome variants (currently green)
-│   │   ├── design-system-green.md      # AIUI monochrome-green token spec
-│   │   └── preview-green.html          # browsable visual showcase (green)
-│   └── fullcolor/                      # planned — full-RGB display specs
-├── packages/
-│   ├── cloud-integration/    # npm client for Rokid Glasses notifications
-│   └── create-aiui-agent/    # npm CLI for scaffolding AIUI agent projects
-├── samples/
-│   ├── capabilities/         # runnable AIUI capabilities app and feature demos
-│   └── gyroscope-test/       # device diagnostic for orientation sensor behavior
-├── skills/
-│   ├── aiui-cloud-integration/ # Rokid Glasses cloud notification integration skill
-│   └── aiui-dev/               # AI Agent skill documentation (SKILL.md)
-└── .github/workflows/        # Automated daily build and publish workflows
-```
-
-## 📄 License
-
-Apache License 2.0
+Licensed under Apache 2.0.
