@@ -2,7 +2,8 @@
   "name": "能力集合",
   "description": "用于体验和验证页面、组件、设备能力及运行时接口的综合示例。",
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/open/index"
   ],
   "widgets": [
     {

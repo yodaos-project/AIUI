@@ -27,7 +27,7 @@ export default {
 
   async onLoad() {
     try {
-      this.api = await createOpenAPI('dev');
+      this.api = await createOpenAPI();
       const firstMethod = findFirstCallableMethod(this.api);
       const capabilityCount = Object.keys(this.api || {}).reduce((count, namespace) => {
         const group = this.api[namespace] || {};
