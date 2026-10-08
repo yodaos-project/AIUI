@@ -8,16 +8,16 @@ The `canvas` component provides a 2D drawing context, similar to the `<canvas>` 
 <canvas id="myCanvas" width="300" height="150"></canvas>
 ```
 
-In your JavaScript:
+After the component has mounted, draw in your JavaScript:
 
 ```javascript
-// Get the canvas instance
-const canvas = this.selectComponent('#myCanvas');
-// Get the 2D drawing context
-const ctx = canvas.getContext('2d');
+// Get the 2D drawing context by element ID (without '#')
+const ctx = wx.createCanvasContext('myCanvas');
 
 ctx.fillStyle = 'red';
 ctx.fillRect(10, 10, 150, 75);
+
+ctx.flush();
 ```
 
 ## Properties
@@ -29,6 +29,6 @@ ctx.fillRect(10, 10, 150, 75);
 
 ## API
 
-The `canvas` component is controlled through the standard Web Canvas API. You can use `canvas.getContext('2d')` to get the drawing context.
+Use `wx.createCanvasContext(canvasId)` to obtain the page canvas's 2D drawing context. Pass the element ID without a `#` prefix; the method returns `null` if no matching canvas is available. Draw using the Canvas 2D API, then call `ctx.flush()` to submit the drawing operations.
 
 For a detailed API list, see the [Canvas API Specification](/AIUI/api/canvas).
