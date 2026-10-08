@@ -1,16 +1,17 @@
 # Canvas
 
-AIUI provides a set of Canvas 2D drawing interfaces that follow Web standards. You can obtain the drawing context through the `getContext('2d')` method of the `canvas` component.
+AIUI provides Canvas 2D drawing interfaces that follow Web standards. For a page `<canvas>`, obtain the drawing context with `wx.createCanvasContext('myCanvas')` after the component has mounted, then call `ctx.flush()` after drawing. Pass the element ID without a `#` prefix.
+
+The page drawing examples below use this component:
+
+```xml
+<canvas id="myCanvas" width="400" height="300"></canvas>
+```
 
 ## Draw Basic Shapes
 
-<!-- aiui-api-style default=web -->
-
-**Web**
-
-```javascript api-style=web
-const canvas = this.selectComponent('#myCanvas');
-const ctx = canvas.getContext('2d');
+```javascript
+const ctx = wx.createCanvasContext('myCanvas');
 
 // 绘制红色矩形
 ctx.fillStyle = 'red';
@@ -28,35 +29,14 @@ ctx.beginPath();
 ctx.ellipse(350, 60, 50, 30, Math.PI / 4, 0, Math.PI * 2);
 ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
 ctx.fill();
+
+ctx.flush();
 ```
-
-**wx**
-
-```javascript api-style=wx
-const ctx = wx.createCanvasContext('myCanvas');
-
-ctx.fillStyle = 'red';
-ctx.fillRect(10, 10, 100, 100);
-
-ctx.beginPath();
-ctx.arc(200, 60, 50, 0, Math.PI * 2);
-ctx.strokeStyle = 'blue';
-ctx.lineWidth = 5;
-ctx.stroke();
-
-ctx.beginPath();
-ctx.ellipse(350, 60, 50, 30, Math.PI / 4, 0, Math.PI * 2);
-ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
-ctx.fill();
-```
-
-<!-- /aiui-api-style -->
 
 ## Use Gradients
 
 ```javascript
-const canvas = this.selectComponent('#myCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = wx.createCanvasContext('myCanvas');
 
 // 创建线性渐变
 const gradient = ctx.createLinearGradient(0, 0, 300, 0);
@@ -66,13 +46,14 @@ gradient.addColorStop(1, 'green');
 
 ctx.fillStyle = gradient;
 ctx.fillRect(10, 150, 300, 50);
+
+ctx.flush();
 ```
 
 ## Draw Text
 
 ```javascript
-const canvas = this.selectComponent('#myCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = wx.createCanvasContext('myCanvas');
 
 ctx.font = '30px sans-serif';
 ctx.textAlign = 'center';
@@ -83,13 +64,14 @@ ctx.fillText('Hello AIUI Canvas', 200, 250);
 
 ctx.strokeStyle = '#40FF5E';
 ctx.strokeText('Hello AIUI Canvas', 200, 250);
+
+ctx.flush();
 ```
 
 ## Image Transformations and Saved State
 
 ```javascript
-const canvas = this.selectComponent('#myCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = wx.createCanvasContext('myCanvas');
 
 ctx.save(); // 保存当前状态
 
@@ -101,21 +83,29 @@ ctx.fillStyle = 'orange';
 ctx.fillRect(-25, -25, 50, 50);
 
 ctx.restore(); // 恢复到平移/旋转/缩放之前的状态
+
+ctx.flush();
 ```
 
 ## Draw a Rounded Path and Test a Point
 
 ```javascript
+const ctx = wx.createCanvasContext('myCanvas');
+
 ctx.beginPath();
 ctx.roundRect(20, 20, 180, 80, 12);
 ctx.fill();
 
 console.log(ctx.isPointInPath(40, 40));
+
+ctx.flush();
 ```
 
 To reuse a path, create a `Path2D` and pass it to `fill()`, `stroke()`, `clip()`, `isPointInPath()`, or `isPointInStroke()`.
 
 ## Export a Canvas Image
+
+Use `new Canvas(width, height)` to create an offscreen canvas and obtain its context with `getContext('2d')`.
 
 ```javascript
 const canvas = new Canvas(320, 200);
@@ -135,6 +125,24 @@ An omitted or unsupported `type` falls back to `image/png`; JPEG composites
 transparent pixels over black, while PNG preserves the alpha channel.
 
 ## API Reference
+
+### Page Canvas
+
+#### `wx.createCanvasContext(canvasId: string)`
+
+Returns the `CanvasRenderingContext2D` of a mounted page `<canvas>`. `canvasId` is the element ID without a `#` prefix. Returns `null` if no matching canvas is available.
+
+### Submit Page Drawing
+
+#### `ctx.flush()`
+
+Submits pending drawing operations. Call it after a batch of drawing operations on a context obtained through `wx.createCanvasContext()`:
+
+```javascript
+const ctx = wx.createCanvasContext('myCanvas');
+ctx.fillRect(10, 10, 100, 50);
+ctx.flush();
+```
 
 ### Interface Description
 

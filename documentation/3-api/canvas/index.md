@@ -1,16 +1,17 @@
 # 画布 (Canvas)
 
-AIUI 提供了一套遵循 Web 标准的 Canvas 2D 绘图接口。你可以通过 `canvas` 组件的 `getContext('2d')` 方法获取绘图上下文。
+AIUI 提供了一套遵循 Web 标准的 Canvas 2D 绘图接口。绘制页面中的 `<canvas>` 时，在组件挂载后通过 `wx.createCanvasContext('myCanvas')` 获取绘图上下文，绘制后调用 `ctx.flush()` 提交。参数是元素 ID，不带 `#` 前缀。
+
+下方页面绘图示例使用以下组件：
+
+```xml
+<canvas id="myCanvas" width="400" height="300"></canvas>
+```
 
 ## 绘制基本图形
 
-<!-- aiui-api-style default=web -->
-
-**Web**
-
-```javascript api-style=web
-const canvas = this.selectComponent('#myCanvas');
-const ctx = canvas.getContext('2d');
+```javascript
+const ctx = wx.createCanvasContext('myCanvas');
 
 // 绘制红色矩形
 ctx.fillStyle = 'red';
@@ -28,35 +29,14 @@ ctx.beginPath();
 ctx.ellipse(350, 60, 50, 30, Math.PI / 4, 0, Math.PI * 2);
 ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
 ctx.fill();
+
+ctx.flush();
 ```
-
-**wx**
-
-```javascript api-style=wx
-const ctx = wx.createCanvasContext('myCanvas');
-
-ctx.fillStyle = 'red';
-ctx.fillRect(10, 10, 100, 100);
-
-ctx.beginPath();
-ctx.arc(200, 60, 50, 0, Math.PI * 2);
-ctx.strokeStyle = 'blue';
-ctx.lineWidth = 5;
-ctx.stroke();
-
-ctx.beginPath();
-ctx.ellipse(350, 60, 50, 30, Math.PI / 4, 0, Math.PI * 2);
-ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
-ctx.fill();
-```
-
-<!-- /aiui-api-style -->
 
 ## 使用渐变
 
 ```javascript
-const canvas = this.selectComponent('#myCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = wx.createCanvasContext('myCanvas');
 
 // 创建线性渐变
 const gradient = ctx.createLinearGradient(0, 0, 300, 0);
@@ -66,13 +46,14 @@ gradient.addColorStop(1, 'green');
 
 ctx.fillStyle = gradient;
 ctx.fillRect(10, 150, 300, 50);
+
+ctx.flush();
 ```
 
 ## 绘制文本
 
 ```javascript
-const canvas = this.selectComponent('#myCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = wx.createCanvasContext('myCanvas');
 
 ctx.font = '30px sans-serif';
 ctx.textAlign = 'center';
@@ -83,13 +64,14 @@ ctx.fillText('Hello AIUI Canvas', 200, 250);
 
 ctx.strokeStyle = '#40FF5E';
 ctx.strokeText('Hello AIUI Canvas', 200, 250);
+
+ctx.flush();
 ```
 
 ## 图像变换与保存状态
 
 ```javascript
-const canvas = this.selectComponent('#myCanvas');
-const ctx = canvas.getContext('2d');
+const ctx = wx.createCanvasContext('myCanvas');
 
 ctx.save(); // 保存当前状态
 
@@ -101,21 +83,29 @@ ctx.fillStyle = 'orange';
 ctx.fillRect(-25, -25, 50, 50);
 
 ctx.restore(); // 恢复到平移/旋转/缩放之前的状态
+
+ctx.flush();
 ```
 
 ## 绘制圆角路径并检查位置
 
 ```javascript
+const ctx = wx.createCanvasContext('myCanvas');
+
 ctx.beginPath();
 ctx.roundRect(20, 20, 180, 80, 12);
 ctx.fill();
 
 console.log(ctx.isPointInPath(40, 40));
+
+ctx.flush();
 ```
 
 需要复用路径时，可以创建 `Path2D`，再传给 `fill()`、`stroke()`、`clip()`、`isPointInPath()` 或 `isPointInStroke()`。
 
 ## 导出 Canvas 图像
+
+使用 `new Canvas(width, height)` 创建离屏画布，再通过 `getContext('2d')` 获取上下文。
 
 ```javascript
 const canvas = new Canvas(320, 200);
@@ -135,6 +125,24 @@ console.log(blob.type, blob.size);
 alpha 通道。
 
 ## API Reference
+
+### 页面画布
+
+#### `wx.createCanvasContext(canvasId: string)`
+
+返回已挂载的页面 `<canvas>` 的 `CanvasRenderingContext2D`。`canvasId` 是元素 ID，不带 `#` 前缀。找不到对应画布时返回 `null`。
+
+### 提交页面绘图
+
+#### `ctx.flush()`
+
+提交待处理的绘制操作。通过 `wx.createCanvasContext()` 获取上下文后，在一批绘制操作结束时调用：
+
+```javascript
+const ctx = wx.createCanvasContext('myCanvas');
+ctx.fillRect(10, 10, 100, 50);
+ctx.flush();
+```
 
 ### 接口说明
 
