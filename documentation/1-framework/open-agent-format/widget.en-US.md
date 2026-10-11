@@ -170,7 +170,7 @@ Widgets provide four optional callbacks:
 
 | Callback | Typical use |
 | :--- | :--- |
-| `onCreate()` | Initialize Widget data and resources that are created once |
+| `onCreate(options)` | Initialize Widget data and resources that are created once |
 | `onAttach()` | Refresh data about to be shown and resume visible work |
 | `onDetach()` | Pause work that is only needed while the Widget is shown |
 | `onDestroy()` | Cancel requests, remove listeners, and release resources |
@@ -201,7 +201,7 @@ export default {
 ## Widget and Page Differences
 
 - Widgets do not enter the Page navigation stack.
-- Widgets use `onCreate()`, `onAttach()`, `onDetach()`, and `onDestroy()` instead of the Page callbacks `onLoad()`, `onShow()`, `onReady()`, `onHide()`, and `onUnload()`.
+- Widgets use `onCreate(options)`, `onAttach()`, `onDetach()`, and `onDestroy()` instead of the Page callbacks `onLoad()`, `onShow()`, `onReady()`, `onHide()`, and `onUnload()`.
 - Widgets do not provide Page-only features such as `enableWorldAwareness()` and `finish()`.
 - Widgets can use data binding, custom components, event handlers, images, and Canvas.
 - `family` describes the Widget size category; layouts should still adapt to the available width and height.
@@ -212,3 +212,7 @@ export default {
 - [app.json](/AIUI/framework/open-agent-format-app-json): configure application entries
 - [Components](/AIUI/framework/open-agent-format-custom-components): reuse interface components in a Widget
 - [Canvas](/AIUI/api/canvas): draw graphics in a Widget
+
+## URL query parameters
+
+`window.open('widgets/weather/index?city=hangzhou', '_widget')` passes query parameters to `onCreate(options)`. For example, initialize the city from `options.city`. Values are strings; absent parameters produce `{}`. See [Widget API](/AIUI/api/framework-widget) for the complete example.

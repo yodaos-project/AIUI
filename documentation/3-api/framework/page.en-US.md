@@ -178,9 +178,9 @@ The Page lifecycle describes how one page is created, shown, initially rendered,
 
 | Callback | Description | Trigger Timing |
 | :--- | :--- | :--- |
-| `onLoad` | Listens for page loading | Triggered when the page loads, only once globally |
+| `onLoad` | Listens for page loading | Triggered when the page loads, once per page instance |
 | `onShow` | Listens for the page being shown | Triggered when the page is shown or brought to the foreground |
-| `onReady` | Listens for the initial page render to complete | Triggered when the initial render completes, only once globally |
+| `onReady` | Listens for the initial page render to complete | Triggered when the initial render completes, once per page instance |
 | `onHide` | Listens for the page being hidden | Triggered when the page is hidden or moved to the background |
 | `onUnload` | Listens for page unload | Triggered when the page is unloaded. The runtime automatically disables world awareness before this stage finishes. |
 
@@ -194,7 +194,7 @@ Runs when the page is first shown and whenever it returns to the foreground. Ret
 
 #### `onReady()`
 
-Runs once after the page completes its initial render. Use it for work that depends on the initial view being available. Later updates made with `setData()` do not trigger `onReady()` again.
+Runs once after the first frame containing the initial view is actually presented, rather than after parsing or layout alone. Returning to an existing page or updating it with `setData()` does not repeat it. Instances unloaded before presentation do not receive a late callback.
 
 #### `onHide()`
 
@@ -245,3 +245,7 @@ Runs after `enableWorldAwareness()` when the page's orientation stability change
 #### `onMessage(MessageEvent event)`
 
 Runs when the host sends a message to the current page. `event.data` can contain either a parsed one-shot value or an object used to consume a streamed message. Page-level delivery stops after the page unloads.
+
+#### `onNetworkStatus(event)`
+
+Runs when network status changes. `event.online` is a boolean; `event.status` is `'online'` or `'offline'`. Read connection type and quality from [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator). Online status does not guarantee request success.

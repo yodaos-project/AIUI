@@ -43,6 +43,8 @@ sensor.start();
 - **[绝对方向传感器](/AIUI/api/device-absolute-orientation-sensor)**：查看如何获取空间姿态。
 - **[陀螺仪](/AIUI/api/device-gyroscope)**：查看如何获取旋转速度。
 
+首次有效读数到来前，读数与 `timestamp` 为 `null`，不能当作 `0`。在 `reading` 回调中读取，并检查 `hasReading`；`stop()` 不保证清空已有读数，判断当前是否采样应使用 `activated`。
+
 ## API Reference
 
 ### 入口

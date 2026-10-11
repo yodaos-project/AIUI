@@ -333,6 +333,8 @@ await writer.close();
 - **[大语言模型](/AIUI/api/ai-language-model)**：查看如何把识别文本继续交给模型处理。
 - **[媒体采集](/AIUI/api/media-media-capture)**：查看麦克风、相机和 `MediaRecorder` 的完整用法。
 
+当前不再要求独立的 `SPEECH_RECOGNITION` 权限。识别流程采集麦克风时，仍须声明 `RECORD_AUDIO` 并获得平台麦克风授权；外部音频会话本身不打开麦克风。
+
 ## API Reference
 
 ### `SpeechRecognition`

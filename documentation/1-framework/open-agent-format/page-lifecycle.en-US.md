@@ -6,15 +6,17 @@ The lifecycle of an AIUI page follows a fixed calling order. When a page is open
 
 | Callback | Description | Trigger Timing |
 | :--- | :--- | :--- |
-| `onLoad` | Listens for page load | Triggered when the page loads, once globally |
+| `onLoad` | Listens for page load | Triggered when the page loads, once per page instance |
 | `onShow` | Listens for page display | Triggered when the page is displayed or brought to the foreground |
-| `onReady` | Listens for the first render completion of the page | Triggered when the first render of the page is complete, once globally |
+| `onReady` | Listens for the first render completion of the page | After the first frame containing the initial view is presented, once per page instance |
 | `onHide` | Listens for the page being hidden | Triggered when the page is hidden or moved to the background |
 | `onUnload` | Listens for page unload | Triggered when the page is unloaded |
 
 ## Lifecycle Demo
 
 <page-lifecycle-demo></page-lifecycle-demo>
+
+Sequence: creation `onLoad` → display `onShow` → first-frame presentation `onReady`; later `onHide` / `onShow` cycles end with `onUnload`.
 
 ## Callback Details
 
@@ -28,7 +30,7 @@ Triggered when the page is displayed or brought to the foreground.
 
 ### onReady()
 
-Triggered when the page completes its first render. A page is only called once, which means the page is ready and can interact with the view layer.
+Runs once per instance after the first frame containing the initial view is actually presented. Template parsing or completed layout alone does not trigger `onReady`. Returning to an existing page and later `setData()` calls do not repeat it. Instances unloaded before presentation do not receive a late callback.
 
 ### onHide()
 

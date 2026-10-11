@@ -244,3 +244,9 @@ export default {
 - [Page Overview](/AIUI/framework/open-agent-format-page)
 - [Page Definition](/AIUI/framework/open-agent-format-page-definition)
 - [Lifecycle](/AIUI/framework/open-agent-format-page-lifecycle)
+
+## Animation events
+
+`bindanimationstart`, `bindanimationiteration`, `bindanimationend`, and `bindanimationcancel` receive an `AnimationEvent`. Fields are `animationName`, `elapsedTime` in seconds, and `pseudoElement`; `detail` mirrors them. Events bubble to the Page / Widget; use `catch` or `stopPropagation()` to stop propagation.
+
+Animation callbacks can call `setData()` synchronously. Removing a node or closing an entry cancels active animations before unload / destruction callbacks. See [Animations and transforms](/AIUI/framework/wxss-animation) for complete examples.

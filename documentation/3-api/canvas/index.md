@@ -124,6 +124,23 @@ console.log(blob.type, blob.size);
 `type` 会回落为 `image/png`；JPEG 会把透明像素合成到黑色背景，PNG 会保留
 alpha 通道。
 
+## 测量文字与设置圆角
+
+```javascript
+const canvas = new Canvas(240, 120);
+const ctx = canvas.getContext('2d');
+ctx.font = '20px sans-serif';
+const metrics = ctx.measureText('你好 AIUI');
+console.log(metrics.width, metrics.actualBoundingBoxAscent, metrics.actualBoundingBoxDescent);
+ctx.beginPath();
+ctx.roundRect(10, 10, 200, 80, [{ x: 16, y: 8 }, 4]);
+ctx.stroke();
+```
+
+`measureText()` 的指标与文字布局相对应，包含边界与基线信息。圆角可使用数字、`{ x, y }` 椭圆半径或包含 1–4 项的可迭代对象。`roundRect()` 只加入路径，仍需 `fill()` / `stroke()`。
+
+已调用 `close()` 的 `ImageBitmap` 不能继续传给 `drawImage()`，会抛出 `InvalidStateError`。
+
 ## API Reference
 
 ### 页面画布
@@ -258,3 +275,17 @@ ctx.flush();
 #### Path2D
 
 `new Path2D(path?)` 可以创建空路径、复制现有路径或解析 SVG path 字符串。支持常用路径方法和 `addPath(path, transform?)`。
+
+### `CanvasRenderingContext2D`
+
+#### `ctx.measureText(text)`
+
+返回 `TextMetrics`，包含 `width`、实际文字边界、字体边界、em 高度与基线指标。指标受当前字体、对齐与文字方向影响。
+
+#### `ctx.roundRect(x, y, width, height, radii?)`
+
+加入圆角矩形路径，默认半径为 `0`。半径可为数字、`{ x, y }` 或 1–4 项可迭代对象；负半径、空集合或超过四项抛出 `RangeError`。`Path2D.roundRect()` 使用相同规则。
+
+#### `ctx.drawImage(image, ...args)`
+
+绘制图像，支持 3、5、9 参数形式。已关闭的 `ImageBitmap` 抛出 `InvalidStateError`，应重新创建图像后再绘制。

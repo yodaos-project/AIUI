@@ -55,3 +55,5 @@ wx.request({
 - **[数据流](/AIUI/api/network-streams)**：了解如何分段读取、写入和转换数据。
 - **[设备](/AIUI/api/device)**：查看蓝牙连接和设备传感器能力，包括加速度、姿态和陀螺仪等接口。
 - **[微信小程序兼容 API](/AIUI/api/weixin-compatible-apis)**：查看 `wx.request`、`wx.connectSocket`、`wx.createEventSource` 等兼容接口。
+
+- **[WebRTC](/AIUI/api/media-webrtc)**：实时音频与数据通道，依赖设备联网；应用自行完成信令交换。

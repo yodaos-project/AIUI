@@ -35,9 +35,34 @@ console.log('storage root:', root.name);
 - `navigator.language`、`navigator.languages` 与 `navigator.region` 都来自宿主环境，不同平台的具体值格式可能不同。
 - `navigator.bluetooth`、`navigator.geolocation`、`navigator.mediaDevices`、`navigator.storage` 与电池状态都依赖设备能力和 Agent 权限。
 
+## 观察网络连接
+
+```javascript
+function updateNetworkState() {
+  const connection = navigator.connection;
+  console.log(navigator.onLine, connection.type, connection.effectiveType);
+}
+updateNetworkState();
+navigator.connection.addEventListener('change', updateNetworkState);
+```
+
+`onLine` 表示当前在线状态，`connection` 提供连接类型与质量元数据。在线状态不保证某个地址可达，也不保证设备能建立 WebRTC 连接；请求和连接仍需处理错误。质量未知时应回退到应用自己的超时与重试策略。
+
+网络请求通过蓝牙链路转发时，连接类型可以为 `'bluetooth'`。WebRTC 需要设备联网，详见 [WebRTC](/AIUI/api/media-webrtc)。
+
 ## API Reference
 
 ### 属性
+
+#### `navigator.onLine`
+
+只读的 `boolean`，表示当前运行环境的在线状态。
+
+#### `navigator.connection`
+
+持久化的 `NetworkInformation` / `EventTarget` 对象，反复读取返回同一对象。
+
+
 
 #### `navigator.userAgent`
 
@@ -171,3 +196,29 @@ console.log('SN:', serialNumber);
 - **返回值**：`Promise<BatteryManager>`。
 - **说明**：异步获取宿主电池管理器，用于读取电量、充电状态和预计剩余时长，并监听变化。宿主未注册电池能力时 Promise 会拒绝；完整行为见 [BatteryManager](/AIUI/api/device-battery-manager)。
 - **相关文档**：[BatteryManager](/AIUI/api/device-battery-manager)。
+
+### `NetworkInformation`
+
+#### `connection.type`
+
+类型: `string`. 连接类型：`none`、`wifi`、`ethernet`、`cellular`、`bluetooth`、`other`、`unknown`。
+
+#### `connection.effectiveType`
+
+类型: `string`. 有效连接质量：`slow-2g`、`2g`、`3g`、`4g` 或 `unknown`，不是蜂窝制式标识。
+
+#### `connection.downlink`
+
+类型: `number`. 估算下行速率，单位 Mbps，未知时为 `0`；不应用于精确测速。
+
+#### `connection.rtt`
+
+类型: `number`. 估算往返时延，单位毫秒，未知时为 `0`；不是对当前请求的实时测量。
+
+#### `connection.saveData`
+
+类型: `boolean`. 是否启用节省流量偏好，默认 `false`。
+
+#### `change`
+
+类型: `Event`. 连接状态更新时触发。使用 `addEventListener('change', listener)` 监听，并在结束时移除监听。

@@ -104,3 +104,7 @@ App 从前台进入后台时调用。适合暂停仅在前台运行的任务、�
 #### `onVoiceWakeup(VoiceWakeupEvent event)`
 
 宿主检测到语音唤醒后调用。`event.keyword` 表示命中的唤醒词。该事件同样先经过当前 Page 或 Widget，适合在 App 中实现跨页面共享的语音唤醒处理。
+
+#### `onNetworkStatus(event)`
+
+连接状态变化时调用。`event.online` 为布尔值，`event.status` 为 `'online'` 或 `'offline'`。详细网络类型与质量从 [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator) 读取；在线状态不是请求成功的保证。

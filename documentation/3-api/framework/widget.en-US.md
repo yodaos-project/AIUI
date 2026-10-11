@@ -71,24 +71,58 @@ export default {
 
 For declaration, file structure, and a complete example, see [Widget Development](/AIUI/framework/open-agent-format-widget). To open a declared Widget from current content, see `window.open()` in [Routing](/AIUI/api/route).
 
+## Read opening parameters
+
+Query parameters from `window.open('widgets/weather/index?city=hangzhou', '_widget')` are passed to `onCreate(options)`:
+
+```javascript
+export default {
+  data: { city: '' },
+  onCreate(options) {
+    this.setData({ city: options.city ?? 'hangzhou' });
+  },
+};
+```
+
+Values are strings; no query parameters produces an empty object. The path must match a Widget declared in `app.json`.
+
 ## API Reference
 
-### Instance Properties
+### `Widget`
 
-| Property | Type | Description |
-| :--- | :--- | :--- |
-| `data` | `object` | Current Widget data; defaults to `{}` when omitted |
-| `widgetId` | `string` | Stable identifier for the current Widget instance |
-| `family` | `'1x1' \| '1x2'` | Size category declared in `app.json` and the `.ink` file |
-| `target` | `'_widget'` | Presentation target used by Widgets |
-| `isAttached` | `boolean` | Whether the Widget is currently shown |
-| `interactive` | `boolean` | Whether user input is currently allowed |
-| `hostWidth` | `number` | Available width in logical pixels |
-| `hostHeight` | `number` | Available height in logical pixels |
+#### `widget.data`
 
-All properties except `data` are read-only.
+`object` — Current Widget data; defaults to `{}` when omitted.
 
-### `setData(patch, callback?)`
+#### `widget.widgetId`
+
+`string` — Stable identifier for the current Widget instance. Read-only except for `data`.
+
+#### `widget.family`
+
+`'1x1' | '1x2'` — Size category declared in `app.json` and the `.ink` file. Read-only except for `data`.
+
+#### `widget.target`
+
+`'_widget'` — Presentation target used by Widgets. Read-only except for `data`.
+
+#### `widget.isAttached`
+
+`boolean` — Whether the Widget is currently shown. Read-only except for `data`.
+
+#### `widget.interactive`
+
+`boolean` — Whether user input is currently allowed. Read-only except for `data`.
+
+#### `widget.hostWidth`
+
+`number` — Available width in logical pixels. Read-only except for `data`.
+
+#### `widget.hostHeight`
+
+`number` — Available height in logical pixels. Read-only except for `data`.
+
+#### `widget.setData(patch, callback?)`
 
 Updates Widget data and refreshes affected interface content.
 
@@ -99,11 +133,18 @@ Updates Widget data and refreshes affected interface content.
 
 Returns `undefined`. An error is thrown when `patch` is not an object.
 
-### State Callbacks
+#### `onCreate(options)`
 
-| Callback | When it runs |
-| :--- | :--- |
-| `onCreate()` | Once after the Widget is created and its initial state is ready |
-| `onAttach()` | When the Widget is shown or shown again |
-| `onDetach()` | When the Widget is hidden or is about to be destroyed |
-| `onDestroy()` | Once during final Widget destruction |
+Runs once after the Widget instance is created. `options` contains URL query parameters as strings, or `{}` when absent.
+
+#### `onAttach()`
+
+Runs when the Widget is shown or shown again.
+
+#### `onDetach()`
+
+Runs when the Widget is hidden or is about to be destroyed.
+
+#### `onDestroy()`
+
+Runs once at final destruction; release resources here.

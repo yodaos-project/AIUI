@@ -1,3 +1,83 @@
+# v0.19.0
+
+AIUI 0.19.0 adds WebRTC audio and data communication and network state awareness, while expanding streaming data processing, cryptography, drawing, styles, and animation. It also improves data updates, resource loading, and memory use on complex pages, and fixes navigation, lifecycle, template, and core API behavior.
+
+## Development Capabilities
+
+- **Widget Open Parameters**: URL query parameters supplied when opening a Widget with `window.open()` now reach `onCreate(options)`, so a Widget can display a specific city, record, or task.
+- **Clearer Component Loading**: Missing components now report path errors directly instead of misleading default-export errors. Resource loading is unified, and nested component path resolution is more consistent. Directory entry references should explicitly include `index`.
+
+## APIs, Networking, and Speech
+
+- **WebRTC Audio and Data Communication**: Added `RTCPeerConnection` and `RTCDataChannel` for audio, text, and binary data between Android, desktop, and Web environments that support WebRTC, with STUN and TURN support. This capability requires device network connectivity, and applications provide their own signaling. It supports audio tracks only and is unavailable in Agent Workers.
+- **More Complete Streams**: Added `tee()`, BYOB byte stream readers, `ReadableStream.from()`, and asynchronous iteration. Improved backpressure, cancellation, and error propagation in `pipeTo()` and `pipeThrough()` for processing response streams.
+- **Streaming Text Encoding**: Added `TextEncoderStream` and `TextDecoderStream` for continuous encoding and decoding across chunks. `TextEncoder.encodeInto()` writes into a supplied buffer and reports how much input it read and how many bytes it wrote.
+
+  ```js
+  const response = await fetch('/api/answer');
+  const textStream = response.body.pipeThrough(new TextDecoderStream());
+  for await (const text of textStream) {
+    console.log(text);
+  }
+  ```
+
+- **Expanded Web Crypto**: Added SHA digests and HMAC key generation, import, export, signing, and verification, with more complete `CryptoKey` metadata, binary view handling, and errors.
+- **Network Changes**: Added `navigator.onLine`, `navigator.connection`, and `online`, `offline`, and connection `change` events so applications can read connectivity state and update interfaces or retry requests when it changes.
+- **Speech Synthesis Option Fixes**: Fixed default constructor options for `SpeechSynthesisUtterance`.
+- **More Accurate Capability Queries**: `wx.canIUse()` checks functions registered by the runtime, including function paths such as `request`. Unknown paths, parameter options, and functions added by application code return `false`. A positive result does not guarantee device availability or permission.
+
+## Media and Drawing
+
+- **Audio Playback and Subtitle Fixes**: Fixed assignments to `currentTime` not updating actual playback and preserved subtitle cue object identity.
+- **Export Canvas and Bitmaps**: Added `Canvas.convertToBlob()` and `createImageBlob()` to encode drawings or bitmaps as PNG or JPEG for uploading, sharing, or saving images.
+
+  ```js
+  const canvas = new Canvas(160, 80);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#2f80ed';
+  ctx.fillRect(0, 0, 160, 80);
+
+  const image = await canvas.convertToBlob({
+    type: 'image/jpeg',
+    quality: 0.9,
+  });
+  console.log(image.type, image.size);
+  ```
+
+- **More Consistent Canvas Drawing**: Improved complex text measurement and drawing, and fixed `roundRect()` radii on the Web. Drawing a closed `ImageBitmap` now reports an error.
+
+## Interfaces and Animation
+
+- **Expanded Layout and Styles**: Added `text-overflow: ellipsis` and `calc()` support in sizing and spacing, and fixed `!important` priority and independent border edge rendering.
+- **Concurrent Animations and Lifecycle Events**: Elements can run multiple CSS animations at once and receive `animationstart`, `animationiteration`, `animationend`, and `animationcancel` events. Unrelated style changes preserve playback progress, with more accurate replacement, delay, and style restoration after animations finish.
+- **Text-Triggered Particles**: Text changes can trigger retained particle animations, with expanded 2D `transform` and `transform-origin` behavior.
+- **CSS Random Values (Experimental)**: Added `random()` with bounds, an optional step, and named keys for values such as size, opacity, and animation duration. Within an element, calls with the same key, range, and step can share a result. Random bases remain stable during style recalculation; each triggered animation replay has its own context, so new instances do not change existing ones. The current subset supports numbers, lengths, percentages, and times, without sharing keys across elements.
+
+  ```css
+  .particle {
+    width: random(--size, 2px, 5px, 1px);
+    height: random(--size, 2px, 5px, 1px);
+    opacity: random(0.6, 1);
+    animation-duration: random(800ms, 1200ms, 100ms);
+  }
+  ```
+
+- **Component Display and Input Fixes**: Fixed image and Lottie attribute resolution in projected content and vertical bar chart value labels. Text control input events expose the complete value through `event.detail.value`.
+
+## Performance and Stability
+
+- **Faster Updates and Loading**: Cached parsed single-file components, component definitions, and scope data. Optimized selector matching, data binding, and partial recomposition to reduce repeated work on large pages and continuously updated text.
+- **Lower Animation and Drawing Memory Costs**: Reused rendering and animation buffers, reduced per-frame allocations in images, Lottie, maps, and charts, and bounded Canvas command, path, and text cache storage.
+- **More Reliable Templates and Callbacks**: Fixed array `length` bindings, loop scopes, conditional branches, `hidden` bindings, and queries for loop instances. Fixed `setData()` callback re-entry and stack overflows from messages containing circular references.
+- **Networking and Core API Fixes**: Fixed TLS selection from URI schemes, empty compressed response bodies, empty IDs in streamed tool calls, timer delay conversion, and `localStorage` string coercion. Improved `null` results for unread sensor properties, GPX root validation, and barcode format name recognition.
+
+## Compatibility Notes
+
+- **Ready Runs After the First Frame**: Page `onReady()` and component ready callbacks run after their respective first frame is presented. Returning to an existing page does not fire ready again.
+- **Navigation Callbacks Reflect Actual Outcomes**: `wx` router APIs call `success` after loading a page successfully, or `fail` when a target is missing, loading fails, or no previous page exists, followed by `complete`. `wx.exitMiniProgram()` accepts omitted options.
+- **Recording Format Checks**: Call `MediaRecorder.isTypeSupported()` as a static method instead of through a recorder instance.
+- **Speech Recognition Permission Changes**: Removed the separate `SPEECH_RECOGNITION` permission. Microphone capture still requires declaring `RECORD_AUDIO` in `app.json` and obtaining platform authorization.
+
 # v0.18.0
 
 AIUI 0.18.0 lets you build Widgets and background tasks, and adds more familiar Web APIs together with richer audio, speech, animation, scrolling, and drawing capabilities. Apps also stay smoother and more stable on complex pages and during long-running sessions.

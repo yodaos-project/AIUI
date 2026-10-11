@@ -412,7 +412,7 @@
           {
             "id": "pseudo-element",
             "label": "伪元素",
-            "status": "unsupported"
+            "status": "partial"
           },
           {
             "id": "property",
@@ -430,6 +430,10 @@
             "id": "at-rule",
             "label": "@规则",
             "status": "partial"
+          },
+          {
+            "id": "animation",
+            "label": "动画与变换"
           }
         ],
         "hasIndex": true
@@ -787,6 +791,12 @@
             "label": "媒体采集",
             "docId": "media-media-capture",
             "docPath": "3-api/media/media-capture.md"
+          },
+          {
+            "id": "webrtc",
+            "label": "WebRTC",
+            "docId": "media-webrtc",
+            "docPath": "3-api/media/webrtc.md"
           }
         ]
       },

@@ -198,3 +198,7 @@ export default {
 The final composed object is `{a: 5, b: 3, c: 4}`.
 
 *Note: if there are spaces between the curly braces and the quotation marks, the result will be parsed as a string.*
+
+## Continue updating in a callback
+
+A `setData(patch, callback)` callback can call `setData()` again. Query current nodes in the callback when your work depends on the update. Patch only changed fields to reduce binding and layout work.

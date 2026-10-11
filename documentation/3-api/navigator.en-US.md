@@ -35,9 +35,34 @@ console.log('storage root:', root.name);
 - `navigator.language`, `navigator.languages`, and `navigator.region` are all derived from the host environment, so their exact values may vary across platforms.
 - `navigator.bluetooth`, `navigator.geolocation`, `navigator.mediaDevices`, `navigator.storage`, and battery status depend on device capabilities and Agent permissions.
 
+## Observe network connectivity
+
+```javascript
+function updateNetworkState() {
+  const connection = navigator.connection;
+  console.log(navigator.onLine, connection.type, connection.effectiveType);
+}
+updateNetworkState();
+navigator.connection.addEventListener('change', updateNetworkState);
+```
+
+`onLine` reports current online status; `connection` provides connection type and quality metadata. Being online does not guarantee that a particular address is reachable or that the device can establish WebRTC. Handle request and connection errors, and use application timeout / retry policies when quality is unknown.
+
+Requests forwarded through a Bluetooth link can report type `'bluetooth'`. WebRTC requires device network connectivity; see [WebRTC](/AIUI/api/media-webrtc).
+
 ## API Reference
 
 ### Properties
+
+#### `navigator.onLine`
+
+Read-only `boolean` reporting current online status.
+
+#### `navigator.connection`
+
+Persistent `NetworkInformation` / `EventTarget` object; repeated access returns the same object.
+
+
 
 #### `navigator.userAgent`
 
@@ -170,3 +195,29 @@ console.log('SN:', serialNumber);
 
 - **Returns**: `Promise<BatteryManager>`.
 - **Description**: Asynchronously resolves a host-backed battery manager for reading battery level, charging state, and estimated remaining time, and for observing changes. The Promise rejects when the host registers no battery capability. See [BatteryManager](/AIUI/api/device-battery-manager).
+
+### `NetworkInformation`
+
+#### `connection.type`
+
+Type: `string`. Connection type: `none`, `wifi`, `ethernet`, `cellular`, `bluetooth`, `other`, or `unknown`.
+
+#### `connection.effectiveType`
+
+Type: `string`. Effective quality: `slow-2g`, `2g`, `3g`, `4g`, or `unknown`; it is not a cellular-generation identifier.
+
+#### `connection.downlink`
+
+Type: `number`. Estimated downlink in Mbps; `0` when unknown. Do not use it for precise speed measurements.
+
+#### `connection.rtt`
+
+Type: `number`. Estimated round-trip time in milliseconds; `0` when unknown. It is not a live measurement of the current request.
+
+#### `connection.saveData`
+
+Type: `boolean`. Whether data-saving preference is enabled; defaults to `false`.
+
+#### `change`
+
+Type: `Event`. Fires when connection state updates. Listen with `addEventListener('change', listener)` and remove listeners when finished.

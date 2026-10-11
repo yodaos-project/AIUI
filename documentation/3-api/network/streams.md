@@ -68,27 +68,180 @@ await writer.close();
 
 连续写入时应等待 `write()` 返回的 Promise，避免写入速度超过目标的处理速度。
 
-## 当前限制
+## 从可迭代数据创建流
 
-- `ReadableStream.tee()` 当前不支持，调用时会抛出异常。
-- 使用 reader 或 writer 后，应在不再需要时调用 `releaseLock()`。
-- `pipeTo()` 支持 `preventClose`、`preventAbort`、`preventCancel` 和 `signal` 选项。
+```javascript
+const source = ReadableStream.from(['first', 'second']);
+for await (const chunk of source) {
+  console.log(chunk);
+}
+```
+
+异步迭代会锁定流，正常结束时释放锁。提前 `break` 默认取消数据源；如需继续读取，使用 `stream.values({ preventCancel: true })`。
+
+## 分支读取与字节缓冲区
+
+`stream.tee()` 返回两个分支。普通流的块保持对象身份，两个分支修改同一个对象可能互相影响；字节流会为分支提供独立字节缓冲区。只取消一个分支不会立即取消数据源，取消 Promise 会等待另一个分支或数据源结束。
+
+网络响应体支持 BYOB 读取：
+
+```javascript
+const response = await fetch('https://example.com/file');
+const reader = response.body.getReader({ mode: 'byob' });
+try {
+  let buffer = new ArrayBuffer(4096);
+  while (true) {
+    const { value, done } = await reader.read(new Uint8Array(buffer));
+    if (done) break;
+    console.log(value.byteLength);
+    buffer = value.buffer;
+  }
+} finally {
+  reader.releaseLock();
+}
+```
+
+BYOB 会转移传入缓冲区的所有权，后续必须使用返回的 `value`，不能继续使用原来的视图。只有字节流支持 BYOB；切换 reader 前先释放原 reader 的锁。
+
+## 管道的关闭与错误
+
+`pipeTo()` 等待目标背压与写入完成。默认在数据源结束时关闭目标，在数据源出错时中止目标，在目标出错时取消数据源。可通过 `preventClose`、`preventAbort`、`preventCancel` 控制这些行为；`signal` 用于中止管道。关闭或失败清理完成后，管道释放两端的锁。
+
+使用 reader 或 writer 后，应在不再需要时调用 `releaseLock()`。
 
 ## API Reference
 
 ### `ReadableStream`
 
-构造函数接受可选的 `underlyingSource` 和队列策略。数据源可以实现 `start(controller)`、`pull(controller)`、`cancel(reason)`。
+#### `new ReadableStream(underlyingSource?, strategy?)`
 
-| 成员 | 说明 |
-| --- | --- |
-| `locked` | 流当前是否已被 reader 锁定。 |
-| `getReader()` | 获取 reader。 |
-| `cancel(reason?)` | 取消读取。 |
-| `pipeThrough(transform, options?)` | 经过转换流后返回新的可读流。 |
-| `pipeTo(destination, options?)` | 把数据写入目标流。 |
+数据源可实现 `start(controller)`、`pull(controller)`、`cancel(reason)`。`type: 'bytes'` 创建字节流，支持 `autoAllocateChunkSize`，此时不能提供 `strategy.size`。
 
-reader 提供 `read()`、`cancel()`、`releaseLock()` 和 `closed`。
+#### `ReadableStream.from(iterable)`
+
+从同步或异步可迭代对象创建流，按读取需求调用迭代器。
+
+#### `stream.locked`
+
+只读的 `boolean`，表示流是否被 reader 或管道锁定。
+
+#### `stream.getReader(options?)`
+
+默认返回 `ReadableStreamDefaultReader`；`{ mode: 'byob' }` 返回 `ReadableStreamBYOBReader`。已锁定或对普通流请求 BYOB 时抛出 `TypeError`。
+
+#### `stream.cancel(reason?)`
+
+返回 `Promise<void>`，丢弃队列并通知数据源。已锁定时应通过 reader 取消。
+
+#### `stream.tee()`
+
+返回两个可读分支并锁定原流。两个分支都取消时，数据源收到包含两个取消原因的数组。
+
+#### `stream.pipeTo(destination, options?)`
+
+返回 `Promise<void>`，写入 `WritableStream` 并处理背压与清理。选项为 `preventClose`、`preventAbort`、`preventCancel` 和 `signal`。
+
+#### `stream.pipeThrough(transform, options?)`
+
+接受 `{ readable, writable }`，返回其可读端。选项与 `pipeTo()` 相同。
+
+#### `stream.values(options?)`
+
+返回异步迭代器。默认提前退出会取消流；`preventCancel: true` 只释放锁。
+
+#### `stream[Symbol.asyncIterator]()`
+
+支持 `for await...of`，等价于默认选项的 `values()`。
+
+### `ReadableStreamDefaultReader`
+
+#### `reader.read()`
+
+默认 reader 返回 `Promise<{ value, done }>`。结束时 `done` 为 `true`；出错时拒绝。
+
+#### `reader.closed`
+
+只读的 `Promise<void>`，关闭时解析，出错或提前释放锁时拒绝。
+
+#### `reader.cancel(reason?)`
+
+返回 `Promise<void>`，取消被该 reader 锁定的流。
+
+#### `reader.releaseLock()`
+
+释放锁。尚未完成的读取会以 `TypeError` 失败，已排队数据仍属于流。
+
+### `ReadableStreamBYOBReader`
+
+#### `reader.read(view, options?)`
+
+BYOB reader 接受非空 TypedArray / `DataView`，返回包含新视图的 Promise。`options.min` 默认为 `1`，按视图元素计；关闭时可能返回少于该值的数据。缓冲区会被转移。
+
+#### `reader.closed`
+
+只读的 `Promise<void>`，关闭时解析，出错或提前释放锁时拒绝。
+
+#### `reader.cancel(reason?)`
+
+返回 `Promise<void>`，取消被该 reader 锁定的流。
+
+#### `reader.releaseLock()`
+
+释放锁。尚未完成的读取会以 `TypeError` 失败，已排队数据仍属于流。
+
+### `ReadableStreamDefaultController`
+
+#### `controller.desiredSize`
+
+只读的 `number | null`，用于观察背压；流出错时为 `null`。
+
+#### `controller.enqueue(chunk)`
+
+普通控制器入队任意块；字节控制器接受字节视图并转移缓冲区。
+
+#### `controller.close()`
+
+在队列读完后结束流。
+
+#### `controller.error(reason?)`
+
+使流出错，丢弃队列并拒绝待完成读取。
+
+### `ReadableByteStreamController`
+
+#### `controller.desiredSize`
+
+只读的 `number | null`，用于观察背压；流出错时为 `null`。
+
+#### `controller.enqueue(chunk)`
+
+普通控制器入队任意块；字节控制器接受字节视图并转移缓冲区。
+
+#### `controller.close()`
+
+在队列读完后结束流。
+
+#### `controller.error(reason?)`
+
+使流出错，丢弃队列并拒绝待完成读取。
+
+#### `controller.byobRequest`
+
+仅字节控制器提供，返回当前 `ReadableStreamBYOBRequest` 或 `null`。
+
+### `ReadableStreamBYOBRequest`
+
+#### `request.view`
+
+只读的字节视图，表示当前待填充区间。
+
+#### `request.respond(bytesWritten)`
+
+提交写入的字节数。响应后不能继续使用旧 request；流关闭时允许以 `0` 完成待处理请求。
+
+#### `request.respondWithNewView(view)`
+
+使用符合当前待处理缓冲区范围的新视图完成请求。
 
 ### `WritableStream`
 
@@ -176,10 +329,45 @@ await writer.write(chunk);
 
 释放 writer 对流的锁，使其他代码可以调用 `getWriter()`。存在未完成的 `write()` 时不应释放锁；释放后，该 writer 不能再操作流。
 
+
 ### `TransformStream`
 
-构造函数接受实现 `start()`、`transform()`、`flush()` 的转换器。实例通过 `writable` 接收输入，通过 `readable` 输出转换结果。
+#### `new TransformStream(transformer?, writableStrategy?, readableStrategy?)`
 
-### 队列策略
+转换器可实现 `start(controller)`、`transform(chunk, controller)`、`flush(controller)`；回调可返回 Promise。
 
-`CountQueueingStrategy` 按数据段数量计算队列大小；`ByteLengthQueueingStrategy` 按 `byteLength` 计算。两者都通过构造参数中的 `highWaterMark` 设置期望的队列容量。
+#### `transform.readable`
+
+只读的 `ReadableStream`，输出转换后的块。
+
+#### `transform.writable`
+
+只读的 `WritableStream`，接收输入；转换错误传播到两端。
+
+### `CountQueueingStrategy`
+
+#### `new CountQueueingStrategy({ highWaterMark })`
+
+设置期望队列容量。
+
+#### `strategy.highWaterMark`
+
+只读的目标队列容量。
+
+#### `strategy.size(chunk)`
+
+按块数量计算，每块为 `1`。
+
+### `ByteLengthQueueingStrategy`
+
+#### `new ByteLengthQueueingStrategy({ highWaterMark })`
+
+设置期望队列容量。
+
+#### `strategy.highWaterMark`
+
+只读的目标队列容量。
+
+#### `strategy.size(chunk)`
+
+按块的 `byteLength` 计算。

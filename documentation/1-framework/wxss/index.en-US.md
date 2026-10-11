@@ -2,7 +2,7 @@
 
 WXSS (WeiXin Style Sheets) is a style language used to describe component styles for AIUI agents.
 
-AIUI follows the WXSS specification from WeChat Mini Programs. It is highly similar and compatible with standard CSS (Cascading Style Sheets). Most properties and usage described in the [MDN CSS Reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference) can be used directly in WXSS.
+WXSS uses CSS-style syntax and supports a subset of properties, functions, and animations for AIUI interfaces. Use this chapter for the supported scope.
 
 In this section, you can learn the detailed WXSS reference:
 
@@ -14,3 +14,6 @@ In this section, you can learn the detailed WXSS reference:
 - [Value Types](./value-type): Learn the units and formats of property values.
 - [Functions](./function): Learn the supported CSS functions such as `calc()` and `var()`.
 - [At-rules](./at-rule): Learn the supported at-rules such as `@import` and `@media`.
+
+- [Animations and transforms](/AIUI/framework/wxss-animation): concurrent animations, events, and decorations triggered by text changes.
+- [Random values with `random()`](/AIUI/framework/wxss-function): syntax, stable values, and per-replay random contexts.

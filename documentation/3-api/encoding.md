@@ -34,7 +34,7 @@ const target = new Uint8Array(32);
 
 const result = encoder.encodeInto('AIUI', target);
 
-console.log(result.read);    // 已读取的字符数
+console.log(result.read);    // 已读取的 UTF-16 代码单元数
 console.log(result.written); // 已写入的字节数
 console.log(target.slice(0, result.written)); // 编码后的有效内容
 ```
@@ -96,73 +96,102 @@ console.log(text); // "Hello"
 - **严格模式更适合校验输入**: 如果你希望在输入数据损坏时立即发现问题，可以优先使用 `new TextDecoder('utf-8', { fatal: true })`。
 - **BOM 只影响部分文本场景**: 当你在处理文件头或跨工具导出的文本内容时，`ignoreBOM` 选项会更有意义。
 
-## API Reference
-
-### 接口说明
-
-#### TextEncoder
-
-`TextEncoder` 用于把 JavaScript 字符串编码成 UTF-8 字节数组。它适合在需要原始字节内容的场景中使用，例如计算摘要、生成签名、写入二进制缓冲区等。
-
-需要注意的是，`TextEncoder` 始终输出 UTF-8 编码结果，不需要也不能通过构造参数切换到其他编码。
-
-#### 属性
-
-- **`encoding`**: 始终返回 `"utf-8"`。
-
-#### 方法
-
-- **`encode(input?)`**: 把字符串编码为一个新的 `Uint8Array`。
-  - `input`: `String?`，要编码的文本。省略时等价于空字符串。
-  - 返回值: `Uint8Array`。
-- **`encodeInto(source, destination)`**: 直接把字符串编码结果写入已有的目标缓冲区。
-  - `source`: `String`，要编码的文本。
-  - `destination`: `Uint8Array`，用于接收编码结果的目标缓冲区。
-  - 返回值: 一个对象，包含：
-    - `read`: 已读取的源字符串长度。
-    - `written`: 已写入目标缓冲区的字节数。
-
-`encodeInto()` 适合在你已经有可复用缓冲区时使用，可以减少额外分配，尤其适合大文本或高频编码场景。
-
----
-
-#### TextDecoder
-
-`TextDecoder` 用于把字节数据解码成字符串。它适合读取接口返回的二进制文本内容、解析文件字节流，或把 `ArrayBuffer` / `Uint8Array` 还原为可读文本。
-
-#### 构造函数
-
-- **`new TextDecoder(label?, options?)`**: 创建一个解码器实例。
-  - `label`: `String?`，编码名称，默认是 `"utf-8"`。
-  - `options`: `Object?`，可选配置项：
-    - `fatal`: `Boolean`，是否在遇到非法字节序列时直接抛错，默认 `false`。
-    - `ignoreBOM`: `Boolean`，是否忽略字节顺序标记（BOM），默认 `false`。
-
-#### 属性
-
-- **`encoding`**: 当前解码器使用的编码名称。
-- **`fatal`**: 当前是否启用严格解码模式。
-- **`ignoreBOM`**: 当前是否忽略 BOM。
-
-#### 方法
-
-- **`decode(input?, options?)`**: 把字节数据解码成字符串。
-  - `input`: `ArrayBuffer | Uint8Array | DataView?`，要解码的数据。省略时可用于结束一次流式解码。
-  - `options`: `Object?`，可选配置项：
-    - `stream`: `Boolean`，是否按流式方式继续解码，默认 `false`。
-  - 返回值: `String`。
-
-当 `fatal` 为 `false` 时，非法字节通常会被替换为替代字符；当 `fatal` 为 `true` 时，遇到非法字节会抛出异常，适合对输入质量要求更严格的场景。
-
-#### 增量解码
-
-`decode(input, { stream: true })` 支持按块增量解码流式文本。当 UTF-8 字符可能跨越多个数据块时，应使用 `stream: true` 保留解码器的内部状态，并在所有数据读取完成后再额外调用一次 `decode()`，把剩余字节刷新为最终文本。
+## 通过编码流处理网络文本
 
 ```javascript
-const decoder = new TextDecoder('utf-8');
-let text = '';
-
-text += decoder.decode(chunk1, { stream: true });
-text += decoder.decode(chunk2, { stream: true });
-text += decoder.decode(); // 结束流式解码并刷新剩余字节
+const response = await fetch('https://example.com/stream');
+const textStream = response.body.pipeThrough(new TextDecoderStream('utf-8'));
+for await (const text of textStream) {
+  console.log(text);
+}
 ```
+
+`TextDecoderStream` 会保留跨块字符与 BOM 状态；`TextEncoderStream` 接受字符串并输出 UTF-8 字节。手动写入编码流时，应同时消费 `readable`，否则背压可能使 `write()` 一直等待。
+
+四个编码类均可在页面与 Agent Worker 中使用。编码流的关闭、取消与错误传播遵循 [Streams](/AIUI/api/network-streams)。
+
+## API Reference
+
+### `TextEncoder`
+
+#### `new TextEncoder()`
+
+创建 UTF-8 编码器。
+
+#### `encoder.encoding`
+
+只读，始终为 `'utf-8'`。
+
+#### `encoder.encode(input?)`
+
+返回新的 `Uint8Array`；省略输入时编码空字符串。孤立代理项替换为 U+FFFD。
+
+#### `encoder.encodeInto(source, destination)`
+
+将字符串写入已有 `Uint8Array`，返回 `{ read, written }`。`read` 是已消耗的 UTF-16 代码单元数，`written` 是写入的字节数。空间不足时不会写入半个 UTF-8 字符；继续编码可使用 `source.slice(read)`。
+
+### `TextDecoder`
+
+#### `new TextDecoder(label?, options?)`
+
+`label` 默认为 `'utf-8'`，会去除首尾 ASCII 空白并忽略大小写；未知或不支持的标签抛出 `RangeError`。`options` 支持 `fatal` 和 `ignoreBOM`，均默认为 `false`。
+
+#### `decoder.encoding`
+
+只读，返回规范化后的编码名。
+
+#### `decoder.fatal`
+
+只读的 `boolean`。为 `true` 时，非法输入或结束时未完成的字符会抛出 `TypeError`；否则使用替代字符。
+
+#### `decoder.ignoreBOM`
+
+只读的 `boolean`。默认 `false` 会移除 UTF 编码的初始 BOM；`true` 会保留该字符。BOM 不会切换编码。
+
+#### `decoder.decode(input?, options?)`
+
+返回字符串。输入为 `ArrayBuffer`、`SharedArrayBuffer` 或其 TypedArray / `DataView` 视图，只解码视图区间。`options.stream: true` 保留跨块状态；最后调用 `decode()` 刷新。普通数字数组不是有效输入。
+
+### `TextEncoderStream`
+
+#### `new TextEncoderStream()`
+
+创建 UTF-8 编码流。字符串代理对可以跨写入块组合，关闭时孤立代理项转换为 U+FFFD。
+
+#### `encoderStream.encoding`
+
+只读，始终为 `'utf-8'`。
+
+#### `encoderStream.readable`
+
+只读的 `ReadableStream`，输出 `Uint8Array`。同一实例反复读取此属性得到同一端点。
+
+#### `encoderStream.writable`
+
+只读的 `WritableStream`，输入按字符串转换。写入受到可读端背压控制；取消可读端会使待完成写入失败，中止可写端会使可读端出错。
+
+### `TextDecoderStream`
+
+#### `new TextDecoderStream(label?, options?)`
+
+编码名和选项与 `TextDecoder` 相同。输入字节可以跨块；关闭时刷新剩余状态。严格模式的解码错误会传播到可读端和可写端。
+
+#### `decoderStream.encoding`
+
+只读，返回规范化后的编码名。
+
+#### `decoderStream.fatal`
+
+只读，表示是否启用严格模式。
+
+#### `decoderStream.ignoreBOM`
+
+只读，BOM 行为与 `TextDecoder` 相同。
+
+#### `decoderStream.readable`
+
+只读的 `ReadableStream`，输出非空字符串块，属性返回稳定的端点。
+
+#### `decoderStream.writable`
+
+只读的 `WritableStream`，接受与 `TextDecoder.decode()` 相同的字节输入类型，属性返回稳定的端点。

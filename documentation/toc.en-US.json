@@ -412,7 +412,7 @@
           {
             "id": "pseudo-element",
             "label": "Pseudo Elements",
-            "status": "unsupported"
+            "status": "partial"
           },
           {
             "id": "property",
@@ -430,6 +430,10 @@
             "id": "at-rule",
             "label": "At-rules",
             "status": "partial"
+          },
+          {
+            "id": "animation",
+            "label": "Animations and Transforms"
           }
         ],
         "hasIndex": true
@@ -622,6 +626,12 @@
             "label": "Video Playback",
             "docId": "media-video",
             "docPath": "3-api/media/video.en-US.md"
+          },
+          {
+            "id": "webrtc",
+            "label": "WebRTC",
+            "docId": "media-webrtc",
+            "docPath": "3-api/media/webrtc.en-US.md"
           }
         ]
       },

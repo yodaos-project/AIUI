@@ -58,3 +58,7 @@
 `scaleToFill` 会让图片填满容器，因此图片比例可能发生变化。需要保持原始比例时，通常优先使用 `aspectFit` 或 `aspectFill`。
 
 本地路径和网络 URL 的支持规则请查看[资源（Assets）](/AIUI/framework/open-agent-format-assets)。
+
+## 在插槽中绑定属性
+
+通过自定义组件插槽或模板投影内容时，`src` 等绑定属性使用当前已解析的数据值。`setData()` 更新资源地址或显示参数后，投影内容同步更新，无需重新创建整个组件。

@@ -76,6 +76,10 @@ barcodeDetector
 
 可以通过 `getSupportedFormats()` 方法检查用户代理（浏览器/运行环境）支持的格式。
 
+## 使用规范格式名
+
+优先使用 `getSupportedFormats()` 返回的 Web 格式名，例如 `qr_code`、`code_128`、`ean_13`。结果中的 `format` 使用规范名称；不能假设检测器支持所有平台或库的格式别名。
+
 ## API Reference
 
 ### 接口

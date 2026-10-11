@@ -58,3 +58,7 @@ For example, keep a fixed width and calculate the height automatically:
 `scaleToFill` stretches the image to fill its container, so the image ratio may change. Use `aspectFit` or `aspectFill` when preserving the original ratio matters.
 
 See [Assets](/AIUI/framework/open-agent-format-assets) for local path and network URL support.
+
+## Bind attributes in slots
+
+When content is projected through custom-component slots or templates, bound attributes such as `src` use the current resolved values. Updating resource addresses or display settings with `setData()` updates projected content without recreating the entire component.

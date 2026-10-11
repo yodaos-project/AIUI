@@ -80,7 +80,7 @@
 
 ```css
 .dynamic-box {
-  width: calc(100% - 40rpx); /* 计算 */
+  width: calc(100vw - 40rpx); /* 计算 */
   background: linear-gradient(to right, red, blue); /* 渐变 */
 }
 ```
@@ -88,3 +88,5 @@
 ---
 
 *更多关于值类型的详细说明，请参考 [MDN CSS 数据类型](https://developer.mozilla.org/zh-CN/docs/Web/CSS/CSS_Types)。*
+
+随机数字、长度、时间和百分比的支持范围见[函数 `random()`](/AIUI/framework/wxss-function)。`calc()` 的两个操作数应为可相加减的长度，或两个百分比；不要在普通尺寸与间距中混用百分比和长度。

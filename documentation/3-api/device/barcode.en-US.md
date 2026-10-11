@@ -76,6 +76,10 @@ The Barcode Detection API supports the following barcode formats:
 
 You can check which formats are supported by the user agent (browser/runtime) through `getSupportedFormats()`.
 
+## Use canonical format names
+
+Prefer Web format names returned by `getSupportedFormats()`, such as `qr_code`, `code_128`, and `ean_13`. Detection results use canonical names in `format`; do not assume all platform or library aliases are supported.
+
 ## API Reference
 
 ### Interface

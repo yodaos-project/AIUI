@@ -84,6 +84,24 @@ for await (const chunk of oggOpusChunks) {
 player.finish();
 ```
 
+## 添加字幕并保留 cue 对象
+
+```javascript
+const player = new AudioPlayer();
+const track = player.addTextTrack('subtitles', '字幕', 'zh-CN');
+track.mode = 'hidden';
+const cue = new VTTCue(0, 2, '欢迎使用 AIUI');
+cue.id = 'greeting';
+track.addCue(cue);
+console.log(track.cues.item(0) === cue); // true
+console.log(track.cues.getCueById('greeting') === cue); // true
+track.addEventListener('cuechange', () => {
+  console.log(track.activeCues.item(0)?.text ?? '');
+});
+```
+
+同一个 cue 在 `cues`、`activeCues` 和 `getCueById()` 中保持对象身份。读取后可以修改文字或时间，再把同一个对象交给 `removeCue()`。`SpeechAudioPlayer` 的生成字幕也遵循此规则，见[语音播报](/AIUI/api/ai-speech-synthesis)。
+
 ## API Reference
 
 ### 构造函数
@@ -150,6 +168,8 @@ new AudioPlayer(options)
 - **类型**: `Number`
 - **说明**: 当前播放的时间位置（单位：秒）。设置该值会使播放器跳转到指定位置。
 
+设置 `currentTime` 会实际执行 seek，而不是只修改读数。需要在跳转完成后更新界面时监听播放器的 seek 相关事件；流式资源的可跳转范围仍取决于播放器与数据源。
+
 #### `paused`
 - **类型**: `Boolean` (只读)
 - **说明**: 当前播放器是否处于暂停状态。
@@ -212,3 +232,117 @@ AudioPlayer 提供了一系列监听方法来响应播放状态的变化：
 #### 移除监听
 - 每个 `onXxx` 方法都对应一个 `offXxx([callback])` 方法，用于移除特定的回调或清空所有监听器。
 - **示例**: `player.offPlay(myPlayCallback);` 或 `player.offPlay();` (移除所有 play 监听)
+
+### `AudioPlayer`
+
+#### `player.textTracks`
+
+只读的 `TextTrackList`，列出播放器的字幕轨道。
+
+#### `player.addTextTrack(kind, label?, language?)`
+
+返回新的 `TextTrack`，可选 label / language 默认为空字符串。不能直接 `new TextTrack()`。
+
+### `TextTrack`
+
+#### `track.id`
+
+只读的轨道标识字符串。
+
+#### `track.kind`
+
+只读的轨道类型字符串。
+
+#### `track.label`
+
+只读的轨道标签字符串。
+
+#### `track.language`
+
+只读的语言字符串。
+
+#### `track.mode`
+
+可写：`disabled`、`hidden`、`showing`。使用 `hidden` 可跟踪活动字幕而不要求自动呈现字幕。
+
+#### `track.cues`
+
+只读的 `TextTrackCueList`，包含全部 cue。列表查询返回同一 cue 对象。
+
+#### `track.activeCues`
+
+只读的 `TextTrackCueList`，包含当前时间范围内的活动 cue。
+
+#### `track.addCue(cue)`
+
+添加 `VTTCue`，返回 `undefined`。已经属于轨道的 cue 不能再次添加。
+
+#### `track.removeCue(cue)`
+
+按对象身份删除 cue，返回 `undefined`；不属于该轨道时抛出 `NotFoundError`。
+
+#### `cuechange / track.oncuechange`
+
+活动 cue 集合变化时触发，支持 `addEventListener()` 或 `oncuechange`。
+
+### `TextTrackCueList`
+
+#### `list.length`
+
+只读的 cue 数量。
+
+#### `list.item(index)`
+
+返回该位置的 `VTTCue`，越界时为 `null`。
+
+#### `list.getCueById(id)`
+
+返回 ID 对应的 `VTTCue`，没有匹配时为 `null`。
+
+### `TextTrackList`
+
+#### `list.length`
+
+只读的轨道数量。
+
+#### `list.item(index)`
+
+返回该位置的 `TextTrack`，越界时为 `null`。
+
+#### `list.getTrackById(id)`
+
+返回 ID 对应的 `TextTrack`，没有匹配时为 `null`。
+
+### `VTTCue`
+
+#### `new VTTCue(startTime, endTime, text)`
+
+时间以秒计，要求有限、非负且 endTime 不小于 startTime。
+
+#### `cue.id`
+
+可写的标识字符串，默认空字符串。
+
+#### `cue.startTime`
+
+可写的开始时间，以秒计。
+
+#### `cue.endTime`
+
+可写的结束时间，以秒计。
+
+#### `cue.text`
+
+可写的字幕字符串；列表再次读取仍得到原对象。
+
+#### `cue.charIndex`
+
+只读的源文本起始索引，可为 `null`；主要用于生成的语音字幕。
+
+#### `cue.charLength`
+
+只读的源文本长度，可为 `null`。
+
+#### `cue.pauseOnExit`
+
+可写的 `boolean`，默认 `false`；当前保存该标记，不会自动暂停播放器。需要暂停时由应用在字幕变化回调中调用 `pause()`。

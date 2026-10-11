@@ -1,108 +1,115 @@
 # 加密 (Crypto)
 
-AIUI 提供了一套遵循 Web Crypto API 标准的加密接口。你可以通过全局 `crypto` 对象或 `import crypto from 'crypto'` 来访问这些功能。
+通过全局 `crypto` 对象或 `import crypto from 'crypto'` 使用安全随机数、SHA 摘要和 HMAC。当前不支持加解密、RSA、ECDSA 或 JWK 密钥格式。
 
-## 生成随机 UUID
-
-```javascript
-const uuid = crypto.randomUUID();
-console.log(uuid); // 例如: "550e8400-e29b-41d4-a716-446655440000"
-```
-
-## 生成安全随机数
-
-使用 `getRandomValues()` 填充整数类型数组，适合生成随机标识、挑战值或加密所需的随机数据：
+## 生成 UUID 与随机字节
 
 ```javascript
-const bytes = new Uint8Array(16);
-crypto.getRandomValues(bytes);
-console.log(bytes);
+const id = crypto.randomUUID();
+const bytes = crypto.getRandomValues(new Uint8Array(16));
+console.log(id, bytes);
 ```
 
-单次最多生成 65,536 字节。参数必须是整数类型的 TypedArray；传入 `Float32Array`、普通数组或超出限制的数组会抛出异常。
-
-## 计算 SHA-256 摘要
+## 计算摘要
 
 ```javascript
-async function calculateHash(message) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  
-  // 将 ArrayBuffer 转换为十六进制字符串
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  return hashHex;
-}
-
-calculateHash('Hello AIUI').then(console.log);
+const data = new TextEncoder().encode('Hello AIUI');
+const digest = await crypto.subtle.digest('SHA-256', data);
+const hex = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+console.log(hex);
 ```
 
-## 使用 HMAC 签名
+## 生成 HMAC 密钥、签名与验证
 
 ```javascript
-async function signMessage(keyText, message) {
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(keyText);
-  const data = encoder.encode(message);
+const key = await crypto.subtle.generateKey(
+  { name: 'HMAC', hash: 'SHA-256' },
+  true,
+  ['sign', 'verify'],
+);
+const data = new TextEncoder().encode('message');
+const signature = await crypto.subtle.sign('HMAC', key, data);
+console.log(await crypto.subtle.verify('HMAC', key, signature, data));
 
-  // 1. 导入密钥
-  const key = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-
-  // 2. 生成签名
-  const signature = await crypto.subtle.sign(
-    'HMAC',
-    key,
-    data
-  );
-
-  return signature; // 返回 ArrayBuffer
-}
+const raw = await crypto.subtle.exportKey('raw', key);
+const imported = await crypto.subtle.importKey(
+  'raw', raw, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify'],
+);
+console.log(await crypto.subtle.verify('HMAC', imported, signature, data));
 ```
+
+只有创建时允许导出的密钥才能导出。不要将导出的密钥写入日志。
+
+## 输入与错误
+
+摘要、签名、验证和原始密钥接受 `BufferSource`，即 `ArrayBuffer` 或其 TypedArray / `DataView` 视图；视图只使用自身的字节区间。字符串应先编码，普通数组、伪造对象或已分离的缓冲区不能作为输入。
+
+使用 `try { await ... } catch (error) { ... }` 同时处理参数检查的同步异常和异步失败。未支持的算法或格式为 `NotSupportedError`；不匹配的密钥或用途为 `InvalidAccessError`；无效用途为 `SyntaxError`；无效原始密钥为 `DataError`。
 
 ## API Reference
 
 ### `Crypto`
 
-`Crypto` 是加密功能的主要入口点。
+#### `crypto.subtle`
 
-**属性**
+只读的 `SubtleCrypto` 对象。
 
-- **`subtle`**: 返回一个 `SubtleCrypto` 对象，用于执行摘要、密钥导入和签名等操作。
+#### `crypto.randomUUID()`
 
-**方法**
+返回安全随机生成的 v4 UUID 字符串。
 
-- **`randomUUID()`**: 返回一个随机生成的 v4 UUID 字符串。
-- **`getRandomValues(typedArray)`**: 使用安全随机值填充整数类型的 TypedArray，并返回同一个数组对象。单次最多填充 65,536 字节。
+#### `crypto.getRandomValues(typedArray)`
+
+填充并返回同一个整数 TypedArray，包括 BigInt 整数数组。浮点数组和普通数组不受支持；单次超过 65,536 字节会抛出 `QuotaExceededError`。
 
 ### `SubtleCrypto`
 
-`SubtleCrypto` 接口提供了许多低级加密原语。所有方法都返回一个 `Promise`。
+#### `subtle.digest(algorithm, data)`
 
-**方法**
+返回 `Promise<ArrayBuffer>`。支持 `SHA-1`、`SHA-256`、`SHA-384`、`SHA-512`；算法可为名称或 `{ name }`。`data` 为 `BufferSource`。
 
-- **`digest(algorithm, data)`**: 生成给定数据的摘要（Hash）。
-    - `algorithm`: 支持 `"SHA-1"`, `"SHA-256"`, `"SHA-384"`, `"SHA-512"`。
-    - `data`: 支持 `String`, `ArrayBuffer`, `Uint8Array`。
-- **`importKey(format, keyData, algorithm, extractable, keyUsages)`**: 将外部密钥数据导入为 `CryptoKey`。
-    - `format`: 目前仅支持 `"raw"`。
-    - `algorithm`: 可以是字符串（如 `"HMAC"`）或对象（如 `{ name: "HMAC", hash: "SHA-256" }`）。
-- **`sign(algorithm, key, data)`**: 使用给定的密钥和算法生成签名。
-    - 目前支持 `HMAC` 算法配合 `SHA-1`, `SHA-256`, `SHA-384`, `SHA-512`。
+#### `subtle.generateKey(algorithm, extractable, keyUsages)`
+
+返回 `Promise<CryptoKey>`，生成 HMAC 密钥。
+
+| 参数 | 类型 | 说明 |
+| --- | --- | --- |
+| `algorithm` | `object` | `{ name: 'HMAC', hash: 'SHA-256', length?: number }`；`hash` 也接受 `{ name }`，支持上述四种 SHA 算法 |
+| `extractable` | `boolean` | 是否允许导出原始密钥 |
+| `keyUsages` | `string[]` | 非空数组，只能包含 `'sign'`、`'verify'` |
+
+`length` 以位计，必须为正值。省略时，SHA-1 / SHA-256 使用 512 位，SHA-384 / SHA-512 使用 1024 位。
+
+#### `subtle.importKey(format, keyData, algorithm, extractable, keyUsages)`
+
+返回 `Promise<CryptoKey>`。仅支持 `'raw'` HMAC 密钥；`keyData` 为非空 `BufferSource`。算法、可导出性和用途与 `generateKey()` 相同。指定 `length` 时不能超过输入密钥的位数，也不能丢弃完整的尾部字节。
+
+#### `subtle.exportKey(format, key)`
+
+返回 `Promise<ArrayBuffer>`。仅支持 `'raw'`，并且密钥必须允许导出，否则抛出 `InvalidAccessError`。
+
+#### `subtle.sign(algorithm, key, data)`
+
+返回 `Promise<ArrayBuffer>`。算法为 `'HMAC'` 或 `{ name: 'HMAC' }`；密钥必须包含 `'sign'` 用途。
+
+#### `subtle.verify(algorithm, key, signature, data)`
+
+返回 `Promise<boolean>`。验证 HMAC，密钥必须包含 `'verify'` 用途。`signature` 和 `data` 为 `BufferSource`；签名不匹配时返回 `false`。
 
 ### `CryptoKey`
 
-表示通过 `SubtleCrypto.importKey()` 导入的密钥对象。
+#### `key.type`
 
-**属性**
+只读，当前为 `'secret'`。
 
-- **`algorithm`**: 返回描述密钥算法的对象。
-- **`type`**: 始终返回 `"secret"`。
-- **`extractable`**: 始终返回 `false`。
-- **`usages`**: 始终返回 `["sign", "verify"]`。
+#### `key.algorithm`
+
+只读，返回 `{ name: 'HMAC', hash: { name }, length }`，`length` 以位计。
+
+#### `key.extractable`
+
+只读的 `boolean`，与生成或导入时指定的值一致。
+
+#### `key.usages`
+
+只读的用途数组，与生成或导入时指定的用途一致。

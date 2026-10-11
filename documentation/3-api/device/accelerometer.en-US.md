@@ -43,6 +43,8 @@ sensor.start();
 - **[Absolute Orientation Sensor](/AIUI/api/device-absolute-orientation-sensor)**: Learn how to obtain spatial pose data.
 - **[Gyroscope](/AIUI/api/device-gyroscope)**: Learn how to obtain rotational velocity.
 
+Before the first valid reading, readings and `timestamp` are `null`, not `0`. Read them in a `reading` callback and check `hasReading`. `stop()` does not guarantee that previous readings are cleared; use `activated` to check current sampling activity.
+
 ## API Reference
 
 ### Entry

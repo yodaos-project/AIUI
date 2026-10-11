@@ -87,3 +87,16 @@ export default {
 ```
 
 *注意： 花括号和引号之间如果有空格，将最终被解析成为字符串*
+
+## 循环作用域与条件
+
+每次迭代有自己的 `item` / `index` 作用域；嵌套循环可显式命名变量以访问外层数据。同一节点同时使用 `ink:for` 和 `ink:if` 时，条件在当前项的作用域中求值：
+
+```xml
+<view ink:for="{{items}}" ink:key="id" ink:if="{{item.visible}}">
+  {{index}}: {{item.title}}
+</view>
+<text>共 {{items.length}} 项</text>
+```
+
+可使用数组的 `.length` 绑定数量。更新列表、条件或绑定属性后，节点查询应使用当前渲染树，不应缓存已经被条件移除的 Entity。

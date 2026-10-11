@@ -87,3 +87,16 @@ Equivalent to
 ```
 
 *Note: if there are spaces between the curly braces and the quotation marks, the result will be parsed as a string.*
+
+## Loop scope and conditions
+
+Each iteration has its own `item` / `index` scope. Name nested-loop variables explicitly when you need outer values. When `ink:for` and `ink:if` are on the same node, the condition is evaluated in the current item's scope:
+
+```xml
+<view ink:for="{{items}}" ink:key="id" ink:if="{{item.visible}}">
+  {{index}}: {{item.title}}
+</view>
+<text>Total: {{items.length}}</text>
+```
+
+Bind an array's `.length` to display its count. After list, condition, or bound-attribute updates, query the current rendered tree rather than retaining an Entity removed by a condition.

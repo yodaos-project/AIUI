@@ -124,6 +124,23 @@ console.log(blob.type, blob.size);
 An omitted or unsupported `type` falls back to `image/png`; JPEG composites
 transparent pixels over black, while PNG preserves the alpha channel.
 
+## Measure text and configure rounded corners
+
+```javascript
+const canvas = new Canvas(240, 120);
+const ctx = canvas.getContext('2d');
+ctx.font = '20px sans-serif';
+const metrics = ctx.measureText('Hello AIUI');
+console.log(metrics.width, metrics.actualBoundingBoxAscent, metrics.actualBoundingBoxDescent);
+ctx.beginPath();
+ctx.roundRect(10, 10, 200, 80, [{ x: 16, y: 8 }, 4]);
+ctx.stroke();
+```
+
+`measureText()` returns metrics consistent with text layout, including bounds and baselines. Radii accept a number, an elliptical `{ x, y }` radius, or an iterable of 1–4 entries. `roundRect()` only adds a path; call `fill()` / `stroke()` to draw it.
+
+Passing a closed `ImageBitmap` to `drawImage()` throws `InvalidStateError`.
+
 ## API Reference
 
 ### Page Canvas
@@ -259,3 +276,17 @@ An object representing a repeating pattern.
 #### Path2D
 
 `new Path2D(path?)` creates an empty path, copies an existing path, or parses an SVG path string. It supports the common path methods and `addPath(path, transform?)`.
+
+### `CanvasRenderingContext2D`
+
+#### `ctx.measureText(text)`
+
+Returns `TextMetrics` containing width, actual bounds, font bounds, em heights, and baselines. Metrics depend on the current font, alignment, and text direction.
+
+#### `ctx.roundRect(x, y, width, height, radii?)`
+
+Adds a rounded-rectangle path; radii default to `0`. Accepts a number, `{ x, y }`, or an iterable of 1–4 entries. Negative radii, empty collections, and more than four entries throw `RangeError`. `Path2D.roundRect()` follows the same rules.
+
+#### `ctx.drawImage(image, ...args)`
+
+Draws an image using the 3-, 5-, or 9-argument form. A closed `ImageBitmap` throws `InvalidStateError`; create a new image before drawing again.

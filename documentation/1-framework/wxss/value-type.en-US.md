@@ -80,7 +80,7 @@ A value generated dynamically through a function.
 
 ```css
 .dynamic-box {
-  width: calc(100% - 40rpx); /* 计算 */
+  width: calc(100vw - 40rpx); /* 计算 */
   background: linear-gradient(to right, red, blue); /* 渐变 */
 }
 ```
@@ -88,3 +88,5 @@ A value generated dynamically through a function.
 ---
 
 *For more details about value types, see [MDN CSS data types](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Types).*
+
+See [`random()` functions](/AIUI/framework/wxss-function) for supported random numbers, lengths, times, and percentages. `calc()` operands should be compatible lengths or two percentages; do not mix percentages and lengths in ordinary size or spacing declarations.

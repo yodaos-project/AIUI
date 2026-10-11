@@ -71,24 +71,58 @@ export default {
 
 Widget 的声明、文件结构和完整示例请参阅 [Widget 开发](/AIUI/framework/open-agent-format-widget)。需要从当前内容打开已声明的 Widget 时，请参阅[路由](/AIUI/api/route)中的 `window.open()`。
 
+## 读取打开参数
+
+`window.open('widgets/weather/index?city=hangzhou', '_widget')` 的查询参数会传给 `onCreate(options)`：
+
+```javascript
+export default {
+  data: { city: '' },
+  onCreate(options) {
+    this.setData({ city: options.city ?? 'hangzhou' });
+  },
+};
+```
+
+参数值是字符串，没有查询参数时得到空对象。路径必须与 `app.json` 中声明的 Widget 路径一致。
+
 ## API Reference
 
-### 实例属性
+### `Widget`
 
-| 属性 | 类型 | 说明 |
-| :--- | :--- | :--- |
-| `data` | `object` | 当前 Widget 数据；未提供时默认为 `{}` |
-| `widgetId` | `string` | 当前 Widget 实例的稳定标识 |
-| `family` | `'1x1' \| '1x2'` | 在 `app.json` 和 `.ink` 文件中声明的尺寸类别 |
-| `target` | `'_widget'` | Widget 固定使用的展示目标 |
-| `isAttached` | `boolean` | 当前是否处于显示状态 |
-| `interactive` | `boolean` | 当前是否允许用户输入 |
-| `hostWidth` | `number` | 当前可用宽度，单位为逻辑像素 |
-| `hostHeight` | `number` | 当前可用高度，单位为逻辑像素 |
+#### `widget.data`
 
-除 `data` 外，其余属性均为只读。
+`object` — 当前 Widget 数据；未提供时默认为 `{}`。
 
-### `setData(patch, callback?)`
+#### `widget.widgetId`
+
+`string` — 当前 Widget 实例的稳定标识。只读。
+
+#### `widget.family`
+
+`'1x1' | '1x2'` — 在 `app.json` 和 `.ink` 文件中声明的尺寸类别。只读。
+
+#### `widget.target`
+
+`'_widget'` — Widget 固定使用的展示目标。只读。
+
+#### `widget.isAttached`
+
+`boolean` — 当前是否处于显示状态。只读。
+
+#### `widget.interactive`
+
+`boolean` — 当前是否允许用户输入。只读。
+
+#### `widget.hostWidth`
+
+`number` — 当前可用宽度，单位为逻辑像素。只读。
+
+#### `widget.hostHeight`
+
+`number` — 当前可用高度，单位为逻辑像素。只读。
+
+#### `widget.setData(patch, callback?)`
 
 更新 Widget 数据并刷新受到影响的界面内容。
 
@@ -99,11 +133,18 @@ Widget 的声明、文件结构和完整示例请参阅 [Widget 开发](/AIUI/fr
 
 返回值为 `undefined`。如果 `patch` 不是对象，将抛出错误。
 
-### 状态回调
+#### `onCreate(options)`
 
-| 回调 | 调用时机 |
-| :--- | :--- |
-| `onCreate()` | Widget 创建并准备好初始状态后调用一次 |
-| `onAttach()` | Widget 开始显示或重新显示时调用 |
-| `onDetach()` | Widget 隐藏或准备销毁前调用 |
-| `onDestroy()` | Widget 最终销毁时调用一次 |
+每个 Widget 实例创建后调用一次。`options` 包含打开 URL 的查询参数，值为字符串；没有参数时为 `{}`。
+
+#### `onAttach()`
+
+Widget 开始显示或重新显示时调用。
+
+#### `onDetach()`
+
+Widget 隐藏或准备销毁前调用。
+
+#### `onDestroy()`
+
+最终销毁时调用一次，释放资源。

@@ -60,6 +60,8 @@ Current limits:
 - **[Accelerometer](/AIUI/api/device-accelerometer)**: Learn about linear motion readings.
 - **[Gyroscope](/AIUI/api/device-gyroscope)**: Learn about rotational velocity readings.
 
+Before the first valid reading, readings and `timestamp` are `null`, not `0`. Read them in a `reading` callback and check `hasReading`. `stop()` does not guarantee that previous readings are cleared; use `activated` to check current sampling activity.
+
 ## API Reference
 
 ### Entry
@@ -73,7 +75,7 @@ const sensor = new AbsoluteOrientationSensor({ frequency: 60 });
 ### Constructor
 
 ```javascript
-new AbsoluteOrientationSensor(options?)
+new AbsoluteOrientationSensor()
 ```
 
 Supported options:

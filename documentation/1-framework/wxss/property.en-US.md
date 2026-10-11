@@ -1,6 +1,6 @@
 # Properties
 
-AIUI / WXSS supports most standard CSS properties. The following are the property categories most commonly used in development and their code examples:
+WXSS supports the common properties below; its scope differs from browser CSS.
 
 ## 1. Layout and Positioning
 
@@ -118,3 +118,24 @@ Used to handle truncation of long text.
 ---
 
 *For the complete CSS property dictionary and detailed descriptions, see [MDN CSS Reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference#properties).*
+
+## Single-line ellipsis and independent borders
+
+```css
+.title {
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card {
+  border-top: 1px solid #444;
+  border-right: 2px dashed #40ff5e;
+  padding: calc(12px + 4rpx);
+  color: #fff !important;
+}
+```
+
+`text-overflow: ellipsis` applies to width-constrained single-line text; it does not implement multiline clamping. Each border side supports its own width, style, color, and shorthand. `!important` participates in cascade priority and can prevent keyframe overrides.
+
+Sizes, margin / padding / gap, and insets accept supported `calc()` values. See [Functions](/AIUI/framework/wxss-function) for syntax limits and random values, and [Animations and transforms](/AIUI/framework/wxss-animation) for concurrent animations and events.

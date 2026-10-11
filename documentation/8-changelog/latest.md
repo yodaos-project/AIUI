@@ -1,3 +1,83 @@
+# v0.19.0
+
+AIUI 0.19.0 新增 WebRTC 音频与数据通信、网络状态感知，并完善流式数据处理、加密、绘图、样式与动画能力。此次更新也优化了复杂页面的数据更新、资源加载和内存使用，并修复导航、生命周期、模板与基础 API 的行为。
+
+## 开发能力
+
+- **Widget 打开参数**：通过 `window.open()` 打开 Widget 时，URL 查询参数现在会传入 `onCreate(options)`，方便按城市、记录或任务展示不同内容。
+- **组件加载更明确**：组件不存在时直接报告路径错误，避免误报为默认导出错误；统一资源加载，并完善嵌套组件的路径解析。引用目录入口时应显式写出 `index`。
+
+## API、网络与语音
+
+- **WebRTC 音频与数据通信**：新增 `RTCPeerConnection` 和 `RTCDataChannel`，可在支持 WebRTC 的 Android、桌面和 Web 运行环境之间传输音频、文本和二进制数据，并支持 STUN 与 TURN。此能力依赖设备联网，应用需要自行交换信令；当前支持音频轨道，不支持视频轨道，也不在 Agent Worker 中提供。
+- **流式数据处理更完整**：Streams 新增 `tee()`、BYOB 字节流读取、`ReadableStream.from()` 和异步迭代，完善 `pipeTo()`、`pipeThrough()` 的背压、取消和错误传播，方便把响应流接入后续处理。
+- **流式文本编码**：新增 `TextEncoderStream`、`TextDecoderStream`，支持跨分片连续编码和解码；`TextEncoder.encodeInto()` 可以写入指定缓冲区，并返回实际读取和写入的数量。
+
+  ```js
+  const response = await fetch('/api/answer');
+  const textStream = response.body.pipeThrough(new TextDecoderStream());
+  for await (const text of textStream) {
+    console.log(text);
+  }
+  ```
+
+- **Web Crypto 能力补齐**：支持 SHA 摘要与 HMAC 密钥生成、导入、导出、签名和验证，并完善 `CryptoKey` 元数据、二进制切片与错误处理。
+- **感知网络变化**：新增 `navigator.onLine`、`navigator.connection` 以及 `online`、`offline` 和连接 `change` 事件，可读取网络状态并在连接变化时调整界面或重试请求。
+- **语音合成参数修复**：修复 `SpeechSynthesisUtterance` 构造参数的默认值。
+- **能力查询更准确**：`wx.canIUse()` 按运行时注册的函数判断能力，支持 `request` 等函数路径；未知路径、参数选项和应用自行添加的函数返回 `false`。查询结果不代表设备可用或已获得权限。
+
+## 多媒体与绘图
+
+- **音频播放与字幕修复**：修复设置 `currentTime` 未同步实际播放位置的问题，并保持字幕 cue 对象身份稳定。
+- **导出 Canvas 与位图**：新增 `Canvas.convertToBlob()` 和 `createImageBlob()`，可把绘图或位图编码为 PNG、JPEG，用于上传、分享或保存图片。
+
+  ```js
+  const canvas = new Canvas(160, 80);
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#2f80ed';
+  ctx.fillRect(0, 0, 160, 80);
+
+  const image = await canvas.convertToBlob({
+    type: 'image/jpeg',
+    quality: 0.9,
+  });
+  console.log(image.type, image.size);
+  ```
+
+- **Canvas 绘制更一致**：改进复杂文本的测量与绘制，修复 Web 端 `roundRect()` 圆角处理；绘制已关闭的 `ImageBitmap` 现在会报告错误。
+
+## 界面与动画
+
+- **布局与样式补齐**：新增 `text-overflow: ellipsis`，支持在尺寸和间距中使用 `calc()`；修复 `!important` 优先级与四边独立边框的绘制。
+- **并发动画与生命周期**：同一元素可以同时运行多个 CSS 动画，支持 `animationstart`、`animationiteration`、`animationend`、`animationcancel` 事件；无关样式更新保留播放进度，动画替换、延迟和结束后的样式恢复更加准确。
+- **文字与粒子联动**：支持由文字变化触发保留的粒子动画，并扩展二维 `transform` 与 `transform-origin` 行为。
+- **CSS 随机值（实验性）**：新增 `random()`，支持指定上下界、可选步长和命名 key，为尺寸、透明度、动画时长等生成随机值。同一元素内，相同 key、范围和步长可共享结果；样式重算保持随机基值稳定，每个触发式动画重放实例拥有独立上下文，新实例不会改变已有实例。当前支持数值、长度、百分比和时间值的有限子集，不支持跨元素共享 key。
+
+  ```css
+  .particle {
+    width: random(--size, 2px, 5px, 1px);
+    height: random(--size, 2px, 5px, 1px);
+    opacity: random(0.6, 1);
+    animation-duration: random(800ms, 1200ms, 100ms);
+  }
+  ```
+
+- **组件显示与输入修复**：修复投影内容中的图片、Lottie 属性解析和垂直柱状图数值标签；文本控件的输入事件通过 `event.detail.value` 提供完整内容。
+
+## 性能与稳定性
+
+- **数据更新与加载更高效**：缓存解析后的单文件组件、组件定义和作用域数据，优化选择器匹配、数据绑定和局部重组，减少大型页面及文本持续更新时的重复工作。
+- **动画与绘图减少内存开销**：复用渲染和动画缓冲区，减少图片、Lottie、地图和图表的逐帧分配，并限制 Canvas 指令、路径和文字缓存的占用。
+- **模板与回调更可靠**：修复数组 `length` 绑定、循环作用域、条件分支、`hidden` 绑定及循环节点查询；修复 `setData()` 回调重入和循环引用消息导致的栈溢出。
+- **网络与基础 API 修复**：修复 URI 协议与 TLS 判断、空压缩响应体处理、流式工具调用的空 ID、定时器延迟转换和 `localStorage` 字符串转换；完善传感器未取得读数时返回 `null`、GPX 根节点校验和条码格式名称识别。
+
+## 兼容性说明
+
+- **首帧之后触发 ready**：Page 的 `onReady()` 和组件的 ready 生命周期在各自首帧实际呈现后触发；返回已有页面时不会重复触发。
+- **导航回调反映实际结果**：`wx` 路由 API 在页面成功加载后调用 `success`；目标缺失、加载失败或没有上一页时调用 `fail`，并在结束时调用 `complete`。`wx.exitMiniProgram()` 支持省略参数。
+- **录制格式检测**：`MediaRecorder.isTypeSupported()` 统一作为静态方法调用，不再通过录制实例调用。
+- **语音识别权限调整**：移除独立的 `SPEECH_RECOGNITION` 权限；采集麦克风音频仍需在 `app.json` 中声明 `RECORD_AUDIO`，并满足系统授权要求。
+
 # v0.18.0
 
 AIUI 0.18.0 支持开发 Widget 和后台任务，并带来更多常用 Web API，以及更丰富的音频、语音、动画、滚动和绘图能力。应用在复杂页面和长时间运行时也会更加流畅、稳定。

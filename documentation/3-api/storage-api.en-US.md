@@ -84,20 +84,20 @@ See [WeChat Mini Program Compatible APIs](/AIUI/api/weixin-compatible-apis) for 
 
 ## API Reference
 
-### API Description
+### `Storage`
 
-#### localStorage
+#### `localStorage.getItem(key)`
 
-`localStorage` lets you store key-value data in an agent. Data stored in `localStorage` does not expire.
+Converts key to a string and returns its string value, or `null` if absent.
 
-#### Methods
+#### `localStorage.setItem(key, value)`
 
-- **`getItem(key)`**: Gets the value associated with the specified key.
-    - `key`: `String`, the key to retrieve.
-    - Return value: `String` or `null` if the key does not exist.
-- **`setItem(key, value)`**: Sets the value associated with the specified key. If the key already exists, its value is updated.
-    - `key`: `String`, the key to set.
-    - `value`: `String`, the value to store.
-- **`removeItem(key)`**: Removes the data item for the specified key.
-    - `key`: `String`, the key to remove.
-- **`clear()`**: Clears all data stored for the current agent.
+Converts key and value using JavaScript string conversion before storing; for example, `null` becomes `'null'`. Serialize objects with `JSON.stringify()` first, otherwise they commonly become `'[object Object]'`. Returns `undefined`.
+
+#### `localStorage.removeItem(key)`
+
+Converts key to a string and removes the entry; missing entries do not error. Returns `undefined`.
+
+#### `localStorage.clear()`
+
+Clears storage for the current Agent; returns `undefined`.

@@ -38,3 +38,9 @@ At the same time, `ink:if` is lazy. If the initial render condition is `false`, 
 In contrast, `hidden` is much simpler. The component is always rendered, and only its visibility is controlled.
 
 In general, `ink:if` has a higher switching cost, while `hidden` has a higher initial rendering cost. Therefore, `hidden` is better for scenarios that need frequent toggling, while `ink:if` is better when the runtime condition is unlikely to change.
+
+## Conditional nodes and hidden state
+
+Keep `ink:if` / `ink:elif` / `ink:else` branches adjacent. Inactive branches are absent from the current rendered tree. `hidden` retains the node and controls visibility. Bind a boolean, such as `hidden="{{isHidden}}"`, rather than treating a string as boolean state.
+
+Conditions inside loops use the current item scope; see [List rendering](/AIUI/framework/wxml-list-rendering). After updating conditions or `hidden`, use current nodes and bound values for selectors and events.

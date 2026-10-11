@@ -19,35 +19,17 @@
 @import "./common.wxss";
 
 .container {
-  /* 继承来自 common.wxss 的类 */
-  composes: flex-center; 
   height: 100vh;
 }
 ```
 
 ## 2. `@media` (媒体查询)
-用于根据设备特性（如屏幕宽度、分辨率、主题等）应用不同的样式。
+用于根据设备特性（如视口宽度）应用不同的样式。
 
 ```css
-/* 基础样式：适配浅色模式 */
-.page {
-  background-color: #ffffff;
-  color: #333333;
-}
-
-/* 适配深色模式 */
-@media (prefers-color-scheme: dark) {
-  .page {
-    background-color: #1a1a1a;
-    color: #eeeeee;
-  }
-}
-
-/* 适配超大屏幕设备 */
+.sidebar { display: none; }
 @media (min-width: 1200px) {
-  .sidebar {
-    display: block;
-  }
+  .sidebar { display: block; }
 }
 ```
 
@@ -89,3 +71,5 @@
 ---
 
 *更多 @规则 的使用详情，请参考 [MDN CSS At-rules](https://developer.mozilla.org/zh-CN/docs/Web/CSS/At-rule)。*
+
+`@import` 导入后，在 WXML 中使用 `class="container flex-center"` 组合类；不支持示例框架中的 `composes`。`@keyframes` 的并发、事件与重播说明见[动画与变换](/AIUI/framework/wxss-animation)。

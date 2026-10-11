@@ -98,7 +98,7 @@ The component lifecycle describes how one component instance is created, attache
 | :--- | :--- | :--- |
 | `created` | Listens for component creation | After the component instance and its initial state are created |
 | `attached` | Listens for component attachment | After the component is attached to its host tree |
-| `ready` | Listens for initial render completion | After the component subtree completes its initial render |
+| `ready` | Listens for initial render completion | After the first frame containing the component subtree is presented, once per instance |
 | `moved` | Listens for component node movement | When the component changes position in its host tree |
 | `detached` | Listens for component detachment | When the component is removed from its host tree |
 
@@ -112,7 +112,9 @@ Runs after the component is attached to its host tree. Use it to register host-n
 
 #### `lifetimes.ready()`
 
-Runs after the component subtree completes its initial render. Use it for initialization that depends on the component view being ready. Later state updates do not trigger this callback again.
+Runs after the first frame containing the component subtree is actually presented. Use it for initialization that depends on the component view being ready. Later state updates do not trigger this callback again.
+
+Components mounted after the page’s first frame wait for a frame containing their own content before `ready()`. Updates, moves, and redisplay do not repeat it. Instances removed before presentation do not receive a late callback.
 
 #### `lifetimes.moved()`
 

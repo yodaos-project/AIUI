@@ -170,7 +170,7 @@ Widget 提供四个可选回调：
 
 | 回调 | 适合执行的操作 |
 | :--- | :--- |
-| `onCreate()` | 初始化 Widget 数据和只需执行一次的资源 |
+| `onCreate(options)` | 初始化 Widget 数据和只需执行一次的资源 |
 | `onAttach()` | 刷新即将展示的数据，恢复可见时需要的任务 |
 | `onDetach()` | 暂停只在 Widget 显示时需要的任务 |
 | `onDestroy()` | 取消请求、移除监听并释放资源 |
@@ -201,7 +201,7 @@ export default {
 ## Widget 与 Page 的区别
 
 - Widget 不进入 Page 导航栈。
-- Widget 使用 `onCreate()`、`onAttach()`、`onDetach()` 和 `onDestroy()`，不使用 Page 的 `onLoad()`、`onShow()`、`onReady()`、`onHide()` 和 `onUnload()`。
+- Widget 使用 `onCreate(options)`、`onAttach()`、`onDetach()` 和 `onDestroy()`，不使用 Page 的 `onLoad()`、`onShow()`、`onReady()`、`onHide()` 和 `onUnload()`。
 - Widget 不提供 `enableWorldAwareness()` 和 `finish()` 等 Page 专属能力。
 - Widget 可以使用数据绑定、自定义组件、事件处理、图片和 Canvas。
 - Widget 的 `family` 用于表达界面尺寸类别；布局仍应适应实际可用宽高。
@@ -212,3 +212,7 @@ export default {
 - [app.json](/AIUI/framework/open-agent-format-app-json)：查看应用入口配置
 - [组件](/AIUI/framework/open-agent-format-custom-components)：在 Widget 中复用界面组件
 - [Canvas](/AIUI/api/canvas)：在 Widget 中绘制图形
+
+## URL 查询参数
+
+`window.open('widgets/weather/index?city=hangzhou', '_widget')` 会把参数传给 `onCreate(options)`。例如通过 `options.city` 初始化城市；值为字符串，无参数时为 `{}`。完整示例见 [Widget API](/AIUI/api/framework-widget)。

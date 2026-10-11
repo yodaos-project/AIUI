@@ -1,67 +1,28 @@
-# 伪元素 (Pseudo-elements)
+# 伪元素
 
-伪元素是一个附加至选择器末尾的关键词，允许你对被选择元素的特定部分或生成的内容进行样式修改，而无需在文档结构中增加额外的节点。
+WXSS 支持在单行 `<text>` 上使用生成的 `::before` 与 `::after` 盒子，用于文字前后的标记及动画装饰。当前只实现这一子集，不等同于浏览器的完整伪元素能力。
 
-在 AIUI 的 WXSS 中，常用的伪元素及其代码示例包括：
+## 生成文字与装饰
 
-## 1. 内容生成伪元素
-
-### `::before`
-在选中元素的内容前面插入内容。通常用于添加图标、引号或装饰性线条。
-
-```css
-.tip-box::before {
-  content: "ℹ️";
-  margin-right: 10rpx;
-}
+```xml
+<text class="label" data-suffix="*">名称</text>
 ```
 
-### `::after`
-在选中元素的内容后面插入内容。常用于清除浮动（Web 开发习惯）或添加后续修饰。
-
 ```css
-/* 为必填项添加红色的星号 */
-.label-required::after {
-  content: "*";
+.label::after {
+  content: attr(data-suffix);
   color: #ff4d4f;
-  margin-left: 4rpx;
 }
 ```
 
-## 2. 交互与状态伪元素
+`content` 接受带引号的字符串或 `attr(name)`；`normal` / `none` 不生成内容。属性缺失时 `attr(name)` 得到空字符串，不支持其类型参数和回退语法。`content: ''` 可用于没有文字的背景或形状装饰。
 
-### `::placeholder`
-用于设置输入框组件（如 `input`、`textarea`）占位符文本的样式。
+`::before` 锚定在文字起点，`::after` 锚定在末端，均位于文字中线。生成盒子归 `<text>` 所有，不成为 DOM / Entity / 布局节点，不能通过 `querySelector()` 访问。
 
-```css
-.search-input::placeholder {
-  color: #999;
-  font-size: 28rpx;
-  font-style: italic;
-}
-```
+## 由文字变化触发动画
 
-## 3. 复杂组件伪元素
+通过 `event-trigger` 和 `animation-trigger` 在文字或属性内容变化时重播生成盒子的动画。重播仅对 `transform` 与 `opacity` 生效，示例与生命周期见[动画与变换](/AIUI/framework/wxss-animation)。
 
-部分内置组件支持通过伪元素访问其内部结构。例如，自定义的滚动条或开关组件。
+## 当前边界
 
-```css
-/* 修改滚动条宽度 (如果平台支持) */
-::-webkit-scrollbar {
-  width: 6rpx;
-  background-color: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3rpx;
-}
-```
-
----
-
-**注意事项：**
-- 使用 `::before` 和 `::after` 时，必须设置 `content` 属性（即使是空字符串 `""`），否则伪元素不会显示。
-- 伪元素默认是 `display: inline`，如果需要设置宽高，通常需要改为 `display: block` 或 `display: inline-block`。
-
-*完整的伪元素列表及其用法，请参考 [MDN CSS 伪元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-elements)。*
+不应将浏览器的 `::placeholder`、`::-webkit-scrollbar` 或任意容器的生成内容用法直接套用到 WXSS。输入占位符样式应使用组件支持的属性；多行 `<text>` 的生成盒子布局不在当前支持范围内。

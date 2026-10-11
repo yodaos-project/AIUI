@@ -33,3 +33,5 @@ export default {
 | 事件 | 事件数据 | 说明 |
 | --- | --- | --- |
 | `bindinput` | `{ detail: { value: string } }` | 每次文本变化时触发。 |
+
+`event.detail.value` 是变化后的完整输入文本，而不是本次按键的增量字符；新增、删除和连续输入都应直接使用该值更新数据。

@@ -184,3 +184,7 @@ Both `x-axis` and `y-axis` support these common fields:
 | `opposedPosition` | Boolean | Whether the axis appears on the opposite side. |
 
 `y-axis` additionally supports `interval` and `stripLines`. `x-axis` additionally supports `valueType` and `intervalType`.
+
+## Bar-chart value labels
+
+Vertical bar charts also support `show-value-labels="true"`. Use `value-label-format` and `value-label-color` to format values. Labels follow bar positions and data animation without changing the bar color.

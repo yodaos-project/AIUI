@@ -2,7 +2,7 @@
 
 WXSS (WeiXin Style Sheets) 是一套样式语言，用于描述 AIUI 智能体的组件样式。
 
-AIUI 沿用了微信小程序的 WXSS 规范，它与标准的 CSS (层叠样式表) 具有极高的相似度和兼容性。大部分基于 [MDN CSS 参考](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference) 中的属性和用法，你都可以在 WXSS 中直接使用。
+WXSS 采用 CSS 风格的语法，并支持适合 AIUI 界面的属性、函数和动画子集。请以本章节列出的支持范围为准。
 
 在这一章节中，你可以了解到 WXSS 的详细参考：
 
@@ -14,3 +14,6 @@ AIUI 沿用了微信小程序的 WXSS 规范，它与标准的 CSS (层叠样式
 - [值类型](./value-type)：了解属性值的单位和格式。
 - [函数](./function)：了解支持的 CSS 函数（如 calc, var）。
 - [@规则](./at-rule)：了解支持的 @ 规则（如 @import, @media）。
+
+- [动画与变换](/AIUI/framework/wxss-animation)：多动画并发、动画事件和文字变化触发的装饰。
+- [随机值 `random()`](/AIUI/framework/wxss-function)：语法、稳定取值和每次重播的随机上下文。

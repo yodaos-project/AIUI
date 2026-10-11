@@ -1,67 +1,28 @@
 # Pseudo-elements
 
-A pseudo-element is a keyword appended to the end of a selector that lets you style a specific part of the selected element or generated content, without adding extra nodes to the document structure.
+WXSS supports generated `::before` and `::after` boxes on single-line `<text>` elements for markers and animated decorations. This is a supported subset rather than the full browser pseudo-element model.
 
-In AIUI WXSS, common pseudo-elements and their code examples include:
+## Generate text and decorations
 
-## 1. Content-generating Pseudo-elements
-
-### `::before`
-Inserts content before the content of the selected element. It is commonly used to add icons, quotation marks, or decorative lines.
-
-```css
-.tip-box::before {
-  content: "ℹ️";
-  margin-right: 10rpx;
-}
+```xml
+<text class="label" data-suffix="*">Name</text>
 ```
 
-### `::after`
-Inserts content after the content of the selected element. It is often used to clear floats in web development or add trailing decorations.
-
 ```css
-/* 为必填项添加红色的星号 */
-.label-required::after {
-  content: "*";
+.label::after {
+  content: attr(data-suffix);
   color: #ff4d4f;
-  margin-left: 4rpx;
 }
 ```
 
-## 2. Interaction and State Pseudo-elements
+`content` accepts quoted strings or `attr(name)`; `normal` / `none` generate no content. A missing attribute resolves to an empty string. Typed `attr()` arguments and fallback syntax are unsupported. Use `content: ''` for decorations without text.
 
-### `::placeholder`
-Used to set the style of placeholder text for input components such as `input` and `textarea`.
+`::before` anchors at the text start and `::after` at its end, both on the text midline. Generated boxes belong to the `<text>` element and are not DOM / Entity / layout nodes; `querySelector()` cannot access them.
 
-```css
-.search-input::placeholder {
-  color: #999;
-  font-size: 28rpx;
-  font-style: italic;
-}
-```
+## Trigger animations from text changes
 
-## 3. Pseudo-elements for Complex Components
+Use `event-trigger` and `animation-trigger` to replay generated-box animations when text or attribute-generated content changes. Replays animate only `transform` and `opacity`; see [Animations and transforms](/AIUI/framework/wxss-animation) for examples and lifecycle.
 
-Some built-in components support access to their internal structure through pseudo-elements, such as customized scrollbars or switch components.
+## Current limits
 
-```css
-/* 修改滚动条宽度 (如果平台支持) */
-::-webkit-scrollbar {
-  width: 6rpx;
-  background-color: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3rpx;
-}
-```
-
----
-
-**Notes:**
-- When using `::before` and `::after`, you must set the `content` property, even if it is an empty string `""`, otherwise the pseudo-element will not be displayed.
-- Pseudo-elements are `display: inline` by default. If you need to set width and height, you usually need to change them to `display: block` or `display: inline-block`.
-
-*For the full list of pseudo-elements and their usage, see [MDN CSS Pseudo-elements](https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements).*
+Do not assume browser `::placeholder`, `::-webkit-scrollbar`, or generated content on arbitrary containers is supported in WXSS. Style input placeholders using the component's supported properties. Generated-box layout for multiline `<text>` is outside the current supported scope.

@@ -107,6 +107,8 @@ The methods do not share task state: a task created by `synthesize()` does not j
 - **[Speech Recognition](/AIUI/api/ai-speech-recognition)**: Learn how to convert user speech into text.
 - **[Large Language Model](/AIUI/api/ai-language-model)**: Learn how to generate reply content that can be spoken aloud.
 
+`SpeechAudioPlayer.textTrack` cues retain identity across lists and ID lookup. Keep a cue object to edit it or remove it by identity. See [AudioPlayer](/AIUI/api/media-audio-player) for the full text-track API.
+
 ## API Reference
 
 ### Entry Point
@@ -135,29 +137,44 @@ These entry points represent different workflows. Choose one based on whether yo
 
 `SpeechSynthesisUtterance` is a mutable speech-synthesis request object. Both `speechSynthesis.speak()` and `speechSynthesis.synthesize()` accept this object and handle its currently supported properties consistently.
 
-#### `new SpeechSynthesisUtterance(text)`
+#### `new SpeechSynthesisUtterance(text?)`
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
-| `text` | `string` | Yes | Initial text to speak. |
+| `text` | `string` | No | Initial text to speak; defaults to `''`. |
 
-#### Properties
+#### `utterance.text`
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `text` | `string` | `''` | Text to synthesize. |
-| `lang` | `string` | `'en-US'` | Speech-generation language. This property is not currently supported. |
-| `voice` | `string \| null` | `null` | Voice ID to use. When set to `null`, the default voice is used. |
-| `volume` | `number` | `1` | Volume. Accepts integers from `0` to `10`. |
+Writable `string`, defaulting to an empty string. Create an empty request and set text later.
 
-#### Available `voice` Values
+#### `utterance.lang`
+
+Writable `string`, defaulting to `'en-US'`; the current speech service does not use it to switch languages.
+
+#### `utterance.pitch`
+
+Writable `number`, defaulting to `1`; adjustment support depends on the speech service.
+
+#### `utterance.rate`
+
+Writable `number`, defaulting to `1`; adjustment support depends on the speech service.
+
+#### `utterance.volume`
+
+Writable `number`, defaulting to `1`. Fractional values are retained rather than converted to integers on assignment. Audible volume depends on the speech service.
+
+#### `utterance.voice`
+
+Writable `string | null`, defaulting to `null` to select the default voice.
+
+**Available voices**
 
 | Voice ID | Voice type | Recommended use |
 | --- | --- | --- |
 | `female-tianmei` | Sweet Mandarin female voice | Short Mandarin text with `tts_streaming` |
 | `English_radiant_girl` | Energetic English female voice | Short English text with `tts_streaming` |
 | `English_expressive_narrator` | Expressive English narrator | Long English text with `tts_streaming` |
-| `male-qn-qingse` | Young Mandarin male voice | Ink's current default voice and general conversation |
+| `male-qn-qingse` | Young Mandarin male voice | The runtime's current default voice and general conversation |
 | `male-qn-jingying` | Mature Mandarin male voice | Business content and assistant announcements |
 | `female-yujie` | Mature Mandarin female voice | Brand introductions and content narration |
 | `Chinese (Mandarin)_News_Anchor` | Mandarin female news voice | News and informational announcements |

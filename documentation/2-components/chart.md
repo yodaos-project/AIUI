@@ -184,3 +184,7 @@ export default {
 | `opposedPosition` | Boolean | 是否把坐标轴显示在另一侧。 |
 
 `y-axis` 还支持 `interval` 和 `stripLines`；`x-axis` 还支持 `valueType` 和 `intervalType`。
+
+## 柱状图数值标签
+
+竖向柱状图也支持 `show-value-labels="true"`，可配合 `value-label-format` 和 `value-label-color` 显示数值。标签跟随柱形位置与数据动画，不会改变柱形本身的颜色。

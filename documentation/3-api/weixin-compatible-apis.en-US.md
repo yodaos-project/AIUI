@@ -62,3 +62,27 @@ See [Media](/AIUI/api/media) for usage.
 - `wx.setBackgroundColor`: Calls the compatible page background-color API.
 
 > Web/wx switches in examples represent two API styles for the same capability. wx-only capabilities continue to use ordinary Markdown code blocks.
+
+## Check whether an API is registered
+
+```javascript
+if (wx.canIUse('request')) {
+  wx.request({ url: 'https://example.com/data' });
+}
+console.log(wx.canIUse('media.getDevices'));
+console.log(wx.canIUse('request.object.unknown')); // false
+```
+
+Pass an exact function path without the `wx.` prefix. Namespaces, unknown paths, and functions added later by the application do not count as registered capabilities. `true` establishes API availability, not permissions, device readiness, or operation success.
+
+## API Reference
+
+### `wx`
+
+#### `wx.canIUse(schema)`
+
+`schema` is a function-path string. Returns a `boolean` by matching compatible APIs registered when the current environment initializes.
+
+#### `wx.exitMiniProgram(options?)`
+
+Requests exit of the current instance and returns `undefined`. Options are optional and may include `success`, `fail`, and `complete` callbacks.

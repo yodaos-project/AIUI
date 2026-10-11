@@ -77,27 +77,27 @@ console.log(savedUser.name); // "Admin"
 
 ## 注意事项
 
-- **数据类型**: `setItem` 的 `value` 参数必须是字符串。如果传入其他类型，系统会自动将其转换为字符串。建议在存储复杂对象前手动调用 `JSON.stringify()`。
+- **数据类型**: `setItem` 的 `key` 与 `value` 会按 JavaScript 规则转换为字符串。建议在存储复杂对象前手动调用 `JSON.stringify()`。
 - **隔离性**: 存储空间是按智能体（Agent）隔离的，不同智能体之间无法访问彼此的存储数据。
 
 完整的 wx 兼容接口见[微信小程序兼容 API](/AIUI/api/weixin-compatible-apis)。
 
 ## API Reference
 
-### 接口说明
+### `Storage`
 
-#### localStorage
+#### `localStorage.getItem(key)`
 
-`localStorage` 允许你在智能体中存储键值对数据。存储在 `localStorage` 中的数据没有过期时间。
+将 key 转为字符串，返回对应字符串值；不存在时为 `null`。
 
-#### 方法
+#### `localStorage.setItem(key, value)`
 
-- **`getItem(key)`**: 获取指定键名对应的值。
-    - `key`: `String`，要获取的键名。
-    - 返回值: `String` 或 `null`（如果键名不存在）。
-- **`setItem(key, value)`**: 设置指定键名对应的值。如果键名已存在，则更新其值。
-    - `key`: `String`，要设置的键名。
-    - `value`: `String`，要设置的值。
-- **`removeItem(key)`**: 移除指定键名的数据项。
-    - `key`: `String`，要移除的键名。
-- **`clear()`**: 清除当前智能体存储的所有数据。
+将 key 和 value 按 JavaScript 字符串转换后保存；例如 `null` 保存为 `'null'`。对象应先 `JSON.stringify()`，否则通常保存为 `'[object Object]'`。返回 `undefined`。
+
+#### `localStorage.removeItem(key)`
+
+将 key 转为字符串并删除，不存在时不报错。返回 `undefined`。
+
+#### `localStorage.clear()`
+
+清空当前 Agent 的存储，返回 `undefined`。

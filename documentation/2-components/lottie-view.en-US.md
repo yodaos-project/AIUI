@@ -30,3 +30,7 @@ The `lottie-view` component is used to render Lottie animations, a JSON-based an
 Currently, the `lottie-view` component does not expose public events to WXML/JS and mainly handles loading-related events internally.
 
 See [Assets](/AIUI/framework/open-agent-format-assets) for local paths, network URLs, external images, and `.lottie` archives.
+
+## Bind attributes in slots
+
+When content is projected through custom-component slots or templates, bound attributes such as `src` use the current resolved values. Updating resource addresses or display settings with `setData()` updates projected content without recreating the entire component.

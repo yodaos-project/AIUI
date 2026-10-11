@@ -84,6 +84,24 @@ for await (const chunk of oggOpusChunks) {
 player.finish();
 ```
 
+## Add subtitles and retain cue objects
+
+```javascript
+const player = new AudioPlayer();
+const track = player.addTextTrack('subtitles', 'Subtitles', 'en-US');
+track.mode = 'hidden';
+const cue = new VTTCue(0, 2, 'Welcome to AIUI');
+cue.id = 'greeting';
+track.addCue(cue);
+console.log(track.cues.item(0) === cue); // true
+console.log(track.cues.getCueById('greeting') === cue); // true
+track.addEventListener('cuechange', () => {
+  console.log(track.activeCues.item(0)?.text ?? '');
+});
+```
+
+The same cue preserves its identity across `cues`, `activeCues`, and `getCueById()`. Modify its text or times after reading it, and pass that same object to `removeCue()`. Generated subtitles on `SpeechAudioPlayer` follow the same rule; see [Speech synthesis](/AIUI/api/ai-speech-synthesis).
+
 ## API Reference
 
 ### Constructor
@@ -150,6 +168,8 @@ The current documentation explicitly covers these `AudioPlayer` format and input
 - **Type**: `Number`
 - **Description**: The current playback position in seconds. Setting this value seeks the player to the specified position.
 
+Assigning `currentTime` performs a real seek rather than only changing the reported value. Use the player’s seek events when UI work depends on completion; the seekable range of streamed resources still depends on the player and source.
+
 #### `paused`
 - **Type**: `Boolean` (read-only)
 - **Description**: Whether the player is currently paused.
@@ -212,3 +232,117 @@ AudioPlayer provides a set of listener methods to respond to playback state chan
 #### Remove Listeners
 - Each `onXxx` method has a corresponding `offXxx([callback])` method for removing a specific callback or clearing all listeners.
 - **Example**: `player.offPlay(myPlayCallback);` or `player.offPlay();` (removes all play listeners)
+
+### `AudioPlayer`
+
+#### `player.textTracks`
+
+Read-only `TextTrackList` containing the player’s text tracks.
+
+#### `player.addTextTrack(kind, label?, language?)`
+
+Returns a new `TextTrack`. Optional label / language default to empty strings. Direct `new TextTrack()` construction is unsupported.
+
+### `TextTrack`
+
+#### `track.id`
+
+Read-only track ID string.
+
+#### `track.kind`
+
+Read-only track kind string.
+
+#### `track.label`
+
+Read-only track label string.
+
+#### `track.language`
+
+Read-only language string.
+
+#### `track.mode`
+
+Writable: `disabled`, `hidden`, or `showing`. Use `hidden` to track active cues without requiring automatic subtitle display.
+
+#### `track.cues`
+
+Read-only `TextTrackCueList` of all cues. Queries preserve cue object identity.
+
+#### `track.activeCues`
+
+Read-only `TextTrackCueList` containing cues active at the current time.
+
+#### `track.addCue(cue)`
+
+Adds a `VTTCue`, returning `undefined`. A cue already owned by a track cannot be added again.
+
+#### `track.removeCue(cue)`
+
+Removes a cue by identity, returning `undefined`; throws `NotFoundError` if it does not belong to this track.
+
+#### `cuechange / track.oncuechange`
+
+Fires when the active cue set changes; use `addEventListener()` or `oncuechange`.
+
+### `TextTrackCueList`
+
+#### `list.length`
+
+Read-only cue count.
+
+#### `list.item(index)`
+
+Returns the `VTTCue` at the index, or `null` out of range.
+
+#### `list.getCueById(id)`
+
+Returns the `VTTCue` matching an ID, or `null` if absent.
+
+### `TextTrackList`
+
+#### `list.length`
+
+Read-only track count.
+
+#### `list.item(index)`
+
+Returns the `TextTrack` at the index, or `null` out of range.
+
+#### `list.getTrackById(id)`
+
+Returns the `TextTrack` matching an ID, or `null` if absent.
+
+### `VTTCue`
+
+#### `new VTTCue(startTime, endTime, text)`
+
+Times are finite, nonnegative seconds, with endTime at least startTime.
+
+#### `cue.id`
+
+Writable ID string, defaulting to an empty string.
+
+#### `cue.startTime`
+
+Writable start time in seconds.
+
+#### `cue.endTime`
+
+Writable end time in seconds.
+
+#### `cue.text`
+
+Writable subtitle text; later list queries return the same object.
+
+#### `cue.charIndex`
+
+Read-only source-text start index, possibly `null`; primarily for generated speech subtitles.
+
+#### `cue.charLength`
+
+Read-only source-text length, possibly `null`.
+
+#### `cue.pauseOnExit`
+
+Writable `boolean`, defaulting to `false`. Currently stores the flag without automatically pausing playback; call `pause()` from application cue-change logic when needed.

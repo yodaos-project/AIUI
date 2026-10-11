@@ -33,3 +33,5 @@ Placeholder color resolves from `--input-placeholder-color`, then `--color-text-
 | Event | Event Data | Description |
 | --- | --- | --- |
 | `bindinput` | `{ detail: { value: string } }` | Fires whenever the text changes. |
+
+`event.detail.value` is the full updated input text, not the character delta from the latest key. Use it directly for additions, deletions, and continuous input.

@@ -34,9 +34,9 @@ const target = new Uint8Array(32);
 
 const result = encoder.encodeInto('AIUI', target);
 
-console.log(result.read);    // 已读取的字符数
-console.log(result.written); // 已写入的字节数
-console.log(target.slice(0, result.written)); // 编码后的有效内容
+console.log(result.read);    // UTF-16 code units read
+console.log(result.written); // Bytes written
+console.log(target.slice(0, result.written)); // Encoded output
 ```
 
 ## Decode an ArrayBuffer Returned by an API
@@ -96,73 +96,102 @@ console.log(text); // "Hello"
 - **Strict mode is better for validating input**: If you want to detect corrupted input immediately, prefer `new TextDecoder('utf-8', { fatal: true })`.
 - **BOM mainly matters in some text scenarios**: The `ignoreBOM` option is more meaningful when processing file headers or text exported from other tools.
 
-## API Reference
-
-### API Description
-
-#### TextEncoder
-
-`TextEncoder` is used to encode JavaScript strings into UTF-8 byte arrays. It is suitable for scenarios that require raw byte content, such as computing digests, generating signatures, or writing into binary buffers.
-
-It is important to note that `TextEncoder` always outputs UTF-8 encoded results. You do not need to and cannot switch to another encoding through constructor arguments.
-
-#### Properties
-
-- **`encoding`**: Always returns `"utf-8"`.
-
-#### Methods
-
-- **`encode(input?)`**: Encodes a string into a new `Uint8Array`.
-  - `input`: `String?`, the text to encode. If omitted, it is treated as an empty string.
-  - Return value: `Uint8Array`.
-- **`encodeInto(source, destination)`**: Writes the encoded result directly into an existing destination buffer.
-  - `source`: `String`, the text to encode.
-  - `destination`: `Uint8Array`, the target buffer that receives the encoded result.
-  - Return value: an object containing:
-    - `read`: the number of source characters that were read.
-    - `written`: the number of bytes written into the destination buffer.
-
-`encodeInto()` is suitable when you already have a reusable buffer and want to reduce extra allocations, especially for large text or high-frequency encoding scenarios.
-
----
-
-#### TextDecoder
-
-`TextDecoder` is used to decode byte data into strings. It is suitable for reading binary text returned by APIs, parsing file byte streams, or restoring `ArrayBuffer` / `Uint8Array` into readable text.
-
-#### Constructor
-
-- **`new TextDecoder(label?, options?)`**: Creates a decoder instance.
-  - `label`: `String?`, the encoding name. Defaults to `"utf-8"`.
-  - `options`: `Object?`, optional configuration:
-    - `fatal`: `Boolean`, whether to throw immediately when an illegal byte sequence is encountered. Defaults to `false`.
-    - `ignoreBOM`: `Boolean`, whether to ignore the byte order mark (BOM). Defaults to `false`.
-
-#### Properties
-
-- **`encoding`**: The name of the encoding used by the current decoder.
-- **`fatal`**: Whether strict decoding mode is enabled.
-- **`ignoreBOM`**: Whether BOM is ignored.
-
-#### Methods
-
-- **`decode(input?, options?)`**: Decodes byte data into a string.
-  - `input`: `ArrayBuffer | Uint8Array | DataView?`, the data to decode. If omitted, it can be used to finish a streaming decode operation.
-  - `options`: `Object?`, optional configuration:
-    - `stream`: `Boolean`, whether to continue decoding in streaming mode. Defaults to `false`.
-  - Return value: `String`.
-
-When `fatal` is `false`, invalid bytes are typically replaced with replacement characters. When `fatal` is `true`, invalid bytes cause an exception, which is more suitable for scenarios with stricter input quality requirements.
-
-#### Incremental Decoding
-
-`decode(input, { stream: true })` supports incremental decoding for streamed text. When UTF-8 characters may cross chunk boundaries, use `stream: true` to preserve the decoder's internal state between chunks, then call `decode()` one final time after all data has been read to flush any remaining bytes.
+## Process network text through an encoding stream
 
 ```javascript
-const decoder = new TextDecoder('utf-8');
-let text = '';
-
-text += decoder.decode(chunk1, { stream: true });
-text += decoder.decode(chunk2, { stream: true });
-text += decoder.decode(); // Finish streaming decode and flush remaining bytes
+const response = await fetch('https://example.com/stream');
+const textStream = response.body.pipeThrough(new TextDecoderStream('utf-8'));
+for await (const text of textStream) {
+  console.log(text);
+}
 ```
+
+`TextDecoderStream` preserves split characters and BOM state across chunks. `TextEncoderStream` accepts strings and emits UTF-8 bytes. When writing manually, consume `readable` concurrently; otherwise backpressure can leave `write()` waiting.
+
+All four encoding classes are available in pages and Agent Workers. Closing, cancellation, and error propagation follow [Streams](/AIUI/api/network-streams).
+
+## API Reference
+
+### `TextEncoder`
+
+#### `new TextEncoder()`
+
+Creates a UTF-8 encoder.
+
+#### `encoder.encoding`
+
+Read-only; always `'utf-8'`.
+
+#### `encoder.encode(input?)`
+
+Returns a new `Uint8Array`; omitted input encodes an empty string. Lone surrogates are replaced with U+FFFD.
+
+#### `encoder.encodeInto(source, destination)`
+
+Writes a string into an existing `Uint8Array` and returns `{ read, written }`. `read` counts consumed UTF-16 code units; `written` counts output bytes. Insufficient space never writes a partial UTF-8 character. Continue with `source.slice(read)`.
+
+### `TextDecoder`
+
+#### `new TextDecoder(label?, options?)`
+
+`label` defaults to `'utf-8'`; leading/trailing ASCII whitespace and case are normalized. Unknown or unsupported labels throw `RangeError`. `options` accepts `fatal` and `ignoreBOM`, both defaulting to `false`.
+
+#### `decoder.encoding`
+
+Read-only canonical encoding name.
+
+#### `decoder.fatal`
+
+Read-only `boolean`. When `true`, malformed input or incomplete characters at the end throw `TypeError`; otherwise replacement characters are used.
+
+#### `decoder.ignoreBOM`
+
+Read-only `boolean`. The default `false` removes an initial BOM for UTF encodings; `true` preserves the character. A BOM does not switch the encoding.
+
+#### `decoder.decode(input?, options?)`
+
+Returns a string. Accepts an `ArrayBuffer`, `SharedArrayBuffer`, or TypedArray / `DataView` view, decoding only the view range. `options.stream: true` preserves state across chunks; call `decode()` at the end to flush. Ordinary numeric arrays are invalid inputs.
+
+### `TextEncoderStream`
+
+#### `new TextEncoderStream()`
+
+Creates a UTF-8 encoding stream. Surrogate pairs can span input chunks; a trailing lone surrogate becomes U+FFFD on close.
+
+#### `encoderStream.encoding`
+
+Read-only; always `'utf-8'`.
+
+#### `encoderStream.readable`
+
+Read-only `ReadableStream` emitting `Uint8Array` chunks. Repeated access returns the same endpoint.
+
+#### `encoderStream.writable`
+
+Read-only `WritableStream`; input is converted to strings. Writes follow readable-side backpressure. Canceling the readable side rejects pending writes; aborting the writable side errors the readable side.
+
+### `TextDecoderStream`
+
+#### `new TextDecoderStream(label?, options?)`
+
+Uses the same labels and options as `TextDecoder`. Byte sequences can span chunks; close flushes remaining state. Fatal decoding errors propagate to both endpoints.
+
+#### `decoderStream.encoding`
+
+Read-only canonical encoding name.
+
+#### `decoderStream.fatal`
+
+Read-only fatal decoding mode.
+
+#### `decoderStream.ignoreBOM`
+
+Read-only; BOM behavior matches `TextDecoder`.
+
+#### `decoderStream.readable`
+
+Read-only `ReadableStream` emitting nonempty string chunks; the endpoint is stable.
+
+#### `decoderStream.writable`
+
+Read-only `WritableStream` accepting the same byte input types as `TextDecoder.decode()`; the endpoint is stable.

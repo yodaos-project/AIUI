@@ -171,3 +171,9 @@ export default {
 - 组件样式默认只作用于组件内部，不会泄漏到页面其他区域
 - 组件内部可以通过事件转发，将子组件事件继续向外层传递
 - `<slot>` 只能在自定义组件模板中作为内容放置位置使用；普通页面不需要直接使用它
+
+## 路径与首次可见帧
+
+`usingComponents` 指定具体文件路径。`/components/card/card` 可以对应 `card.ink`，但目录路径 `/components/card` 不会自动查找 `index.ink`；使用 index 入口时写成 `/components/card/index`。缺失或错误路径会导致加载失败，应检查入口、脚本及配置文件。
+
+`lifetimes.ready()` 在包含该组件的首帧实际呈现后每个实例触发一次。后续动态挂载的新组件也等待自身内容呈现；`setData()` 更新不会重复触发。详见 [Component API](/AIUI/api/framework-component)。

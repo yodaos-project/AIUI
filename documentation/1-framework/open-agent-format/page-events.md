@@ -244,3 +244,9 @@ export default {
 - [页面概览](/AIUI/framework/open-agent-format-page)
 - [页面定义](/AIUI/framework/open-agent-format-page-definition)
 - [生命周期](/AIUI/framework/open-agent-format-page-lifecycle)
+
+## 动画事件
+
+`bindanimationstart`、`bindanimationiteration`、`bindanimationend`、`bindanimationcancel` 接收 `AnimationEvent`。事件携带 `animationName`、以秒计的 `elapsedTime` 和 `pseudoElement`；也可在 `detail` 中读取这三个字段。事件冒泡到 Page / Widget，可使用 `catch` 或 `stopPropagation()` 截断。
+
+动画回调中可以同步调用 `setData()`。节点移除或入口关闭时，活动动画先收到取消事件，再进入卸载 / 销毁回调。完整例子见[动画与变换](/AIUI/framework/wxss-animation)。

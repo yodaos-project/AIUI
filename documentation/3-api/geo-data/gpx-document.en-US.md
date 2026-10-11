@@ -75,6 +75,8 @@ export default {
 
 Use `toBlob()` when the result needs to be passed or saved as a binary object. The returned MIME type is `application/gpx+xml`.
 
+Input must contain one complete `<gpx>...</gpx>` root. Truncated XML, route fragments without a root, multiple GPX roots, and mismatched closing tags throw errors. Do not treat these inputs as empty routes.
+
 ## API Reference
 
 ### `new GPXDocument(input?)`

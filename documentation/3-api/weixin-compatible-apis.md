@@ -62,3 +62,27 @@ AIUI 提供以下微信小程序风格的兼容接口，便于迁移或复用已
 - `wx.setBackgroundColor`：调用页面背景色兼容接口。
 
 > 代码示例中的 Web/wx 切换只用于表达同一能力的两种 API Style。仅支持 wx 的能力仍使用普通 Markdown 代码块。
+
+## 查询接口是否注册
+
+```javascript
+if (wx.canIUse('request')) {
+  wx.request({ url: 'https://example.com/data' });
+}
+console.log(wx.canIUse('media.getDevices'));
+console.log(wx.canIUse('request.object.unknown')); // false
+```
+
+传入不带 `wx.` 前缀的精确函数路径。命名空间、未知路径和之后由应用自行添加的函数不算已注册能力。返回 `true` 只表示接口存在，不保证权限、设备状态或请求成功。
+
+## API Reference
+
+### `wx`
+
+#### `wx.canIUse(schema)`
+
+`schema` 为函数路径字符串，返回 `boolean`；匹配当前运行环境初始化时注册的兼容接口。
+
+#### `wx.exitMiniProgram(options?)`
+
+请求退出当前实例，返回 `undefined`。`options` 可省略；提供时可包含 `success`、`fail`、`complete` 回调。

@@ -171,3 +171,9 @@ export default {
 - Component styles are scoped to the component subtree and do not leak to the page
 - Child component events can be forwarded outward through parent components when needed
 - Use `<slot>` as a content insertion point inside a custom component template; regular pages do not need to use it directly
+
+## Paths and the first visible frame
+
+`usingComponents` identifies a concrete file path. `/components/card/card` can resolve to `card.ink`, but directory path `/components/card` does not automatically search for `index.ink`; specify `/components/card/index`. Missing or incorrect paths fail loading; check entry, script, and configuration files.
+
+`lifetimes.ready()` runs once per instance after a frame containing that component is actually presented. Dynamically mounted components wait for their own content to be presented. Later `setData()` updates do not repeat it. See [Component API](/AIUI/api/framework-component).

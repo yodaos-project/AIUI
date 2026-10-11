@@ -107,6 +107,8 @@ player.play();
 - **[语音识别](/AIUI/api/ai-speech-recognition)**：查看如何把用户语音转换成文本。
 - **[大语言模型](/AIUI/api/ai-language-model)**：查看如何生成可播报的回复内容。
 
+`SpeechAudioPlayer.textTrack` 的 cue 在列表与 ID 查询之间保持对象身份，可以保留对象、修改属性并按同一对象删除。完整字幕接口见 [AudioPlayer](/AIUI/api/media-audio-player)。
+
 ## API Reference
 
 ### 入口
@@ -135,29 +137,44 @@ player.play();
 
 `SpeechSynthesisUtterance` 是一个可修改的语音合成请求对象。`speechSynthesis.speak()` 和 `speechSynthesis.synthesize()` 都接收该对象，并对当前支持的属性采用相同的处理方式。
 
-#### `new SpeechSynthesisUtterance(text)`
+#### `new SpeechSynthesisUtterance(text?)`
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `text` | `string` | 是 | 初始播报文本。 |
+| `text` | `string` | 否 | 初始播报文本，省略时为 `''`。 |
 
-#### 属性
+#### `utterance.text`
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| `text` | `string` | `''` | 要合成的文本。 |
-| `lang` | `string` | `'en-US'` | 语音生成语言，当前不支持。 |
-| `voice` | `string \| null` | `null` | 要使用的音色 ID；为 `null` 时使用默认音色。 |
-| `volume` | `number` | `1` | 音量，取值范围为整数 `0` 到 `10`。 |
+可写的 `string`，默认空字符串；可以先创建空请求，再设置文本。
 
-#### `voice` 可用音色
+#### `utterance.lang`
+
+可写的 `string`，默认 `'en-US'`；当前语音服务不支持用此属性切换语言。
+
+#### `utterance.pitch`
+
+可写的 `number`，默认 `1`；是否支持调整由语音服务决定。
+
+#### `utterance.rate`
+
+可写的 `number`，默认 `1`；是否支持调整由语音服务决定。
+
+#### `utterance.volume`
+
+可写的 `number`，默认 `1`；可保存小数值，不会在对象赋值时自动转换为整数。实际音量效果取决于语音服务。
+
+#### `utterance.voice`
+
+可写的 `string | null`，默认 `null`，此时使用默认音色。
+
+**可用音色**
 
 | Voice ID | 类型 | 用途 |
 | --- | --- | --- |
 | `female-tianmei` | 中文甜美女声 | `tts_streaming` 中文短文本 |
 | `English_radiant_girl` | 英文活力女声 | `tts_streaming` 英文短文本 |
 | `English_expressive_narrator` | 英文叙事声 | `tts_streaming` 英文长文本 |
-| `male-qn-qingse` | 中文青年男声 | Ink 当前默认音色、通用对话 |
+| `male-qn-qingse` | 中文青年男声 | 运行时当前默认音色、通用对话 |
 | `male-qn-jingying` | 中文成熟男声 | 商务、助手播报 |
 | `female-yujie` | 中文成熟御姐 | 品牌介绍、内容解说 |
 | `Chinese (Mandarin)_News_Anchor` | 中文新闻女声 | 新闻和信息播报 |

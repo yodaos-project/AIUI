@@ -19,3 +19,5 @@ AIUI 提供音频播放、短音效、音频处理、视频播放和媒体采集
 - **[音频处理](/AIUI/api/media-web-audio)**：生成声音、播放 PCM 数据、调整声音，或分析麦克风的音量、波形和频率。
 - **[视频播放](/AIUI/api/media-video)**：查看 `<video>` 组件与 `VideoContext` 播放控制接口。
 - **[媒体采集](/AIUI/api/media-media-capture)**：使用 `navigator.mediaDevices`、`ImageCapture`、`MediaRecorder` 以及 wx 风格接口完成拍照、录音和录像。
+
+- **[WebRTC](/AIUI/api/media-webrtc)**：实时音频与数据通道，依赖设备联网；应用自行完成信令交换。

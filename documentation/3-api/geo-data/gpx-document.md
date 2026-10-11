@@ -75,6 +75,8 @@ export default {
 
 需要以二进制对象传递或保存时，可以使用 `toBlob()`。返回结果的 MIME 类型是 `application/gpx+xml`。
 
+读取输入时必须包含一个完整的 `<gpx>...</gpx>` 根元素。截断 XML、只有路线片段、多个 GPX 根或错误闭合会抛出异常；不要把这些输入当作空路线继续处理。
+
 ## API Reference
 
 ### `new GPXDocument(input?)`

@@ -104,3 +104,7 @@ Runs when the user releases a key. `event.code` identifies the key. Some keys ha
 #### `onVoiceWakeup(VoiceWakeupEvent event)`
 
 Runs after the host detects voice wakeup. `event.keyword` contains the matched wake word. This event also passes through the active Page or Widget first, so use the App callback for voice-wakeup handling shared across pages.
+
+#### `onNetworkStatus(event)`
+
+Runs when network status changes. `event.online` is a boolean; `event.status` is `'online'` or `'offline'`. Read connection type and quality from [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator). Online status does not guarantee request success.

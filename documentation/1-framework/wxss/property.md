@@ -1,6 +1,6 @@
 # 属性 (Properties)
 
-AIUI / WXSS 支持绝大部分标准的 CSS 属性。以下是开发中最常用的属性分类及其代码示例：
+WXSS 支持以下常用属性，具体范围与浏览器 CSS 不完全相同。
 
 ## 1. 布局与定位
 
@@ -118,3 +118,24 @@ Flex 是智能体界面开发的首选布局方式。
 ---
 
 *完整的 CSS 属性字典及详细说明，请参考 [MDN CSS 属性参考](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Reference#属性)。*
+
+## 单行省略与独立边框
+
+```css
+.title {
+  width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.card {
+  border-top: 1px solid #444;
+  border-right: 2px dashed #40ff5e;
+  padding: calc(12px + 4rpx);
+  color: #fff !important;
+}
+```
+
+`text-overflow: ellipsis` 用于受限宽度的单行文字；不会自动实现多行截断。边框支持各边独立的宽度、样式和颜色，以及对应简写。`!important` 按优先级参与样式选择，也可阻止 keyframe 覆盖该属性。
+
+尺寸与 margin / padding / gap / 定位可使用支持的 `calc()`；语法边界和随机数值见[函数](/AIUI/framework/wxss-function)。并发动画与事件见[动画与变换](/AIUI/framework/wxss-animation)。

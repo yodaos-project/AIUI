@@ -19,8 +19,6 @@ Used to import an external WXSS stylesheet. It must appear at the very top of th
 @import "./common.wxss";
 
 .container {
-  /* 继承来自 common.wxss 的类 */
-  composes: flex-center; 
   height: 100vh;
 }
 ```
@@ -29,25 +27,9 @@ Used to import an external WXSS stylesheet. It must appear at the very top of th
 Used to apply different styles based on device characteristics such as screen width, resolution, or theme.
 
 ```css
-/* 基础样式：适配浅色模式 */
-.page {
-  background-color: #ffffff;
-  color: #333333;
-}
-
-/* 适配深色模式 */
-@media (prefers-color-scheme: dark) {
-  .page {
-    background-color: #1a1a1a;
-    color: #eeeeee;
-  }
-}
-
-/* 适配超大屏幕设备 */
+.sidebar { display: none; }
 @media (min-width: 1200px) {
-  .sidebar {
-    display: block;
-  }
+  .sidebar { display: block; }
 }
 ```
 
@@ -89,3 +71,5 @@ Used to load custom web fonts.
 ---
 
 *For more details about at-rules, see [MDN CSS At-rules](https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule).*
+
+After `@import`, combine classes in WXML with `class="container flex-center"`; framework-specific `composes` is unsupported. See [Animations and transforms](/AIUI/framework/wxss-animation) for concurrent keyframes, events, and replay.

@@ -333,6 +333,8 @@ Each message must use `user` or `assistant` as its `role`, and `text` must not b
 - **[Large Language Model](/AIUI/api/ai-language-model)**: Learn how to pass recognized text to the model for further processing.
 - **[Media Capture](/AIUI/api/media-media-capture)**: See complete microphone, camera, and `MediaRecorder` usage.
 
+A separate `SPEECH_RECOGNITION` permission is no longer required. Microphone capture still requires `RECORD_AUDIO` and platform microphone authorization; external-audio sessions do not open the microphone themselves.
+
 ## API Reference
 
 ### `SpeechRecognition`

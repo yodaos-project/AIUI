@@ -55,3 +55,5 @@ wx.request({
 - **[Streams](/AIUI/api/network-streams)**: Learn how to read, write, and transform data in chunks.
 - **[Device](/AIUI/api/device)**: See Bluetooth connectivity and device sensor capabilities, including accelerometer, orientation, and gyroscope APIs.
 - **[WeChat Mini Program Compatible APIs](/AIUI/api/weixin-compatible-apis)**: See compatible APIs such as `wx.request`, `wx.connectSocket`, and `wx.createEventSource`.
+
+- **[WebRTC](/AIUI/api/media-webrtc)**: real-time audio and data channels, requiring device network connectivity and application-managed signaling.

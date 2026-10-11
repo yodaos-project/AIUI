@@ -68,27 +68,180 @@ await writer.close();
 
 Await the Promise returned by `write()` so the destination has time to process each chunk.
 
-## Current Limitations
+## Create a stream from iterable data
 
-- `ReadableStream.tee()` is not supported and throws when called.
-- Call `releaseLock()` when a reader or writer is no longer needed.
-- `pipeTo()` supports `preventClose`, `preventAbort`, `preventCancel`, and `signal` options.
+```javascript
+const source = ReadableStream.from(['first', 'second']);
+for await (const chunk of source) {
+  console.log(chunk);
+}
+```
+
+Async iteration locks the stream and releases the lock on completion. An early `break` cancels the source by default. Use `stream.values({ preventCancel: true })` to allow later reading.
+
+## Branch reading and byte buffers
+
+`stream.tee()` returns two branches. Ordinary streams preserve chunk object identity, so mutations can affect both branches. Byte streams give branches independent byte buffers. Canceling only one branch does not immediately cancel the source; its cancellation Promise waits for the other branch or the source to finish.
+
+Network response bodies support BYOB reading:
+
+```javascript
+const response = await fetch('https://example.com/file');
+const reader = response.body.getReader({ mode: 'byob' });
+try {
+  let buffer = new ArrayBuffer(4096);
+  while (true) {
+    const { value, done } = await reader.read(new Uint8Array(buffer));
+    if (done) break;
+    console.log(value.byteLength);
+    buffer = value.buffer;
+  }
+} finally {
+  reader.releaseLock();
+}
+```
+
+BYOB transfers ownership of the input buffer. Use the returned `value` afterwards; do not reuse the original view. Only byte streams support BYOB. Release the old reader's lock before switching readers.
+
+## Pipe completion and errors
+
+`pipeTo()` waits for destination backpressure and writes. By default, source completion closes the destination, a source error aborts the destination, and a destination error cancels the source. Control these actions with `preventClose`, `preventAbort`, and `preventCancel`; use `signal` to abort the pipe. Both locks are released after shutdown or failure cleanup.
+
+Release reader or writer locks when they are no longer needed.
 
 ## API Reference
 
 ### `ReadableStream`
 
-The constructor accepts an optional `underlyingSource` and queuing strategy. A source can implement `start(controller)`, `pull(controller)`, and `cancel(reason)`.
+#### `new ReadableStream(underlyingSource?, strategy?)`
 
-| Member | Description |
-| --- | --- |
-| `locked` | Whether a reader currently locks the stream. |
-| `getReader()` | Obtains a reader. |
-| `cancel(reason?)` | Cancels reading. |
-| `pipeThrough(transform, options?)` | Returns a readable stream passing through a transform. |
-| `pipeTo(destination, options?)` | Writes the data to a destination stream. |
+The source can implement `start(controller)`, `pull(controller)`, and `cancel(reason)`. `type: 'bytes'` creates a byte stream with optional `autoAllocateChunkSize`; `strategy.size` is invalid for byte streams.
 
-A reader provides `read()`, `cancel()`, `releaseLock()`, and `closed`.
+#### `ReadableStream.from(iterable)`
+
+Creates a stream from a synchronous or asynchronous iterable, advancing its iterator as data is requested.
+
+#### `stream.locked`
+
+Read-only `boolean` indicating whether a reader or pipe locks the stream.
+
+#### `stream.getReader(options?)`
+
+Returns a `ReadableStreamDefaultReader` by default, or a `ReadableStreamBYOBReader` for `{ mode: 'byob' }`. Locked streams and BYOB requests on ordinary streams throw `TypeError`.
+
+#### `stream.cancel(reason?)`
+
+Returns `Promise<void>`, discards queued chunks, and notifies the source. Cancel locked streams through their reader.
+
+#### `stream.tee()`
+
+Returns two readable branches and locks the original stream. If both branches cancel, the source receives an array of both reasons.
+
+#### `stream.pipeTo(destination, options?)`
+
+Returns `Promise<void>`, piping to a `WritableStream` with backpressure and cleanup. Options are `preventClose`, `preventAbort`, `preventCancel`, and `signal`.
+
+#### `stream.pipeThrough(transform, options?)`
+
+Accepts `{ readable, writable }` and returns its readable endpoint. Options match `pipeTo()`.
+
+#### `stream.values(options?)`
+
+Returns an async iterator. Early exit cancels by default; `preventCancel: true` only releases the lock.
+
+#### `stream[Symbol.asyncIterator]()`
+
+Supports `for await...of`, equivalent to `values()` with default options.
+
+### `ReadableStreamDefaultReader`
+
+#### `reader.read()`
+
+A default reader returns `Promise<{ value, done }>`. `done` is `true` at the end; stream errors reject the Promise.
+
+#### `reader.closed`
+
+Read-only `Promise<void>`; resolves on close and rejects on error or early lock release.
+
+#### `reader.cancel(reason?)`
+
+Returns `Promise<void>`, canceling the stream locked by this reader.
+
+#### `reader.releaseLock()`
+
+Releases the lock. Pending reads fail with `TypeError`; queued data remains in the stream.
+
+### `ReadableStreamBYOBReader`
+
+#### `reader.read(view, options?)`
+
+A BYOB reader accepts a nonempty TypedArray / `DataView` and returns a Promise containing a new view. `options.min` defaults to `1` and counts view elements; close may return fewer. The buffer is transferred.
+
+#### `reader.closed`
+
+Read-only `Promise<void>`; resolves on close and rejects on error or early lock release.
+
+#### `reader.cancel(reason?)`
+
+Returns `Promise<void>`, canceling the stream locked by this reader.
+
+#### `reader.releaseLock()`
+
+Releases the lock. Pending reads fail with `TypeError`; queued data remains in the stream.
+
+### `ReadableStreamDefaultController`
+
+#### `controller.desiredSize`
+
+Read-only `number | null` for observing backpressure; `null` when the stream is errored.
+
+#### `controller.enqueue(chunk)`
+
+Default controllers enqueue arbitrary chunks. Byte controllers accept byte views and transfer their buffers.
+
+#### `controller.close()`
+
+Closes the stream after queued data is consumed.
+
+#### `controller.error(reason?)`
+
+Errors the stream, discards the queue, and rejects pending reads.
+
+### `ReadableByteStreamController`
+
+#### `controller.desiredSize`
+
+Read-only `number | null` for observing backpressure; `null` when the stream is errored.
+
+#### `controller.enqueue(chunk)`
+
+Default controllers enqueue arbitrary chunks. Byte controllers accept byte views and transfer their buffers.
+
+#### `controller.close()`
+
+Closes the stream after queued data is consumed.
+
+#### `controller.error(reason?)`
+
+Errors the stream, discards the queue, and rejects pending reads.
+
+#### `controller.byobRequest`
+
+Available only on byte controllers; returns the current `ReadableStreamBYOBRequest` or `null`.
+
+### `ReadableStreamBYOBRequest`
+
+#### `request.view`
+
+Read-only byte view of the range to fill.
+
+#### `request.respond(bytesWritten)`
+
+Reports the number of bytes written. Do not reuse the old request afterwards; a closed stream can complete a pending request with `0`.
+
+#### `request.respondWithNewView(view)`
+
+Completes the request with a new view compatible with the pending buffer range.
 
 ### `WritableStream`
 
@@ -176,10 +329,45 @@ Returns `Promise<void>`, aborts the stream, discards unprocessed chunks, and pas
 
 Releases the writer's lock so other code can call `getWriter()`. Do not release the lock while a `write()` is pending. The writer can no longer operate on the stream after release.
 
+
 ### `TransformStream`
 
-The constructor accepts a transformer implementing `start()`, `transform()`, and `flush()`. The instance receives input through `writable` and emits transformed output through `readable`.
+#### `new TransformStream(transformer?, writableStrategy?, readableStrategy?)`
 
-### Queuing Strategies
+The transformer can implement `start(controller)`, `transform(chunk, controller)`, and `flush(controller)`; callbacks may return Promises.
 
-`CountQueueingStrategy` measures the queue by chunk count. `ByteLengthQueueingStrategy` uses `byteLength`. Both accept a `highWaterMark` in their constructor options.
+#### `transform.readable`
+
+Read-only `ReadableStream` emitting transformed chunks.
+
+#### `transform.writable`
+
+Read-only `WritableStream` accepting input; transform errors propagate to both endpoints.
+
+### `CountQueueingStrategy`
+
+#### `new CountQueueingStrategy({ highWaterMark })`
+
+Sets the desired queue capacity.
+
+#### `strategy.highWaterMark`
+
+Read-only target queue capacity.
+
+#### `strategy.size(chunk)`
+
+Counts chunks, returning `1` per chunk.
+
+### `ByteLengthQueueingStrategy`
+
+#### `new ByteLengthQueueingStrategy({ highWaterMark })`
+
+Sets the desired queue capacity.
+
+#### `strategy.highWaterMark`
+
+Read-only target queue capacity.
+
+#### `strategy.size(chunk)`
+
+Measures the chunk by its `byteLength`.
