@@ -41,7 +41,7 @@ npm run --silent bench -- inspect 002-create-counter
 | [云端集成](./packages/cloud-integration/) | 对接第三方智能体与 Rokid Glasses 通知的 Node.js 包。 |
 | [编码基准测试](./bench/README.zh-CN.md) | 50 道任务、评分工具及 AIUI 编码智能体评估流程。 |
 
-可以从[能力展示示例](./samples/capabilities/)开始，再按需查看[陀螺仪诊断](./samples/gyroscope-test/)、[设备信息](./samples/navigator-info/)、[扫码](./samples/scanner/)和[语音合成](./samples/tts/)示例。
+可以从[能力展示示例](./samples/capabilities/)开始，再按需查看[陀螺仪诊断](./samples/gyroscope-test/)、[设备信息](./samples/navigator-info/)、[扫码](./samples/scanner/)、[语音合成](./samples/tts/)和[实时语音智能](./samples/realtime-voice-intelligence/)示例。
 
 ## 用 AI 编码助手开发
 

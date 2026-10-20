@@ -1,0 +1,37 @@
+/* Shared across all pages: design tokens + pending-action loading indicator
+   (see lib/action-feedback.js). */
+
+:root {
+  --rvi-green: #40ff5e;
+  --rvi-green-fill: rgba(64, 255, 94, 0.2);
+  --rvi-green-border: rgba(64, 255, 94, 0.6);
+  --rvi-text: #ffffff;
+  --rvi-text-body: rgba(255, 255, 255, 0.85);
+  --rvi-text-secondary: rgba(255, 255, 255, 0.65);
+  --rvi-text-hint: rgba(255, 255, 255, 0.5);
+}
+
+/* Three-dot pulse shown while a tapped action is still pending (>200ms). */
+.loading {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: var(--rvi-green);
+  animation: rvi-loading-pulse 0.9s ease-in-out infinite;
+}
+
+.loading-dot-2 { animation-delay: 0.15s; }
+.loading-dot-3 { animation-delay: 0.3s; }
+
+@keyframes rvi-loading-pulse {
+  0% { opacity: 0.25; }
+  50% { opacity: 1; }
+  100% { opacity: 0.25; }
+}

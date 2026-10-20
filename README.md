@@ -41,7 +41,7 @@ See the [benchmark guide](./bench/README.md) to prepare a workspace, grade an ag
 | [Cloud integration](./packages/cloud-integration/) | A Node.js package for third-party agents and Rokid Glasses notifications. |
 | [Coding benchmark](./bench/README.md) | 50 tasks, grading tools, and workflows for evaluating AIUI coding agents. |
 
-Start with the [capabilities showcase](./samples/capabilities/), or explore focused [gyroscope](./samples/gyroscope-test/), [device info](./samples/navigator-info/), [scanner](./samples/scanner/), and [text-to-speech](./samples/tts/) examples.
+Start with the [capabilities showcase](./samples/capabilities/), or explore focused [gyroscope](./samples/gyroscope-test/), [device info](./samples/navigator-info/), [scanner](./samples/scanner/), [text-to-speech](./samples/tts/), and [realtime voice intelligence](./samples/realtime-voice-intelligence/) examples.
 
 ## Develop with an AI coding assistant
 

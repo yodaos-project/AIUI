@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "agentId": "develop.rokid.samples.realtimevoice",
+  "agentName": "实时语音智能",
+  "agentDesc": "需要管理语音提示词、进行实时语音对话（边说边转写并实时生成回复）时使用。",
+  "agentPrompt": "",
+  "agentLogo": "",
+  "nativeVersion": "1.0.0",
+  "inkVersion": ">=0.17.0",
+  "permissions": ["RECORD_AUDIO"]
+}

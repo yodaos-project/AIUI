@@ -1,0 +1,20 @@
+{
+  "agentName": "实时语音智能",
+  "agentDesc": "麦克风 PCM → SpeechRecognitionSession VAD 断句 → 提示词组装 → LanguageModel 流式回复",
+  "pages": [
+    "pages/prompt-list/index",
+    "pages/prompt-select/index",
+    "pages/prompt-edit/index",
+    "pages/mic-mode/index",
+    "pages/realtime/index"
+  ],
+  "permissions": [
+    "RECORD_AUDIO"
+  ],
+  "window": {
+    "navigationBarTitleText": "实时语音智能",
+    "viewport": {
+      "width": "device-width"
+    }
+  }
+}
