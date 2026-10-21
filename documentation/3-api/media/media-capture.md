@@ -278,6 +278,59 @@ await recorder.start({
 
 Web 的每个 `event.data` 都是编码后的 `Blob`。`wx` 的 `frameBuffer` 是 `ArrayBuffer`；Opus 模式还会先通过 `onHeader()` 提供初始化 header。处理流式音频时，应按收到的顺序保存或发送 header 和音频分片。
 
+## 观察录音中的语音活动
+
+录音时可以启用可选的 VAD（语音活动检测），随音频分片读取当前的语音活动状态。下面分别使用 Web 和 `wx` API 录制音频，并读取分片中的 `voiceActive`。
+
+<!-- aiui-api-style default=web -->
+
+**Web**
+
+```javascript api-style=web
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+const recorder = new MediaRecorder(stream, {
+  mimeType: 'audio/wav',
+  vad: { enabled: true, silenceDurationMs: 500 },
+});
+
+recorder.addEventListener('dataavailable', ({ data, voiceActive }) => {
+  console.log('音频分片', data.size, '语音活动', voiceActive);
+});
+recorder.addEventListener('stop', () => {
+  stream.getTracks().forEach((track) => track.stop());
+});
+
+recorder.start(100);
+// 完成录音后调用：
+// recorder.stop();
+```
+
+**wx**
+
+```javascript api-style=wx
+const recorder = wx.media.getRecorderManager();
+if (!recorder) throw new Error('当前环境不支持录音');
+
+recorder.onFrameRecorded(({ frameBuffer, voiceActive }) => {
+  console.log('音频分片', frameBuffer.byteLength, '语音活动', voiceActive);
+});
+recorder.onError(({ errMsg }) => {
+  console.error('录音失败', errMsg);
+});
+
+await recorder.start({
+  format: 'pcm',
+  frameSize: 100,
+  vad: { enabled: true, silenceDurationMs: 500 },
+});
+// 完成录音后调用：
+// await recorder.stop();
+```
+
+<!-- /aiui-api-style -->
+
+VAD 只为音频分片附加状态，不会裁剪静音、自动停止录音或生成识别文字。它与 `SpeechRecognitionSession` 的 `segmentation` 分段设置相互独立。不支持 VAD 的环境仍可正常录音；读取状态前应检查 `voiceActive === undefined`，不能把缺省状态当作“未检测到语音”。
+
 ## 录制视频流
 
 录制视频时，需要同时请求摄像头和麦克风，再把包含两种轨道的 `MediaStream` 交给 `MediaRecorder`。示例会选择当前可用的视频格式，每秒产生一个视频分片；停止后把所有分片合并为一个可保存或上传的 `Blob`。
@@ -528,11 +581,27 @@ bitmap.close();
 
 `Canvas` 是 AIUI 提供的离屏画布，不需要创建 DOM 元素。`ImageBitmap` 本身不提供 `arrayBuffer()`；需要原始像素时，将它绘制到离屏画布，再通过 `getImageData()` 读取。示例中的 `buffer` 是独立的 `ArrayBuffer`，像素按 RGBA 顺序排列，每个通道占 1 字节，因此总字节数为 `width * height * 4`。它不是 JPEG 或 PNG 文件字节。
 
+### `MediaRecordingVADOptions`
+
+Web 的 `MediaRecorderOptions.vad` 和 `RecorderManager.start()` 的 `options.vad` 使用相同的录音 VAD 选项。省略 `vad` 时不开启检测。当前环境不支持 VAD，或请求的静音延迟超出当前环境支持的范围时，继续正常录音，但不附加 `voiceActive`。
+
+#### `enabled`
+
+可选的 `boolean`，默认 `false`。设为 `true` 时请求在音频分片中提供语音活动状态；录音可用并不代表 VAD 一定可用，应检查每个分片的 `voiceActive`。
+
+#### `silenceDurationMs`
+
+可选的 `number`，默认 `500`。表示检测到语音后，报告未激活状态前所需的连续静音毫秒数。必须是 `0` 到 `4294967295`（含端点）之间的整数；只有 `enabled: true` 时才请求应用该设置。它不是 `MediaRecorder.start(timeslice)` 或 `options.frameSize` 的分片间隔，也不会决定录音何时停止。
+
+`vad` 必须是选项对象，`enabled` 必须是布尔值，`silenceDurationMs` 必须符合上述数值要求。字段类型或数值无效时，`MediaRecorder` 构造函数抛出 `TypeError`，`RecorderManager.start()` 返回的 Promise 则以 `TypeError` 拒绝；合法参数在当前环境不受支持时，按上述规则继续普通录音。
+
 ### `MediaRecorder`
 
 #### `new MediaRecorder(stream, options?)`
 
 为指定 `MediaStream` 创建录制器。构造后 `state` 为 `'inactive'`。`options.mimeType` 用于选择输出格式；省略时默认使用 `audio/wav`。AIUI 当前支持 `audio/wav`、`audio/ogg;codecs=opus`、`video/webm;codecs=vp8,opus` 与 `video/mp4`，不支持的格式会抛出 `TypeError`。开始录制时，流中必须至少有一条音频或视频轨道。
+
+`options.vad` 接受可选的 [`MediaRecordingVADOptions`](#mediarecordingvadoptions)，用于请求音频分片的语音活动状态。应在构造时设置，然后在 `dataavailable` 事件中读取 `event.voiceActive`。
 
 #### `state`
 
@@ -588,6 +657,16 @@ const recorder = new MediaRecorder(stream, { mimeType });
 
 有新的录制数据分片时触发。`event.data` 是包含编码数据的 `Blob`；分片可能由 `timeslice`、`requestData()` 或 `stop()` 产生。异步处理分片时应保留顺序，并根据 `Blob.type` 解释编码格式。
 
+音频分片还可能包含可选的只读 `event.voiceActive`：
+
+| 值 | 含义 |
+| --- | --- |
+| `true` | 该分片对应的语音活动状态为激活。 |
+| `false` | 该分片对应的语音活动状态为未激活，是有效的检测结果。 |
+| `undefined` | 此分片没有可用的检测状态，例如未开启或不支持 VAD；不能据此判断为静音。 |
+
+该字段是与当前音频分片对应的状态快照，不表示分片内任意位置是否曾出现语音，也不是独立的语音开始或结束事件。不要把它当作整个分片的语音占比或识别结果。仅包含初始化 header 或没有音频内容的输出也可能不带该字段。
+
 #### `start` 事件
 
 `start()` 成功进入录制状态后触发，此时 `state === 'recording'`。
@@ -642,6 +721,7 @@ const recorder = new MediaRecorder(stream, { mimeType });
 | `options.numberOfChannels` | `number` | 否 | `1` | 请求的声道数。 |
 | `options.format` | `'pcm' \| 'opus'` | 否 | `'pcm'` | 请求的编码格式。 |
 | `options.frameSize` | `number` | 否 | `250` | 音频帧回调间隔，单位为毫秒；仅正数生效。 |
+| `options.vad` | `MediaRecordingVADOptions` | 否 | 不开启 | 请求录音 VAD，字段与降级行为见[录音 VAD 选项](#mediarecordingvadoptions)。 |
 
 #### `pause()`
 
@@ -673,7 +753,9 @@ const recorder = new MediaRecorder(stream, { mimeType });
 
 #### `onFrameRecorded(callback)`
 
-注册音频帧回调。回调接收 `{ frameBuffer: ArrayBuffer, isLastFrame: false }`。`frameBuffer` 只在当前回调中表示这一分片，不包含之前已经交付的数据；当前实现不会用 `isLastFrame` 标记最后一帧，完成状态以 `onStop()` 为准。
+注册音频帧回调。回调接收 `{ frameBuffer: ArrayBuffer, isLastFrame: false, voiceActive?: boolean }`。`frameBuffer` 只在当前回调中表示这一分片，不包含之前已经交付的数据；当前实现不会用 `isLastFrame` 标记最后一帧，完成状态以 `onStop()` 为准。
+
+`voiceActive` 与 Web [`dataavailable` 事件](#dataavailable-事件)中的同名字段语义相同。`false` 是有效的未激活状态，字段缺省表示检测状态不可用；不会因为没有检测到语音而停止交付音频帧。
 
 PCM 模式下，`frameBuffer` 是去除 WAV 容器头的原始 PCM 分片。Opus 模式下，它是 Opus 有效载荷。
 

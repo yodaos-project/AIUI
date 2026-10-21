@@ -198,6 +198,34 @@ Supported media types currently include `audio/wav`, `audio/ogg;codecs=opus`, `v
 Call `isTypeSupported()` on `MediaRecorder` itself, never on an instance.
 Supported recording formats do not imply WebRTC video transport support.
 
+### Recording VAD
+
+Web `new MediaRecorder(stream, { mimeType, vad })` and
+`wx.media.getRecorderManager().start({ format, frameSize, vad })` accept the
+same optional `vad: { enabled?: boolean; silenceDurationMs?: number }` object.
+Check that `getRecorderManager()` returned a manager before using it.
+
+- `enabled` defaults to `false`; use `vad: { enabled: true }` to request detection.
+- `silenceDurationMs` defaults to `500` and must be an integer in
+  `0–4294967295`, inclusive. It requests the continuous silence delay after
+  speech before inactivity is reported. It is separate from the chunk interval
+  in `start(timeslice)` or `frameSize`.
+- Invalid field types or values cause `TypeError`: the Web constructor throws,
+  while the Promise returned by wx `start()` rejects.
+- Recording support does not guarantee VAD support. If VAD is disabled,
+  unsupported, or the requested delay is outside the environment's supported
+  range, recording continues without activity metadata.
+- Web `dataavailable` events and wx `onFrameRecorded()` callbacks expose
+  `voiceActive?: boolean`. `true` means active, `false` is a valid inactive
+  result, and `undefined` means unavailable. Check for `undefined` explicitly;
+  do not coerce an absent value to `false`.
+- The field is a snapshot associated with the delivered audio chunk, not an
+  indication that speech occurred anywhere in the chunk. Header-only or empty
+  output may omit it. Preserve the state with its chunk during async handling.
+- VAD does not trim audio, stop recording, or produce transcripts. Do not invent
+  recorder VAD events or equate recording VAD with speech recognition's
+  `segmentation` option; stop recording explicitly when the application is done.
+
 ### `ImageCapture`
 
 Construct with a video `MediaStreamTrack`. `takePhoto(options?)` returns an encoded `Blob`; `grabFrame()` returns an in-memory `ImageBitmap`.

@@ -278,6 +278,59 @@ await recorder.start({
 
 Each Web `event.data` value is an encoded `Blob`. The `wx` `frameBuffer` is an `ArrayBuffer`; in Opus mode, `onHeader()` first provides an initialization header. Store or send the header and audio chunks in the order received when processing streaming audio.
 
+## Observe Voice Activity While Recording
+
+Enable optional voice activity detection (VAD) to read the current activity state alongside recorded audio chunks. The following Web and `wx` examples record audio and read each chunk's `voiceActive` field.
+
+<!-- aiui-api-style default=web -->
+
+**Web**
+
+```javascript api-style=web
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+const recorder = new MediaRecorder(stream, {
+  mimeType: 'audio/wav',
+  vad: { enabled: true, silenceDurationMs: 500 },
+});
+
+recorder.addEventListener('dataavailable', ({ data, voiceActive }) => {
+  console.log('Audio chunk', data.size, 'voice activity', voiceActive);
+});
+recorder.addEventListener('stop', () => {
+  stream.getTracks().forEach((track) => track.stop());
+});
+
+recorder.start(100);
+// Call when recording is complete:
+// recorder.stop();
+```
+
+**wx**
+
+```javascript api-style=wx
+const recorder = wx.media.getRecorderManager();
+if (!recorder) throw new Error('Recorder is unavailable');
+
+recorder.onFrameRecorded(({ frameBuffer, voiceActive }) => {
+  console.log('Audio chunk', frameBuffer.byteLength, 'voice activity', voiceActive);
+});
+recorder.onError(({ errMsg }) => {
+  console.error('Recording failed', errMsg);
+});
+
+await recorder.start({
+  format: 'pcm',
+  frameSize: 100,
+  vad: { enabled: true, silenceDurationMs: 500 },
+});
+// Call when recording is complete:
+// await recorder.stop();
+```
+
+<!-- /aiui-api-style -->
+
+VAD only attaches activity metadata to audio chunks. It does not trim silence, stop recording automatically, or produce recognized text. It is independent of `SpeechRecognitionSession`'s `segmentation` setting. Recording continues normally when VAD is unavailable. Check `voiceActive === undefined` before using the state; a missing state does not mean that no voice was detected.
+
 ## Record a Video Stream
 
 To record video, request both the camera and microphone and pass the `MediaStream` containing both tracks to `MediaRecorder`. The example selects an available video format and produces one video chunk per second. After recording stops, it combines all chunks into a `Blob` that can be saved or uploaded.
@@ -528,11 +581,27 @@ bitmap.close();
 
 `Canvas` is an offscreen canvas provided by AIUI and does not require a DOM element. `ImageBitmap` does not provide `arrayBuffer()` itself. To obtain raw pixels, draw the bitmap to the offscreen canvas and read it with `getImageData()`. The `buffer` in this example is an independent `ArrayBuffer`. Its pixels are stored in RGBA order with one byte per channel, so the total byte length is `width * height * 4`. It does not contain JPEG or PNG file bytes.
 
+### `MediaRecordingVADOptions`
+
+Web `MediaRecorderOptions.vad` and `RecorderManager.start()`'s `options.vad` use the same recording VAD options. Omitting `vad` leaves detection disabled. When VAD is unavailable or the requested silence delay is outside the current environment's supported range, recording continues normally without `voiceActive` metadata.
+
+#### `enabled`
+
+An optional `boolean`, defaulting to `false`. Set it to `true` to request voice activity metadata on audio chunks. Recording support does not guarantee VAD support; check each chunk's `voiceActive` field.
+
+#### `silenceDurationMs`
+
+An optional `number`, defaulting to `500`. It specifies the milliseconds of continuous silence after detected speech before inactivity is reported. It must be an integer from `0` to `4294967295`, inclusive; the setting is requested only when `enabled: true`. It is separate from the chunk interval in `MediaRecorder.start(timeslice)` or `options.frameSize`, and does not determine when recording stops.
+
+`vad` must be an options object, `enabled` must be a boolean, and `silenceDurationMs` must meet the numeric requirements above. Invalid field types or values make the `MediaRecorder` constructor throw `TypeError` or the Promise returned by `RecorderManager.start()` reject with `TypeError`. Valid options that are unsupported in the current environment fall back to ordinary recording as described above.
+
 ### `MediaRecorder`
 
 #### `new MediaRecorder(stream, options?)`
 
 Creates a recorder for the specified `MediaStream`. Its initial `state` is `'inactive'`. `options.mimeType` selects the output format and defaults to `audio/wav`. AIUI currently supports `audio/wav`, `audio/ogg;codecs=opus`, `video/webm;codecs=vp8,opus`, and `video/mp4`; an unsupported value throws a `TypeError`. The stream must contain at least one audio or video track when recording starts.
+
+The optional `options.vad` accepts [`MediaRecordingVADOptions`](#mediarecordingvadoptions) to request voice activity metadata on audio chunks. Set it at construction, then read `event.voiceActive` in the `dataavailable` event.
 
 #### `state`
 
@@ -588,6 +657,16 @@ const recorder = new MediaRecorder(stream, { mimeType });
 
 Dispatched when a new recorded data chunk is available. `event.data` is a `Blob` containing encoded data. A chunk can be produced by `timeslice`, `requestData()`, or `stop()`. Preserve chunk order during asynchronous processing and interpret the encoding using `Blob.type`.
 
+Audio chunks may also include the optional read-only `event.voiceActive` field:
+
+| Value | Meaning |
+| --- | --- |
+| `true` | The voice activity state associated with this chunk is active. |
+| `false` | The state associated with this chunk is inactive; this is a valid detection result. |
+| `undefined` | No detection state is available for this chunk, for example because VAD is disabled or unsupported. This does not establish silence. |
+
+This field is a state snapshot associated with the current audio chunk. It does not indicate whether speech occurred anywhere within the chunk and is not a separate speech-start or speech-end event. Do not interpret it as the proportion of speech in a chunk or as a recognition result. Output containing only initialization headers or no audio may also omit the field.
+
 #### `start` event
 
 Dispatched after `start()` successfully enters the recording state. At this point, `state === 'recording'`.
@@ -642,6 +721,7 @@ Starts a new recording session and returns `Promise<void>`. Register `onFrameRec
 | `options.numberOfChannels` | `number` | No | `1` | Requested channel count. |
 | `options.format` | `'pcm' \| 'opus'` | No | `'pcm'` | Requested encoding format. |
 | `options.frameSize` | `number` | No | `250` | Audio-frame callback interval in milliseconds; only positive values apply. |
+| `options.vad` | `MediaRecordingVADOptions` | No | Disabled | Requests recording VAD. See [recording VAD options](#mediarecordingvadoptions) for fields and fallback behavior. |
 
 #### `pause()`
 
@@ -673,7 +753,9 @@ Registers a recording-stop callback. It receives `{ tempFilePath: '', duration: 
 
 #### `onFrameRecorded(callback)`
 
-Registers an audio-frame callback. It receives `{ frameBuffer: ArrayBuffer, isLastFrame: false }`. Each `frameBuffer` contains only that chunk, not bytes delivered earlier. The current implementation does not use `isLastFrame` to mark the final chunk; use `onStop()` for completion.
+Registers an audio-frame callback. It receives `{ frameBuffer: ArrayBuffer, isLastFrame: false, voiceActive?: boolean }`. Each `frameBuffer` contains only that chunk, not bytes delivered earlier. The current implementation does not use `isLastFrame` to mark the final chunk; use `onStop()` for completion.
+
+`voiceActive` has the same semantics as the field on Web [`dataavailable` events](#dataavailable-event). `false` is a valid inactive state; an omitted field means detection state is unavailable. Audio frames continue to be delivered when no voice is detected.
 
 In PCM mode, `frameBuffer` contains a raw PCM chunk with the WAV container header removed. In Opus mode, it contains the Opus payload.
 
