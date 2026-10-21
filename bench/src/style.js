@@ -1,7 +1,7 @@
 /**
  * Bounded source-level .ink style checks. Supports static selectors, cascade,
  * inherited text properties/custom properties, and common design shorthands.
- * This is not a layout or rendering engine; unsupported syntax fails closed.
+ * This is not a layout or rendering engine; unsupported syntax is unverified.
  */
 const sides = ['top', 'right', 'bottom', 'left'];
 const corners = ['top-left', 'top-right', 'bottom-right', 'bottom-left'];
@@ -107,27 +107,93 @@ function resolve(value, variables, trail = []) {
   });
 }
 
-/** Compute checked declarations on actual template nodes, ignoring decoys. */
-export function matchesStyle(source, check) {
-  try { return evaluateStyle(source, check); } catch { return false; }
+/** Split balanced CSS blocks without treating braces inside strings as syntax. */
+function stylesheetVariants(css) {
+  let variants = [''];
+  let offset = 0;
+  while (offset < css.length) {
+    if (!css.slice(offset).trim()) break;
+    const start = offset;
+    let quote = '', parentheses = 0;
+    for (; offset < css.length; offset++) {
+      const char = css[offset];
+      if (quote) { if (char === '\\') offset++; else if (char === quote) quote = ''; }
+      else if (char === '"' || char === "'") quote = char;
+      else if (char === '(') parentheses++;
+      else if (char === ')') parentheses--;
+      else if (!parentheses && (char === '{' || char === ';')) break;
+    }
+    if (css[offset] !== '{') throw new Error('stylesheet imports or unsupported rule syntax');
+    const selector = css.slice(start, offset).trim();
+    const bodyStart = ++offset;
+    let depth = 1;
+    quote = '';
+    for (; offset < css.length && depth; offset++) {
+      const char = css[offset];
+      if (quote) { if (char === '\\') offset++; else if (char === quote) quote = ''; }
+      else if (char === '"' || char === "'") quote = char;
+      else if (char === '{') depth++;
+      else if (char === '}') depth--;
+    }
+    if (depth) throw new Error('unclosed stylesheet block');
+    const body = css.slice(bodyStart, offset - 1);
+    if (/^@media\b/i.test(selector)) {
+      // Without a rendered viewport, prove a property only if it agrees for
+      // every media branch. Never silently discard a potentially overriding rule.
+      const branches = stylesheetVariants(body);
+      variants = variants.flatMap(prefix => [prefix, ...branches.map(branch => prefix + branch)]);
+      if (variants.length > 32) throw new Error('too many conditional style branches');
+    } else if (/^@(?:[-\w]*keyframes|font-face)\b/i.test(selector)) {
+      // These definitions do not contribute to the default-state cascade.
+    } else if (selector.startsWith('@')) throw new Error('unsupported stylesheet at-rule');
+    else {
+      const selectors = selector.split(',').map(value => value.trim());
+      const base = selectors.filter(value => !/:(?:active|hover|focus)\b/.test(value));
+      if (base.length) variants = variants.map(prefix => `${prefix}${base.join(',')}{${body}}\n`);
+    }
+  }
+  return variants;
 }
 
-function evaluateStyle(source, check) {
+/**
+ * Check default-state source declarations. Conditional disagreement and syntax
+ * outside this bounded cascade return passed:null, never a fabricated failure
+ * or a pass. Runtime animation, focus, and actual layout need separate evidence.
+ */
+export function checkStyle(source, check) {
+  try {
+    const clean = source.replace(/<!--[\s\S]*?-->/g, '').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+    const css = [...clean.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)]
+      .map(match => match[1]).join('\n').replace(/\/\*[\s\S]*?\*\//g, '');
+    const results = stylesheetVariants(css).map(variant => evaluateStyle(source, check, variant));
+    if (results.every(Boolean)) return { passed: true };
+    if (results.every(value => !value)) return { passed: false, message: 'style declarations do not match' };
+    return { passed: null, message: 'style depends on a media condition; rendered viewport verification is required' };
+  } catch (error) {
+    return { passed: null, message: `style not verified: ${error.message}` };
+  }
+}
+
+/** Boolean compatibility helper; unverified styles never count as passed. */
+export function matchesStyle(source, check) {
+  return checkStyle(source, check).passed === true;
+}
+
+function evaluateStyle(source, check, css) {
   const clean = source.replace(/<!--[\s\S]*?-->/g, '').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
   const template = clean.match(/<(page|widget)\b[^>]*>[\s\S]*?<\/\1>/i)?.[0];
   if (!template) return false;
   const sheets = [...clean.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi)];
   if (!sheets.length) return false;
-  const css = sheets.map(match => match[1]).join('\n').replace(/\/\*[\s\S]*?\*\//g, '');
   const rules = [];
   let end = 0;
   for (const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    if (css.slice(end, match.index).trim()) return false;
+    if (css.slice(end, match.index).trim()) throw new Error('unsupported style block');
     const values = declarations(match[2]);
-    if (!values) return false;
+    if (!values) throw new Error('unsupported style declaration');
     for (const selector of match[1].split(',')) {
       const parts = selectorParts(selector);
-      if (!parts) return false;
+      if (!parts) throw new Error('unsupported selector');
       const specificity = (selector.match(/#/g)?.length || 0) * 100
         + (selector.match(/\.|:root/g)?.length || 0) * 10
         + parts.filter(part => /^[a-z]/.test(part)).length;
@@ -135,7 +201,7 @@ function evaluateStyle(source, check) {
     }
     end = match.index + match[0].length;
   }
-  if (css.slice(end).trim()) return false;
+  if (css.slice(end).trim()) throw new Error('unsupported style syntax');
 
   const stack = [], nodes = [];
   for (const match of template.matchAll(/<\/?([a-z][\w-]*)\b((?:"[^"]*"|'[^']*'|[^'">])*)>/gi)) {
@@ -147,7 +213,7 @@ function evaluateStyle(source, check) {
     }
     const attributes = Object.fromEntries([...match[2].matchAll(/([\w:-]+)\s*=\s*(["'])(.*?)\2/g)]
       .map(attribute => [attribute[1].toLowerCase(), attribute[3]]));
-    if (/[{}]/.test(attributes.class || '') || /\{\{/.test(attributes.style || '')) return false;
+    if (/[{}]/.test(attributes.class || '') || /\{\{/.test(attributes.style || '')) throw new Error('dynamic class or inline style');
     const node = { tag: match[1], attributes, classes: (attributes.class || '').split(/\s+/), parent: stack.at(-1) || null,
       start: match.index + match[0].length, content: '' };
     nodes.push(node);

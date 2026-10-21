@@ -1,11 +1,12 @@
 /** Deterministic multi-stage interactions, isolated from real I/O and time. */
 import { loadLogic } from './behavior.js';
-import { readWorkspace } from './workspace.js';
+import { readSource } from './source.js';
 import vm from 'node:vm';
 
 const actions = new Set(['call', 'seed', 'expect', 'respond', 'advance', 'location', 'storageFailure', 'reload']);
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 const identifier = value => typeof value === 'string' && /^[A-Za-z_$][\w$]*$/.test(value);
+const optionalLifecycle = new Set(['onLoad', 'onShow', 'onReady', 'onHide', 'onUnload', 'onCreate', 'onAttach', 'onDetach', 'onDestroy']);
 
 /** Validate the scenario DSL, including nested workspace paths. */
 export function validateScenario(check, validatePath) {
@@ -26,9 +27,12 @@ export function validateScenario(check, validatePath) {
         || (step.event !== undefined && (!object(step.event) || !/^[a-z][\w-]*$/.test(step.event.tag || '') || !/^[a-z]+$/.test(step.event.name || '')))) throw new Error('invalid scenario call');
     }
     if (step.action === 'seed' && !object(step.data)) throw new Error('invalid scenario seed');
-    if (step.action === 'expect' && (!(object(step.data) || object(step.effects))
+    if (step.action === 'expect' && (!(object(step.data) || object(step.effects) || Array.isArray(step.dataAlternatives))
       || (step.data !== undefined && !object(step.data)) || (step.effects !== undefined && !object(step.effects)))) throw new Error('invalid scenario expectation');
-    if (['respond', 'location'].includes(step.action) && (!Number.isInteger(step.request) || step.request < 0)) throw new Error('invalid scenario request');
+    if (step.dataAlternatives !== undefined && (step.action !== 'expect' || !Array.isArray(step.dataAlternatives)
+      || !step.dataAlternatives.length || step.dataAlternatives.some(value => !object(value) || !Object.keys(value).length))) throw new Error('invalid scenario data alternatives');
+    if (['respond', 'location'].includes(step.action) && !(Number.isInteger(step.request) && step.request >= 0)
+      && !(step.action === 'location' && ['latest', 'previous'].includes(step.request))) throw new Error('invalid scenario request');
     if (step.action === 'location' && step.late !== undefined && typeof step.late !== 'boolean') throw new Error('invalid late location flag');
     if (step.action === 'advance' && (!Number.isInteger(step.ms) || step.ms < 0 || step.ms > 60000)) throw new Error('invalid scenario clock advance');
     if (step.action === 'storageFailure' && typeof step.enabled !== 'boolean') throw new Error('invalid storage failure');
@@ -50,6 +54,21 @@ function eventHandler(source, event) {
 
 const clone = value => value === undefined ? undefined : JSON.parse(JSON.stringify(value));
 const matches = (actual, expected) => Object.entries(expected || {}).every(([key, value]) => JSON.stringify(actual[key]) === JSON.stringify(value));
+
+/** Compare decoded query pairs while preserving duplicate-value ordering. */
+function equivalentUrl(actual, expected) {
+  try {
+    const urls = [actual, expected].map(value => new URL(value, 'https://benchmark.invalid/'));
+    for (const url of urls) url.searchParams.sort();
+    return urls[0].href === urls[1].href;
+  } catch { return actual === expected; }
+}
+
+function matchesEffects(actual, expected) {
+  return Object.entries(expected || {}).every(([key, value]) => key === 'requestUrls'
+    ? Array.isArray(value) && actual[key].length === value.length && value.every((url, index) => equivalentUrl(actual[key][index], url))
+    : JSON.stringify(actual[key]) === JSON.stringify(value));
+}
 // Drain a bounded number of Promise continuations, without sleeping or real time.
 async function flush() { for (let index = 0; index < 12; index++) await Promise.resolve(); }
 
@@ -111,7 +130,16 @@ export async function runScenario(check, workspace, buttonHandler) {
     URL, URLSearchParams, encodeURIComponent, decodeURIComponent, AbortController,
   };
   const get = async name => {
-    if (!loaded.has(name)) loaded.set(name, await loadLogic(workspace, instances[name].path, globals));
+    if (!loaded.has(name)) {
+      const entry = instances[name];
+      const logic = await loadLogic(workspace, entry.path, globals);
+      loaded.set(name, logic);
+      const source = await readSource(workspace, entry.path);
+      const initialize = /<widget\b/.test(source) ? 'onCreate' : 'onLoad';
+      // Explicit lifecycle steps retain their supplied query/options and order.
+      const explicit = check.steps.some(step => step.action === 'call' && step.method === initialize && (step.instance || 'main') === name);
+      if (!explicit && logic.has(initialize)) { track(logic.call(initialize, {})); await flush(); }
+    }
     return loaded.get(name);
   };
   for (const step of check.steps) {
@@ -143,7 +171,8 @@ export async function runScenario(check, workspace, buttonHandler) {
       } else if (step.error) request.reject(new Error(step.error));
       else request.resolve({ ok: (step.status ?? 200) < 400, status: step.status ?? 200, json: async () => clone(step.body) });
     } else if (step.action === 'location') {
-      const request = locations[step.request];
+      const request = step.request === 'latest' ? locations.at(-1)
+        : step.request === 'previous' ? locations.at(-2) : locations[step.request];
       if (!request) throw new Error('missing location request');
       // A queued watch callback may arrive after clearWatch. Deliver it only
       // when the scenario explicitly tests that race.
@@ -155,7 +184,7 @@ export async function runScenario(check, workspace, buttonHandler) {
       const logic = await get(name);
       if (step.action === 'seed') logic.setData(clone(step.data));
       else if (step.action === 'call') {
-        const source = step.method ? '' : await readWorkspace(workspace, instances[name].templatePath || instances[name].path);
+        const source = step.method ? '' : await readSource(workspace, instances[name].templatePath || instances[name].path);
         const method = step.method || (step.button ? buttonHandler(source, step.button) : eventHandler(source, step.event));
         if (!method) throw new Error('missing scenario event handler');
         const argument = clone(step.arg);
@@ -165,13 +194,14 @@ export async function runScenario(check, workspace, buttonHandler) {
           track(logic.call(method, { waitUntil(value) { promise = Promise.resolve(value); } }));
           if (!promise) throw new Error('waitUntil must be registered synchronously');
           track(promise);
-        } else track(logic.call(method, argument));
+        } else if (!optionalLifecycle.has(method) || logic.has(method)) track(logic.call(method, argument));
       } else if (step.action === 'expect') {
         const state = JSON.parse(logic.snapshot());
         const observed = { ...effects, storage: Object.fromEntries(storage), requestUrls: requests.map(request => request.url),
           pendingRequests: requests.filter(request => !request.settled).length, activeTimers: timers.size,
           activeWatches: locations.filter(request => request.watch && request.active).length, locationRequests: locations.length };
-        if (!matches(state.data, step.data) || !matches(observed, step.effects)) return false;
+        if (!matches(state.data, step.data) || !matchesEffects(observed, step.effects)
+          || (step.dataAlternatives && !step.dataAlternatives.some(data => matches(state.data, data)))) return false;
       }
     }
     await flush();

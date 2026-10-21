@@ -144,9 +144,10 @@ test('style checker rejects decoys, overriding inline styles, and unsupported ca
   assert.equal(matchesStyle(`<script setup>const decoy = '${template}';</script><page><text>{{title}}</text></page><style>${css}</style>`, check), false);
   assert.equal(matchesStyle(sample(css).replace('class="title"', 'class="title" style="color: red"'), check), false);
   assert.equal(matchesStyle(sample(css).replace('class="title"', 'class="title extra"').replace('</style>', '.extra { color: red; }</style>'), check), false);
-  for (const unsupported of ['@import "other.wxss";', '.title:hover { color: red; }', '.title { font: 10px serif; }', '.title { color: var(--green); }']) {
+  for (const unsupported of ['@import "other.wxss";', '.title { font: 10px serif; }', '.title { color: var(--green); }']) {
     assert.equal(matchesStyle(sample(css + unsupported), check), false, unsupported);
   }
+  assert.equal(matchesStyle(sample(css + '.title:hover { color: red; }'), check), true, 'default-state checks do not apply hover overrides');
 });
 
 test('style checker requires all repeated class nodes to conform', () => {

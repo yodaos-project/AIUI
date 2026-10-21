@@ -47,6 +47,8 @@ npm run --silent bench -- summary bench/results/counter.infer.json
 
 `infer` 会在工作区不存在时先准备项目，再调用模型并评分。工作区已存在时会复用它，因此新一轮运行应换新路径。工作区必须位于 AIUI 仓库外。`--model` 默认是 `deepseek-flash`；`--skill` 可选择其他 `aiui-dev` skill 目录；`--max-steps` 默认 30，可设为 1–100。结果文件包含调用轨迹、token 用量、skill 指纹、状态和评分，不保存 API key。
 
+模型可使用工作区列举/读写工具、删除单个普通文件的 `delete_workspace`、只读 skill 工具，以及 `validate_workspace`。校验只检查公开 AIUI 源码规则和 JSON/JavaScript 语法，不执行提交的代码，也不透露任务隐藏评分；运行时、布局、设备及未支持的 TypeScript 检查会列为未验证。模型会话没有 shell、构建、测试运行器或预览工具。完成需求和可用检查后应结束；写入并重读校验脚本不等于执行。删除过时源码形式，不要用空文件代替删除。
+
 ### 跑完整任务集
 
 使用外部 Agent 时，先准备所有工作区，再分别执行，最后统一评分：
@@ -122,7 +124,7 @@ node bench/scripts/run-all.js \
 | 模板与布局 | `template`、`widgetLayout`、`style`、`noDom` | 标签、文字、绑定、按钮标签、布局及 DOM 限制 |
 | 处理函数行为 | `scenario`、`behavior`、`workerBehavior`、`locationBehavior`、`watchBehavior`、`storageBehavior`、`overlayBehavior`、`voiceBehavior` | 在确定性 mock 中调用处理函数后的状态 |
 
-`behavior` 可使用 `path`、可选 `calls`（`method` 或可见按钮文字 `button`，以及可选 `arg`）、`expect` 和可选 `minPatches`。多文件 Page 的 `path` 指向 `.js` 逻辑文件；需要按按钮定位时，再用 `templatePath` 指向 `.wxml`。行为模拟器只支持部分 JavaScript/ESM 语法和显式 mock，不执行 TypeScript 或任意模块。特殊检查的字段请参考同类别已有任务。
+`behavior` 可使用 `path`、可选 `calls`（`method` 或可见按钮文字 `button`，以及可选 `arg`）、`expect` 和可选 `minPatches`。渲染状态变化需要 patch，但重复幂等动作不应强制产生冗余 patch。逻辑入口 `pages/*.ink` 不存在时，检查也接受完整的同名 JSON/WXML/WXSS/JS Page；已存在的 `.ink` 即使为空，也不会免除双重源码形式错误。明确要求多文件的任务仍可指定 `.js` 和 `templatePath: '*.wxml'`。行为模拟器只支持部分 JavaScript/ESM 语法和显式 mock，不执行 TypeScript 或任意模块。`setData()` 支持点路径和回调内再次更新；数据同步不模拟首帧呈现，也不会触发 ready。
 
 ### 设计任务与样式检查
 
@@ -134,7 +136,7 @@ node bench/scripts/run-all.js \
 { "id": "body-copy", "type": "style", "path": "pages/index/index.ink", "className": "title", "tag": "text", "binding": "title", "declarations": { "font-size": "14px", "color": "rgba(64,255,94,0.72)" } }
 ```
 
-检查器读取 `.ink` 内联样式块，要求 class 应用在真实 Page/Widget 模板节点上，且所有同 class 节点都通过。支持标签、class、ID、复合及后代选择器、`:root`、逗号列表、优先级和源码顺序、内联声明、`!important`、静态自定义属性与 `var()`、文字属性继承，以及常见 padding/margin/border/radius/font/纯色 background 简写。忽略注释和脚本，规范化 token 格式，并检查选中节点上的文字/绑定。这些支持让 agent 无需在任务描述中接受特定 CSS 写法的提示。at-rule/import、动态样式、其他伪类和未支持的语法仍无法评分；不支持完整 CSS 级联、布局、设备渲染或感知质量。评分仍限定在 fixture 内容 class 上，无法识别任意重新组织的结构。这是确定性的源码 benchmark，不是完整 CSS 引擎或视觉比对。
+检查器读取 Page/Widget 样式，要求 class 应用在真实模板节点上，且所有同 class 节点都通过。支持标签、class、ID、复合及后代选择器、`:root`、逗号列表、优先级和源码顺序、内联声明、`!important`、静态自定义属性与 `var()`、文字属性继承，以及常见 padding/margin/border/radius/font/纯色 background 简写。忽略注释和脚本，规范化 token 格式，并检查选中节点上的文字/绑定。检查默认状态，不应用 `:active`/`:hover`/`:focus` 覆盖；keyframes 和 font-face 定义不参与此级联。没有渲染视口时，各媒体条件分支必须对待查属性达成一致；条件有分歧或语法超出支持范围时，返回 `passed: null` 和未验证原因，不能算作任务通过。`required.unverified`、`regression.unverified`、`constraints.unverified` 区分证据缺失和已确认的不符。validator 接受 AIUI 0.19 已记录的动画、visibility 和省略号属性，同时保留明确不支持的规则。实际动画、焦点状态、布局、设备渲染及感知质量仍需独立执行证据；评分仍限定在 fixture 内容 class 上，无法识别任意结构重写。
 
 ### 多阶段场景检查
 
@@ -144,8 +146,10 @@ node bench/scripts/run-all.js \
 
 - `call`：选择可见标签 `button`、模板 `event`（`tag`、`name`，可选 attribute/value 选择）或生命周期 `method`，可传 `arg`。`instance` 选择其他声明实例；`preventDefault` 注入并记录宿主事件；`waitUntil` 要求 Worker 同步注册生命周期 Promise。
 - `seed`：注入变化的数据；`reload`：重建实例，保留模拟存储。
-- `expect`：比较选定的 `data` 或 `effects`，包括导航、存储、请求 URL、活动定时器/watch、Overlay 打开、关闭次数和默认动作阻止次数。
-- `advance`：将虚拟时钟推进 `ms`；`respond`：给编号请求返回 `body`、可选 HTTP `status` 或网络 `error`；`location`：给编号定位请求返回 `coords` 或 `error`；`storageFailure`：以 `enabled` 切换读写故障。
+- `expect`：比较选定的 `data` 或 `effects`，包括导航、存储、请求 URL、活动定时器/watch、Overlay 打开、关闭次数和默认动作阻止次数。可选非空 `dataAlternatives` 列出明确允许的部分状态，例如隐藏时保留或清空坐标。请求 URL 按解码后的查询语义比较，接受 `%20`/`+` 的等价空格编码，并保留重复参数值的顺序。
+- `advance`：将虚拟时钟推进 `ms`；`respond`：给编号请求返回 `body`、可选 HTTP `status` 或网络 `error`；`location`：给编号定位请求或 `latest`/`previous` 定位请求返回 `coords` 或 `error`，`late: true` 检验释放后回调；`storageFailure`：以 `enabled` 切换读写故障。
+
+实例初始化时会调用一次可选的 Page `onLoad({})` 或 Widget `onCreate({})`；如果场景显式调用该回调，则保留场景传参和顺序。其他可见性切换仍显式驱动。缺少可选生命周期回调视为空操作，缺少交互处理函数仍失败。公开需求没有要求时，不固定 watch ID、冗余更新次数或隐藏后的状态保留策略；watch 测试验证活动数量、恢复、最终释放和过期回调隔离。
 
 模拟服务提供 `fetch`、回调式 `wx.request`、导航、同步/回调存储、定位、Window Overlay/关闭、定时器、URL 工具和 AbortController。调用启动异步工作，不等待真实 I/O；由可控响应和有界微任务排空推进。每条检查使用独立服务与实例，处理函数/定时器回调有执行上限，未完成请求不会阻塞评分。模拟验证已记录的契约，不代表完整宿主或硬件行为。模板 `attributes` 检查要求属性位于同一真实元素上，忽略脚本和注释中的伪节点。
 
@@ -190,5 +194,7 @@ npm run --silent bench -- grade 080-create-greeting --workspace /tmp/aiui-greeti
 | design | `051-design-canvas`、`052-design-typography`、`053-design-button`、`054-design-list`、`055-design-error-state`、`076-widget-relative-layout`、`077-fullcolor-theme` |
 
 现有 79 个任务覆盖 Page 状态和事件处理、Widget、Worker、定位、存储、Overlay、语音事件、迁移、平台边界、设计选择、多阶段流程、异步竞态、生命周期清理、失败恢复及多文件回归。validator 只检查已确认的 manifest/源码关系和 AIUI 规则，不会拒绝所有未知 API、事件或 WXSS 属性。设备权限、渲染、焦点、媒体、传感器和视觉质量需要额外运行时验证。比较多轮结果时，应固定模型、skill 版本和测试框架版本。
+
+评分版本 2 将上述规则对齐 AIUI 0.19，评分记录及批量摘要包含 `gradingVersion`。规则版本不同时，不直接比较历史摘要，应先用同一当前框架重评两轮保留工作区。重评分只衡量保留产物：历史 `max_steps` 即使代码通过仍算未完成，也无法衡量新增模型工具和提示的效果；这些改动需要独立、重复的新推理运行。
 
 DeepSeek 请求格式和模型 ID 参见 [Chat Completions API](https://api-docs.deepseek.com/api/create-chat-completion/) 与 [Tool Calls 指南](https://api-docs.deepseek.com/guides/tool_calls/)。

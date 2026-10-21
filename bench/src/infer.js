@@ -109,7 +109,7 @@ export async function infer(task, workspace, { apiKey, model = 'deepseek-flash',
   const workspaceRoot = await realpath(workspace);
   const skillText = await readFile(path.join(skillRoot, 'SKILL.md'), 'utf8');
   const messages = [
-    { role: 'system', content: 'You are an AIUI coding agent. Work only through the provided workspace and skill tools. Read relevant skill references before coding. Never assume browser or Mini Program APIs are available. You cannot see benchmark grading rules. Finish with a concise summary after editing project files.' },
+    { role: 'system', content: 'You are an AIUI coding agent. Work only through the provided workspace and skill tools. Read relevant skill references before coding. Never assume browser or Mini Program APIs are available. You cannot see benchmark grading rules. Use delete_workspace to remove obsolete or temporary files, and validate_workspace for the available public source and syntax checks. There is no shell, test runner, build command, runtime preview, or device tool; do not create helper scripts you cannot execute. After the requested edits and available checks are complete, finish with a concise summary and report unavailable execution or visual checks as unverified.' },
     { role: 'user', content: `Task: ${task.description}\n\nAIUI skill entrypoint:\n${skillText}\n\nUse list_skill/read_skill for linked references. Use list_workspace/read_workspace/write_workspace for project files.` },
   ];
   const trace = [];

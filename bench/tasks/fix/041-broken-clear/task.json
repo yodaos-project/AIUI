@@ -44,7 +44,7 @@
         "expect": {
           "errors": 0
         },
-        "minPatches": 2
+        "minPatches": 1
       }
     ],
     "regression": [

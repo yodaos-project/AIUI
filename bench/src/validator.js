@@ -22,8 +22,11 @@ const permissions = new Set(['GEOLOCATION', 'CAMERA', 'RECORD_AUDIO']);
 const pageEvents = new Set([
   'tap', 'longpress', 'touchstart', 'touchmove', 'touchend',
   'input', 'change', 'focus', 'blur', 'submit',
+  'animationstart', 'animationiteration', 'animationend', 'animationcancel',
 ]);
-const unsupportedStyle = /position\s*:\s*sticky\b|\banimation(?:-[\w-]+)?\s*:|\b(?:white-space|word-break|visibility|font-variant)\s*:/;
+// AIUI 0.19 supports keyframes, visibility, and single-line ellipsis. Reject
+// only documented exclusions rather than the old blanket animation ban.
+const unsupportedStyle = /position\s*:\s*sticky\b|\b(?:animation-play-state|word-break|font-variant|perspective)\s*:/;
 const fixedWidgetSize = /(?:width\s*:\s*(?:239|480)px[\s\S]{0,100}height\s*:\s*140px|height\s*:\s*140px[\s\S]{0,100}width\s*:\s*(?:239|480)px)/;
 
 /** Return false for a missing or unsafe source reference. */

@@ -8,6 +8,7 @@
 import path from 'node:path';
 import vm from 'node:vm';
 import { readWorkspace } from './workspace.js';
+import { readSource } from './source.js';
 
 const identifier = /^[A-Za-z_$][\w$]*$/;
 const importStatement = /^[ \t]*import[ \t]+(?:(?<clause>[\s\S]*?)\s+from\s+)?(?<quote>['"])(?<specifier>[^'"]+)\k<quote>[ \t]*;?/gm;
@@ -154,7 +155,7 @@ async function evaluateModule(workspace, relative, source, globals, context, cac
  * @returns {Promise<{context: import('node:vm').Context, call: (method: string, argument?: unknown) => unknown, setData: (patch: object) => void, snapshot: () => string}>}
  */
 export async function loadLogic(workspace, relative, globals = {}) {
-  const raw = await readWorkspace(workspace, relative);
+  const raw = await readSource(workspace, relative);
   const match = relative.endsWith('.ink') ? raw.match(/<script\s+setup[^>]*>([\s\S]*?)<\/script>/i) : [null, raw];
   if (!match) throw new Error('missing script setup');
   const source = match[1].trim();
@@ -167,9 +168,19 @@ export async function loadLogic(workspace, relative, globals = {}) {
     const instance = {
       ...__definition,
       data: { ...(__definition.data || {}) },
-      setData(patch) {
-        Object.assign(this.data, patch);
+      setData(patch, callback) {
+        if (!patch || typeof patch !== 'object' || Array.isArray(patch)) throw new TypeError('setData patch must be an object');
+        for (const [key, value] of Object.entries(patch)) {
+          const parts = key.split('.');
+          let target = this.data;
+          for (const part of parts.slice(0, -1)) {
+            if (!target[part] || typeof target[part] !== 'object') target[part] = {};
+            target = target[part];
+          }
+          target[parts.at(-1)] = value;
+        }
         this.__patches.push(patch);
+        if (typeof callback === 'function') callback.call(this);
       },
       __patches: [],
     };
@@ -177,6 +188,9 @@ export async function loadLogic(workspace, relative, globals = {}) {
 
   return {
     context,
+    has(method) {
+      return vm.runInContext(`typeof instance[${JSON.stringify(method)}] === 'function'`, context, { timeout: 300 });
+    },
     call(method, argument) {
       context.__argument = argument;
       return vm.runInContext(`instance[${JSON.stringify(method)}](__argument)`, context, { timeout: 300 });

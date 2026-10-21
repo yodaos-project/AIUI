@@ -91,6 +91,15 @@ test('run-all totals USD estimates when every task has complete usage', () => {
   assert.match(markdownReport(summary), /Estimated API cost \(USD\): \*\*\$0\.035000\*\*/);
 });
 
+test('run-all preserves grading versions and identifies mixed historical rules', () => {
+  const current = summarizeRuns([{gradingVersion: 2}], 'model', 'start', 'finish');
+  assert.equal(current.gradingVersion, 2);
+  const mixed = summarizeRuns([{gradingVersion: 1}, {gradingVersion: 2}], 'model', 'start', 'finish');
+  assert.equal(mixed.gradingVersion, null);
+  assert.deepEqual(mixed.gradingVersions, [1, 2]);
+  assert.match(markdownReport(mixed), /Grading version: unknown or mixed/);
+});
+
 test('run-all rejects a missing secret before creating result files', async () => {
   const parent = await mkdtemp(path.join(os.tmpdir(), 'aiui-bench-run-all-'));
   try {

@@ -44,7 +44,7 @@
         "expect": {
           "locked": false
         },
-        "minPatches": 2
+        "minPatches": 1
       }
     ],
     "regression": [

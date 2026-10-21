@@ -42,6 +42,8 @@ function resultFor(task, infer, exitCode, stderr) {
     status: infer.status,
     resolved: infer.status === 'completed' && infer.grading?.resolved === true,
     exitCode,
+    gradingVersion: infer.grading?.gradingVersion ?? null,
+    unverifiedChecks: ['required', 'regression', 'constraints'].reduce((sum, group) => sum + (infer.grading?.[group]?.unverified || 0), 0),
     required: infer.grading?.required && {
       passed: infer.grading.required.passed,
       total: infer.grading.required.total,
@@ -62,6 +64,7 @@ function resultFor(task, infer, exitCode, stderr) {
  * infer JSON file. A missing record must never inflate the resolved rate.
  */
 export function summarizeRuns(results, model, startedAt, finishedAt) {
+  const gradingVersions = [...new Set(results.map(result => result.gradingVersion ?? null))];
   const resolved = results.filter(result => result.resolved).length;
   const usage = results.reduce((total, result) => ({
     promptTokens: total.promptTokens + (result.usage?.promptTokens || 0),
@@ -72,6 +75,8 @@ export function summarizeRuns(results, model, startedAt, finishedAt) {
 
   return {
     schemaVersion: 1,
+    gradingVersion: gradingVersions.length === 1 ? gradingVersions[0] : null,
+    gradingVersions,
     model,
     startedAt,
     finishedAt,
@@ -105,7 +110,7 @@ export function markdownReport(summary) {
     return `| \`${result.task}\` | ${result.status} | ${result.resolved ? 'yes' : 'no'} | ${required} | ${regression} | ${result.constraintViolations ?? '—'} | ${displayUsd(result.cost?.estimatedUsd)} |`;
   });
   const failures = summary.results.filter(result => !result.resolved).map(result => {
-    const failed = result.error || `required ${result.required?.passed ?? '—'}/${result.required?.total ?? '—'}, constraints ${result.constraintViolations ?? '—'}`;
+    const failed = result.error || `required ${result.required?.passed ?? '—'}/${result.required?.total ?? '—'}, constraints ${result.constraintViolations ?? '—'}${result.unverifiedChecks ? `, unverified checks ${result.unverifiedChecks}` : ''}`;
     return `- \`${result.task}\`: ${failed.replace(/[\r\n|]/g, ' ')}`;
   });
 
@@ -113,6 +118,7 @@ export function markdownReport(summary) {
     '# AIUI Coding Benchmark',
     '',
     `Model: \`${summary.model}\``,
+    `Grading version: ${summary.gradingVersion ?? 'unknown or mixed'}; compare runs only after grading their artifacts with the same rules.`,
     `Resolved: **${summary.resolved}/${summary.total} (${Math.round(summary.resolvedRate * 100)}%)**`,
     `Tokens: ${summary.usage.promptTokens} prompt, ${summary.usage.completionTokens} completion`,
     `Estimated API cost (USD): **${displayUsd(summary.cost.estimatedUsd)}**${summary.cost.complete ? '' : ` (known subtotal ${displayUsd(summary.cost.knownUsd)}; ${summary.cost.unpricedTasks} task(s) unavailable)`}`,

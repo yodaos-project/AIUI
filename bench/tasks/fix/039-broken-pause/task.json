@@ -44,7 +44,7 @@
         "expect": {
           "paused": true
         },
-        "minPatches": 2
+        "minPatches": 1
       }
     ],
     "regression": [

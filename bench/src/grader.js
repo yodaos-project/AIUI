@@ -5,13 +5,16 @@
  * compared, so multiple valid implementations can resolve a task.
  * @module grader
  */
-import { access, readdir } from 'node:fs/promises';
+import { readdir } from 'node:fs/promises';
 import path from 'node:path';
-import { readWorkspace, safePath } from './workspace.js';
+import { readWorkspace } from './workspace.js';
 import { loadLogic } from './behavior.js';
 import { validateWorkspace } from './validator.js';
-import { matchesStyle } from './style.js';
+import { checkStyle } from './style.js';
 import { runScenario } from './scenario.js';
+import { readSource } from './source.js';
+
+export const GRADING_VERSION = 2;
 
 /**
  * Find the tap handler for a button with the requested visible label. The
@@ -114,10 +117,10 @@ async function hasDomSource(workspace, directory = '') {
  * @returns {Promise<boolean>}
  */
 async function evaluate(check, workspace, manifest) {
-  const read = relative => readWorkspace(workspace, relative);
+  const read = relative => readSource(workspace, relative);
   switch (check.type) {
     case 'file':
-      await access(await safePath(workspace, check.path));
+      await read(check.path);
       return true;
     case 'route':
       return (manifest?.pages || []).includes(check.value);
@@ -148,7 +151,7 @@ async function evaluate(check, workspace, manifest) {
     case 'noDom':
       return !await hasDomSource(workspace);
     case 'style':
-      return matchesStyle(await read(check.path), check);
+      return checkStyle(await read(check.path), check);
     case 'scenario':
       return runScenario(check, workspace, boundButtonHandler);
     case 'widgetLayout': {
@@ -345,7 +348,11 @@ async function evaluate(check, workspace, manifest) {
 async function runChecks(checks, workspace, manifest) {
   return Promise.all(checks.map(async check => {
     try {
-      const passed = await evaluate(check, workspace, manifest);
+      const result = await evaluate(check, workspace, manifest);
+      if (result && typeof result === 'object' && Object.hasOwn(result, 'passed')) {
+        return { id: check.id, ...result };
+      }
+      const passed = result;
       return { id: check.id, passed: Boolean(passed), ...(passed ? {} : { message: 'condition not met' }) };
     } catch (error) {
       if (error.code === 'UNSUPPORTED_CHECK_TYPE') throw error;
@@ -358,6 +365,7 @@ async function runChecks(checks, workspace, manifest) {
 function checkSummary(checks) {
   return {
     passed: checks.filter(check => check.passed).length,
+    unverified: checks.filter(check => check.passed === null).length,
     total: checks.length,
     checks,
   };
@@ -384,21 +392,22 @@ export async function grade(task, workspace) {
   const regression = checkSummary(regressionChecks);
   const details = [
     ...issues,
-    ...constraintChecks.filter(check => !check.passed).map(check => ({
+    ...constraintChecks.filter(check => check.passed === false).map(check => ({
       rule: check.id,
       file: '',
       message: check.message,
     })),
   ];
-  const constraints = { violations: details.length, checks: constraintChecks, details };
+  const constraints = { violations: details.length, unverified: constraintChecks.filter(check => check.passed === null).length, checks: constraintChecks, details };
 
   return {
     schemaVersion: 1,
+    gradingVersion: GRADING_VERSION,
     task: task.id,
     category: task.category,
     resolved: required.passed === required.total
       && regression.passed === regression.total
-      && constraints.violations === 0,
+      && constraints.violations === 0 && constraints.unverified === 0,
     required,
     regression,
     constraints,

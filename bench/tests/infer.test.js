@@ -50,6 +50,34 @@ test('DeepSeek infer writes workspace through tools then grades it', async () =>
   assert.equal(await readFile(path.join(workspace, 'pages/index/index.ink'), 'utf8'), solution);
 }));
 
+test('infer can remove obsolete files, validate public source, and finish without a shell', async () => withWorkspace(async (task, workspace) => {
+  await mkdir(path.join(workspace, 'pages/index'), {recursive: true});
+  await writeFile(path.join(workspace, 'pages/index/index.js'), 'obsolete');
+  const operations = [
+    ['delete_workspace', {path: 'pages/index/index.js'}],
+    ['write_workspace', {path: 'pages/index/index.ink', content: solution}],
+    ['validate_workspace', {}],
+  ];
+  let validated;
+  const fetchImpl = async (_, options) => {
+    const request = JSON.parse(options.body);
+    assert.match(request.messages[0].content, /no shell, test runner/);
+    if (operations.length) {
+      const [name, args] = operations.shift();
+      return {ok: true, json: async () => ({choices: [{finish_reason: 'tool_calls', message: {tool_calls: [{id: name, type: 'function', function: {name, arguments: JSON.stringify(args)}}]}}]})};
+    }
+    validated = JSON.parse(request.messages.at(-1).content);
+    return {ok: true, json: async () => ({choices: [{finish_reason: 'stop', message: {content: 'Static checks passed; device rendering unverified.'}}]})};
+  };
+  const result = await infer(task, workspace, {apiKey: 'test-key', skill: path.resolve(root, '../skills/aiui-dev'), fetchImpl});
+  assert.equal(validated.value.valid, true);
+  assert.equal(validated.value.grading, undefined);
+  assert.equal(result.status, 'completed');
+  assert.equal(result.steps, 4);
+  assert.equal(result.grading.resolved, true);
+  assert.equal(result.grading.gradingVersion, 2);
+}));
+
 test('agent tools reject traversal and symlink writes', async () => withWorkspace(async (_, workspace, directory) => {
   const options = { workspace, skill: path.resolve(root, '../skills/aiui-dev') };
   await assert.rejects(executeTool('write_workspace', { path: '../escape', content: 'x' }, options), /project-relative/);

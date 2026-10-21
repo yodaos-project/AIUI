@@ -4,9 +4,11 @@
  * There is no shell tool and no tool for reading task.json or grader files.
  * @module agent-tools
  */
-import { lstat, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, readdir, realpath, unlink, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { safePath } from './workspace.js';
+import { validateWorkspace } from './validator.js';
 
 // Keep listings and file payloads bounded before adding them to API messages.
 const MAX_READ = 100_000;
@@ -112,9 +114,46 @@ export const toolDefinitions = [
     path: { type: 'string' },
     content: { type: 'string' },
   }),
+  functionTool('delete_workspace', 'Delete one regular project file. Use this to remove obsolete source forms or temporary files; directories and symlinks are rejected.', { path: { type: 'string' } }),
+  functionTool('validate_workspace', 'Check public AIUI source rules and JSON/JavaScript syntax without executing code. Does not expose task grading or verify runtime, rendering, or devices.'),
   functionTool('list_skill', 'List files in the supplied aiui-dev skill.'),
   functionTool('read_skill', 'Read a file from the supplied aiui-dev skill by skill-relative path.', { path: { type: 'string' } }),
 ];
+
+/** Parse public source only; never execute submitted scripts or hidden checks. */
+async function validateSource(workspace) {
+  const { issues } = await validateWorkspace(workspace);
+  const listing = await listFiles(workspace);
+  const notVerified = ['runtime behavior', 'rendered layout', 'target devices'];
+  if (listing.truncated) notVerified.push('files beyond the 200-file listing limit');
+  let checkedFiles = 0;
+  for (const file of listing.files) {
+    if (!/\.(?:json|ink|[cm]?js|ts)$/.test(file)) continue;
+    const source = await limitedRead(workspace, file);
+    const scripts = [];
+    const json = [];
+    if (file.endsWith('.json')) json.push(source);
+    else if (file.endsWith('.ink')) {
+      for (const match of source.matchAll(/<script\s+(def|setup)\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+        if (match[1] === 'def') json.push(match[3]);
+        else if (/\blang\s*=\s*['"](?:ts|typescript)['"]/i.test(match[2])) notVerified.push(`TypeScript syntax: ${file}`);
+        else scripts.push(match[3]);
+      }
+    } else if (file.endsWith('.ts')) notVerified.push(`TypeScript syntax: ${file}`);
+    else scripts.push(source);
+    checkedFiles++;
+    for (const value of json) {
+      try { JSON.parse(value); } catch (error) { issues.push({ rule: 'json-syntax', file, message: error.message }); }
+    }
+    for (const code of scripts) {
+      const result = spawnSync(process.execPath, [`--input-type=${file.endsWith('.cjs') ? 'commonjs' : 'module'}`, '--check'], {
+        input: code, encoding: 'utf8', timeout: 3000, maxBuffer: 100_000,
+      });
+      if (result.status !== 0) issues.push({ rule: 'javascript-syntax', file, message: result.error?.message || result.stderr.trim() });
+    }
+  }
+  return { valid: issues.length === 0, issues, checkedFiles, notVerified };
+}
 
 /**
  * Dispatch a model tool call. The caller catches errors and sends a structured
@@ -139,6 +178,16 @@ export async function executeTool(name, args, { workspace, skill }) {
       await writeFile(file, args.content, { flag: 'w' });
       return { path: args.path, bytes: Buffer.byteLength(args.content) };
     }
+    case 'delete_workspace': {
+      const file = await writablePath(workspace, args.path);
+      const stat = await lstat(file).catch(error => { if (error.code === 'ENOENT') return null; throw error; });
+      if (!stat) return { path: args.path, deleted: false };
+      if (!stat.isFile()) throw new Error('only regular project files can be deleted');
+      await unlink(file);
+      return { path: args.path, deleted: true };
+    }
+    case 'validate_workspace':
+      return validateSource(workspace);
     case 'list_skill':
       return listFiles(skill);
     case 'read_skill':
