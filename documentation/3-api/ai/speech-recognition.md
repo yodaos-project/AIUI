@@ -255,7 +255,7 @@ const session = new SpeechRecognitionSession({
 | 模式 | 分段依据 |
 | --- | --- |
 | `auto` | 使用当前运行时或识别服务的默认分段策略。 |
-| `vad` | 优先使用语音活动检测（Voice Activity Detection）识别说话后的连续静音，并以此确定语音边界。 |
+| `vad` | 优先使用人声检测（VAD，Voice Activity Detection），根据说话后的连续静音确定语音边界。 |
 | `semantic` | 优先根据识别内容的语义完整性确定句子边界。 |
 
 `vad` 中的时间指“检测到语音后持续静音的时长”，不是从会话开始计算的绝对时间，也不是 `MediaRecorder.start(250)` 中的音频分片间隔。需要自定义时，把 `segmentation` 写成 `{ mode: 'vad', silenceDurationMs }`；`silenceDurationMs` 的单位是毫秒，并且必须是运行时通过 `vadSilenceDuration.minMs` 和 `maxMs` 声明的闭区间内的非负整数。如果 `vadSilenceDuration.supported` 为 `false`，可以继续使用字符串形式的 `'vad'`，但静音阈值由运行时或识别服务决定。

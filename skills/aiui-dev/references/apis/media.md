@@ -200,6 +200,12 @@ Supported recording formats do not imply WebRTC video transport support.
 
 ### Recording VAD
 
+VAD means Voice Activity Detection; use **人声检测** in Chinese explanations.
+Introduce it as a speaking indicator: it detects speech, not the words spoken
+or the speaker's identity, and is different from measuring volume. Explain that
+a speech segment can include short pauses while the detector waits before
+reporting inactivity. Keep the API identifiers `vad` and `voiceActive` unchanged.
+
 Web `new MediaRecorder(stream, { mimeType, vad })` and
 `wx.media.getRecorderManager().start({ format, frameSize, vad })` accept the
 same optional `vad: { enabled?: boolean; silenceDurationMs?: number }` object.
@@ -216,9 +222,13 @@ Check that `getRecorderManager()` returned a manager before using it.
   unsupported, or the requested delay is outside the environment's supported
   range, recording continues without activity metadata.
 - Web `dataavailable` events and wx `onFrameRecorded()` callbacks expose
-  `voiceActive?: boolean`. `true` means active, `false` is a valid inactive
-  result, and `undefined` means unavailable. Check for `undefined` explicitly;
-  do not coerce an absent value to `false`.
+  `voiceActive?: boolean`. `true` means a speech segment is in progress and may
+  include a brief pause within the silence delay; `false` means no speech is
+  detected or the previous segment has finished. `undefined` means unavailable,
+  not silence. Check for `undefined` explicitly; do not coerce an absent value
+  to `false` or treat `false` as proof that the audio contains no sound.
+  Initial `false` can precede any speech; observe `true` before interpreting a
+  later transition to `false` as an indication that speech has ended.
 - The field is a snapshot associated with the delivered audio chunk, not an
   indication that speech occurred anywhere in the chunk. Header-only or empty
   output may omit it. Preserve the state with its chunk during async handling.

@@ -278,9 +278,21 @@ await recorder.start({
 
 Each Web `event.data` value is an encoded `Blob`. The `wx` `frameBuffer` is an `ArrayBuffer`; in Opus mode, `onHeader()` first provides an initialization header. Store or send the header and audio chunks in the order received when processing streaming audio.
 
-## Observe Voice Activity While Recording
+## Detect Speech While Recording
 
-Enable optional voice activity detection (VAD) to read the current activity state alongside recorded audio chunks. The following Web and `wx` examples record audio and read each chunk's `voiceActive` field.
+**VAD** stands for **Voice Activity Detection**. It detects whether someone is speaking during a recording and delivers that state alongside the audio. Think of it as a speaking indicator: an application can use it to show that speech is in progress or help decide whether someone has finished speaking.
+
+### Understand What Speech Detection Does
+
+Suppose a user says, "Check today's weather." VAD detects whether speech is present and whether the speech segment is still in progress. Understanding the words "today's weather" requires speech recognition, which converts audio to text. VAD itself does not produce text or identify who is speaking.
+
+Speech detection also differs from measuring volume. Volume tells you how loud the sound is; speech detection looks for speech in that sound. "No speech detected" does not mean the microphone received no sound: a recording can still contain background sounds such as a fan or passing traffic.
+
+People often pause briefly within a sentence, as in "Could you check... today's weather?" To avoid treating every pause as the end of a speech segment, a detector can wait for a continuous period of silence before marking the segment as finished. During that wait, the state may still indicate that the segment is in progress even though the person has briefly stopped making a sound.
+
+### Read Speech Detection Results While Recording
+
+The Web and `wx` examples below enable `vad` and read each audio chunk's `voiceActive` field. Both examples handle a missing detection result separately so it is not mistaken for "no speech detected."
 
 <!-- aiui-api-style default=web -->
 
@@ -294,7 +306,14 @@ const recorder = new MediaRecorder(stream, {
 });
 
 recorder.addEventListener('dataavailable', ({ data, voiceActive }) => {
-  console.log('Audio chunk', data.size, 'voice activity', voiceActive);
+  if (voiceActive === undefined) {
+    console.log('No speech detection result for this chunk');
+  } else if (voiceActive) {
+    console.log('Speech in progress (including brief pauses)');
+  } else {
+    console.log('No speech detected');
+  }
+  console.log('Received audio chunk', data.size);
 });
 recorder.addEventListener('stop', () => {
   stream.getTracks().forEach((track) => track.stop());
@@ -312,7 +331,14 @@ const recorder = wx.media.getRecorderManager();
 if (!recorder) throw new Error('Recorder is unavailable');
 
 recorder.onFrameRecorded(({ frameBuffer, voiceActive }) => {
-  console.log('Audio chunk', frameBuffer.byteLength, 'voice activity', voiceActive);
+  if (voiceActive === undefined) {
+    console.log('No speech detection result for this chunk');
+  } else if (voiceActive) {
+    console.log('Speech in progress (including brief pauses)');
+  } else {
+    console.log('No speech detected');
+  }
+  console.log('Received audio chunk', frameBuffer.byteLength);
 });
 recorder.onError(({ errMsg }) => {
   console.error('Recording failed', errMsg);
@@ -329,7 +355,25 @@ await recorder.start({
 
 <!-- /aiui-api-style -->
 
-VAD only attaches activity metadata to audio chunks. It does not trim silence, stop recording automatically, or produce recognized text. It is independent of `SpeechRecognitionSession`'s `segmentation` setting. Recording continues normally when VAD is unavailable. Check `voiceActive === undefined` before using the state; a missing state does not mean that no voice was detected.
+### Understand Speech, Pauses, and Audio Chunks
+
+In these examples, `100` requests an audio chunk roughly every `100` milliseconds. This breaks the continuous recording into small pieces that the application can process as they arrive. Separately, `silenceDurationMs: 500` requests `500` milliseconds (half a second) of continuous silence after speech before reporting the segment as finished. One interval controls how often audio is delivered; the other controls how long to wait before deciding that speech has ended.
+
+When the environment supports this setting and speech is successfully detected, a typical sequence is:
+
+1. The user starts speaking. A chunk reports `voiceActive: true`, indicating that a speech segment is in progress.
+2. The user pauses briefly. Before the silence delay has elapsed, the state may remain `true` rather than immediately treating the pause as the end of speech.
+3. After the user stops and the requested silence delay has elapsed, a later chunk may report `false`, indicating that the speech segment has finished.
+
+Chunks may also report `false` before the user has said anything. If the application uses VAD to help decide when to stop recording, first observe `true`, then treat a subsequent transition to `false` as an indication that speech has ended. Do not stop simply because the first result is `false`.
+
+The state arrives with audio chunks, rather than as a separate speech-start or speech-end notification. Do not expect a callback at the exact instant half a second of silence has elapsed. An application can compare successive states, but each chunk carries only one snapshot; it cannot reconstruct whether speech was present at every instant within that chunk.
+
+The `500` milliseconds is not the total recording length. VAD only attaches metadata; it does not trim silence or stop recording automatically. Call `stop()` explicitly when the application needs to end the recording. It does not configure speech recognition either: `SpeechRecognitionSession`'s `segmentation` setting controls how recognized text is split into segments and is independent of recording VAD.
+
+### Handle Missing Detection Results
+
+`voiceActive: undefined` means that the current chunk has no available detection result, for example because detection is disabled or unavailable in the current environment. Recording continues, and the application can still save, upload, or transcribe the audio; it just cannot use this field to determine whether speech is present. Check `voiceActive === undefined` first, as the examples do, rather than converting a missing value to `false`.
 
 ## Record a Video Stream
 
@@ -587,11 +631,11 @@ Web `MediaRecorderOptions.vad` and `RecorderManager.start()`'s `options.vad` use
 
 #### `enabled`
 
-An optional `boolean`, defaulting to `false`. Set it to `true` to request voice activity metadata on audio chunks. Recording support does not guarantee VAD support; check each chunk's `voiceActive` field.
+An optional `boolean`, defaulting to `false`. Set it to `true` to request speech detection results on audio chunks. Recording support does not guarantee VAD support; check each chunk's `voiceActive` field.
 
 #### `silenceDurationMs`
 
-An optional `number`, defaulting to `500`. It specifies the milliseconds of continuous silence after detected speech before inactivity is reported. It must be an integer from `0` to `4294967295`, inclusive; the setting is requested only when `enabled: true`. It is separate from the chunk interval in `MediaRecorder.start(timeslice)` or `options.frameSize`, and does not determine when recording stops.
+An optional `number`, defaulting to `500`. It specifies how many milliseconds of continuous silence to wait after detected speech before reporting `voiceActive: false`, meaning that the speech segment has finished. It must be an integer from `0` to `4294967295`, inclusive; the setting is requested only when `enabled: true`. It is separate from the chunk interval in `MediaRecorder.start(timeslice)` or `options.frameSize`, and does not determine when recording stops.
 
 `vad` must be an options object, `enabled` must be a boolean, and `silenceDurationMs` must meet the numeric requirements above. Invalid field types or values make the `MediaRecorder` constructor throw `TypeError` or the Promise returned by `RecorderManager.start()` reject with `TypeError`. Valid options that are unsupported in the current environment fall back to ordinary recording as described above.
 
@@ -601,7 +645,7 @@ An optional `number`, defaulting to `500`. It specifies the milliseconds of cont
 
 Creates a recorder for the specified `MediaStream`. Its initial `state` is `'inactive'`. `options.mimeType` selects the output format and defaults to `audio/wav`. AIUI currently supports `audio/wav`, `audio/ogg;codecs=opus`, `video/webm;codecs=vp8,opus`, and `video/mp4`; an unsupported value throws a `TypeError`. The stream must contain at least one audio or video track when recording starts.
 
-The optional `options.vad` accepts [`MediaRecordingVADOptions`](#mediarecordingvadoptions) to request voice activity metadata on audio chunks. Set it at construction, then read `event.voiceActive` in the `dataavailable` event.
+The optional `options.vad` accepts [`MediaRecordingVADOptions`](#mediarecordingvadoptions) to request speech detection results on audio chunks. Set it at construction, then read `event.voiceActive` in the `dataavailable` event.
 
 #### `state`
 
@@ -661,8 +705,8 @@ Audio chunks may also include the optional read-only `event.voiceActive` field:
 
 | Value | Meaning |
 | --- | --- |
-| `true` | The voice activity state associated with this chunk is active. |
-| `false` | The state associated with this chunk is inactive; this is a valid detection result. |
+| `true` | The detector considers the speech segment to be in progress. This may include a brief pause shorter than the silence delay. |
+| `false` | No speech is currently detected, or the previous speech segment has finished. This is a valid result and does not mean that the audio contains no sound at all. |
 | `undefined` | No detection state is available for this chunk, for example because VAD is disabled or unsupported. This does not establish silence. |
 
 This field is a state snapshot associated with the current audio chunk. It does not indicate whether speech occurred anywhere within the chunk and is not a separate speech-start or speech-end event. Do not interpret it as the proportion of speech in a chunk or as a recognition result. Output containing only initialization headers or no audio may also omit the field.
@@ -755,7 +799,7 @@ Registers a recording-stop callback. It receives `{ tempFilePath: '', duration: 
 
 Registers an audio-frame callback. It receives `{ frameBuffer: ArrayBuffer, isLastFrame: false, voiceActive?: boolean }`. Each `frameBuffer` contains only that chunk, not bytes delivered earlier. The current implementation does not use `isLastFrame` to mark the final chunk; use `onStop()` for completion.
 
-`voiceActive` has the same semantics as the field on Web [`dataavailable` events](#dataavailable-event). `false` is a valid inactive state; an omitted field means detection state is unavailable. Audio frames continue to be delivered when no voice is detected.
+`voiceActive` has the same semantics as the field on Web [`dataavailable` events](#dataavailable-event). `false` means no speech is detected or a speech segment has finished; an omitted field means detection state is unavailable. Audio frames continue to be delivered when no speech is detected.
 
 In PCM mode, `frameBuffer` contains a raw PCM chunk with the WAV container header removed. In Opus mode, it contains the Opus payload.
 

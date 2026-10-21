@@ -255,7 +255,7 @@ The modes have the following meanings:
 | Mode | Segmentation basis |
 | --- | --- |
 | `auto` | Uses the current runtime or recognition service's default segmentation strategy. |
-| `vad` | Prefers voice activity detection (VAD), which detects continuous silence after speech to determine a speech boundary. |
+| `vad` | Prefers voice activity detection (VAD), using continuous silence after speech to determine a speech boundary. |
 | `semantic` | Prefers sentence boundaries based on whether the recognized content is semantically complete. |
 
 For `vad`, time means the duration of continuous silence after speech is detected. It is not an absolute time measured from the start of the session, nor is it the audio chunk interval in `MediaRecorder.start(250)`. To customize it, use `{ mode: 'vad', silenceDurationMs }`. `silenceDurationMs` is measured in milliseconds and must be a non-negative integer inside the inclusive range advertised by `vadSilenceDuration.minMs` and `maxMs`. When `vadSilenceDuration.supported` is `false`, the string form `'vad'` remains available, but the runtime or recognition service chooses the threshold.
