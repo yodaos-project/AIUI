@@ -16,7 +16,7 @@ For instance-specific members, use [Widget](./widget.md) or
 
 Contains rendered Page or Widget state.
 
-### `this.setData(patch)`
+### `this.setData(patch, callback?)`
 
 Merges changed values into state and updates affected bindings. Dot paths can update nested values:
 
@@ -26,6 +26,11 @@ this.setData({
   'status.label': 'ready',
 });
 ```
+
+The optional callback runs after data synchronization and may call `setData()`
+again. Query current nodes in it when work depends on the update; nodes removed
+by a list or conditional change must not be reused. This callback is not the
+Page's first-frame `onReady()` lifecycle notification.
 
 ## Page Node Access
 

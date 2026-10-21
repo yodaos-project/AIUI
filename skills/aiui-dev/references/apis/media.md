@@ -33,6 +33,7 @@ This file documents the verified media playback APIs available to AIUI agent cod
 ### Behavior notes
 
 - `AudioPlayer` is the general-purpose playback API for full audio files and streaming audio data.
+- Assigning `currentTime` performs a real seek in seconds. Observe seek completion events when UI work depends on it; seekable streaming ranges depend on the player/source.
 - For file playback, set `player.src` to either a relative local path or a project-root absolute path such as `/assets/intro.ogg`.
 - Local path handling explicitly covers leading-slash asset paths in the agent package.
 - Network URLs are supported for `src`, but local packaged assets remain the preferred choice for bundled media.
@@ -48,6 +49,39 @@ const player = new AudioPlayer();
 player.src = '/assets/intro.ogg';
 player.loop = true;
 player.play();
+```
+
+### Text tracks and subtitle cues
+
+`player.textTracks` is a read-only `TextTrackList`.
+`player.addTextTrack(kind, label?, language?)` returns a `TextTrack`; optional
+label/language default to `''`. Do not construct `TextTrack` directly.
+
+| Object | Members |
+| --- | --- |
+| `TextTrack` | Read-only `id`, `kind`, `label`, `language`, `cues`, `activeCues`; writable `mode: 'disabled' | 'hidden' | 'showing'`. |
+| Track updates | `addCue(cue)` / `removeCue(cue)` return `undefined`; a cue cannot be added twice while owned, and removing a foreign cue throws `NotFoundError`. `cuechange` / `oncuechange` signals active-set changes. |
+| `TextTrackCueList` | `length`, `item(index)`, `getCueById(id)`; missing entries return `null`. |
+| `TextTrackList` | `length`, `item(index)`, `getTrackById(id)`; missing entries return `null`. |
+| `new VTTCue(startTime, endTime, text)` | Finite nonnegative seconds, end at least start. Writable `id` (default `''`), `startTime`, `endTime`, `text`; read-only `charIndex` / `charLength` may be `null`. |
+
+Cue identity is preserved through `cues`, `activeCues`, and ID lookup. Keep the
+same object to edit text/times or pass to `removeCue()`. Generated
+`SpeechAudioPlayer.textTrack` cues follow the same rule. `cue.pauseOnExit`
+stores a boolean (default `false`) but does not automatically pause; implement
+that behavior in cue-change logic if needed. Use track mode `hidden` to observe
+active cues without requiring automatic subtitle display.
+
+```javascript
+const track = player.addTextTrack('subtitles', 'Subtitles', 'en-US');
+track.mode = 'hidden';
+const cue = new VTTCue(0, 2, 'Welcome to AIUI');
+cue.id = 'greeting';
+track.addCue(cue);
+console.log(track.cues.getCueById('greeting') === cue); // true
+track.addEventListener('cuechange', () => {
+  console.log(track.activeCues.item(0)?.text ?? '');
+});
 ```
 
 ## `Sound`
@@ -161,6 +195,8 @@ Use `getTracks()`, `getAudioTracks()`, `getVideoTracks()`, and `getTrackById(id)
 `new MediaRecorder(stream, options?)` records a stream. Check formats with `MediaRecorder.isTypeSupported(mimeType)`. Key members include `state`, `mimeType`, `start(timeslice?)`, `stop()`, `pause()`, `resume()`, `requestData()`, `ondataavailable`, `onstart`, `onstop`, `onpause`, `onresume`, and `onerror`.
 
 Supported media types currently include `audio/wav`, `audio/ogg;codecs=opus`, `video/webm;codecs=vp8,opus`, and `video/mp4`.
+Call `isTypeSupported()` on `MediaRecorder` itself, never on an instance.
+Supported recording formats do not imply WebRTC video transport support.
 
 ### `ImageCapture`
 
@@ -178,3 +214,11 @@ The default encoded dimensions are `2016 × 2688` for `wide`, `2016 × 1512`
 for `telephoto`, and `3024 × 4032` for `default`. Read the selected video
 track's `getSettings()` for actual stream dimensions; photo dimensions may
 differ from the video stream.
+
+## WebRTC
+
+Read [WebRTC](./webrtc.md) for audio peer connections and text/binary data
+channels. It requires device networking and agent-provided SDP/ICE signaling,
+supports no video transport, and is unavailable in Agent Workers. Remote audio
+needs an explicit Web Audio output graph; closing a peer does not stop the
+agent's local capture tracks.

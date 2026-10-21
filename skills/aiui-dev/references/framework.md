@@ -171,6 +171,20 @@ export default {
 - `<page>` or `<widget>` is the sole interface root.
 - `<style>` contains page-local WXSS/CSS.
 
+## Data Binding and the Current Tree
+
+Patch only changed fields with `setData(patch, callback?)`. Its callback may call
+`setData()` again; query current nodes there when work depends on the update.
+Array `.length` bindings are supported.
+
+Each `ink:for` iteration has its own item/index scope. Name nested-loop variables
+explicitly when outer values are needed. On a node with both `ink:for` and
+`ink:if`, the condition evaluates in the current item's scope. Keep
+`ink:if` / `ink:elif` / `ink:else` branches adjacent. Inactive branches are absent
+from the rendered tree; `hidden="{{isHidden}}"` retains the node and binds a
+boolean visibility state. After list, condition, or attribute updates, query the
+current tree rather than retaining an Entity removed by a condition.
+
 ## Widget Development
 
 AIUI supports two Widget families on Rokid Glasses:
@@ -232,7 +246,7 @@ export default {
 </style>
 ```
 
-Widget callbacks are `onCreate()`, `onAttach()`, `onDetach()`, and `onDestroy()`. Attach and detach may repeat. Widgets do not use Page lifecycle callbacks or Page-only `enableWorldAwareness()` and `finish()`.
+Widget callbacks are `onCreate(options)`, `onAttach()`, `onDetach()`, and `onDestroy()`. Attach and detach may repeat. Widgets do not use Page lifecycle callbacks or Page-only `enableWorldAwareness()` and `finish()`.
 
 `displayName` and `description` are required default metadata. `placement` is
 `persistent` by default; use `overlay` for a temporary Widget opened through
@@ -241,15 +255,17 @@ For localized metadata, add `app.<BCP-47-locale>.json` at the project root with
 `locale` and a `widgets` object keyed by Widget path. Override only
 `displayName` and `description`; missing translations fall back to `app.json`.
 `onAttach()` and `onDetach()` may run as overlays appear and disappear. Keep
-one-time initialization in `onCreate()`; do not rely on retaining an instance
+one-time initialization in `onCreate(options)`; do not rely on retaining an instance
 after closing the overlay.
 
 Open a declared `overlay` Widget with:
 
 ```javascript
-window.open('widgets/weather?city=hangzhou', '_widget');
+window.open('widgets/weather/index?city=hangzhou', '_widget');
 ```
 
+The path must match the declared Widget. Query parameters reach `onCreate(options)`
+as strings, such as `options.city`; no parameters produces `{}`.
 This API currently opens Widgets only, not other Pages. Close a completed
 overlay with `window.close()`. Do not assume its instance survives closing.
 
@@ -267,6 +283,10 @@ Names are case-sensitive. Unrecognized names grant no capability, and an API
 that requires an undeclared permission fails. A manifest declaration does not
 grant operating system permission; handle denial and unavailable hardware at
 the API call.
+
+Speech recognition has no separate `SPEECH_RECOGNITION` permission. Microphone
+capture still requires `RECORD_AUDIO`; external-audio recognition sessions do
+not open the microphone themselves.
 
 ## Agent Worker Development
 
@@ -314,11 +334,13 @@ export default {
 
 Making `onOpen()` async does not automatically extend the event. A running Worker retains values on `this`; values reset when it stops. Persist durable state in storage.
 
-Workers provide timers, Promise, `console`, `performance`, URL/text encoding, Web Crypto, WebAssembly, and project ES modules. They do not provide Page/Widget objects, `window`, `document`, `fetch`, routing, rendering, or media capture.
+Workers provide timers, Promise, `console`, `performance`, URL/text encoding (including `TextEncoderStream` and `TextDecoderStream`), Web Crypto, WebAssembly, and project ES modules. They do not provide Page/Widget objects, `window`, `document`, `fetch`, routing, rendering, media capture, or WebRTC.
 
 ## Modules, Components, and Resources
 
 - Declare custom components in `usingComponents`; use absolute project paths for shared components.
+- Reference a concrete component file: `/components/card/index` can resolve `index.ink`, but `/components/card` does not automatically search for that directory entry. Missing entry, script, or configuration files fail loading.
+- Component `lifetimes.ready()` runs once after a frame containing that component is presented. Dynamically mounted components wait for their own frame; updates, moves, and redisplay do not repeat ready. A component removed before presentation receives no late ready callback.
 - Project-local ES module resolution is consistent across agent, Page, and Agent Worker entry points.
 - Keep packaged images, fonts, audio, and data under project paths such as `/assets/icon.png`.
 - Prefer source paths and the project packaging workflow; do not assume direct access to arbitrary device files.

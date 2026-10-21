@@ -13,19 +13,24 @@ Common Page callbacks are:
 
 | Callback | Use |
 | --- | --- |
-| `onLoad(query)` | Read route input and initialize state. |
+| `onLoad(query)` | Read route input and initialize state once per Page instance. |
 | `onShow()` | Resume work needed while visible. |
-| `onReady()` | Access rendered nodes after the initial render. |
+| `onReady()` | Runs once per instance after the first frame containing the initial view is presented. |
 | `onHide()` | Pause visible-only timers, listeners, or work. |
 | `onUnload()` | Release final Page resources. |
 
 Make repeated show/hide cycles safe. Final cleanup belongs in `onUnload()`.
+The initial sequence is `onLoad` → `onShow` → first-frame presentation →
+`onReady`. Parsing or layout alone does not fire ready. Returning to an existing
+Page or calling `setData()` does not repeat it; unloading before presentation
+prevents a late callback. Component `lifetimes.ready()` likewise waits for its
+own subtree to appear in a presented frame, including dynamically mounted components.
 
 ## Widget Lifecycle
 
 | Callback | Use |
 | --- | --- |
-| `onCreate()` | Initialize data and one-time resources. |
+| `onCreate(options)` | Initialize once; opening URL query values are strings, or `{}` when absent. |
 | `onAttach()` | Refresh visible data and resume visible-only work. |
 | `onDetach()` | Pause work that is unnecessary while hidden. |
 | `onDestroy()` | Cancel requests, remove listeners, and release resources. |
@@ -48,6 +53,26 @@ Use `bind<event>` for normal propagation and `catch<event>` to stop propagation 
 Handlers live on the default-exported logic object. Read payload values from `event.detail`, target information from `event.target`, and declared dataset values from the target dataset.
 
 Do not use DOM `onclick` attributes or assume browser `addEventListener()` behavior for template component events.
+
+## Animation Events
+
+Use `bindanimationstart`, `bindanimationiteration`, `bindanimationend`, and
+`bindanimationcancel`. `AnimationEvent` exposes `animationName`, `elapsedTime`
+in seconds (excluding delay), and `pseudoElement` (`''`, `'::before'`, or
+`'::after'`); `detail` mirrors these fields. Events bubble through ancestors to
+the Page / Widget. `catch` or `stopPropagation()` stops bubbling; the events
+are not cancelable. Handlers may call `setData()` synchronously.
+
+Removing an animation or node, or applying `display: none`, cancels active
+playback. Closing a Page / Widget fires cancellation before `onUnload` /
+`onDestroy`. See [animation](./animation.md) for timing, replay, and cleanup.
+
+## Network Status
+
+App and Page `onNetworkStatus(event)` receive `event.online: boolean` and
+`event.status: 'online' | 'offline'`. Window also emits `online` / `offline`;
+`navigator.connection` emits `change`. See [Navigator](./apis/navigator.md).
+Online status does not guarantee a request or WebRTC connection will succeed.
 
 ## Focus and Default Actions
 

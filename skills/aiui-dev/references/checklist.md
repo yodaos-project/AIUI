@@ -9,7 +9,7 @@ Use this checklist after generating or modifying an AIUI agent and before declar
 - [ ] Every Page route declared in `pages` resolves to exactly one source structure: either one `.ink` file or same-basename `.json`, `.wxml`, `.wxss`, and `.js` files.
 - [ ] Every Widget entry resolves to its `.ink` file, and its `family` matches `<script def>`.
 - [ ] Every Agent Worker `script` is a project-relative `.js` or `.ts` file without a URL, absolute path, `..`, or backslashes.
-- [ ] Custom component paths in `usingComponents` resolve to actual components.
+- [ ] Custom component paths in `usingComponents` resolve to concrete files; directory entries explicitly include `index`.
 - [ ] Imported project modules and packaged asset paths resolve with the same spelling and letter case.
 - [ ] No required runtime file is accidentally excluded from the final package.
 
@@ -27,7 +27,8 @@ Use this checklist after generating or modifying an AIUI agent and before declar
 ## 3. Page and Widget Behavior
 
 - [ ] Page initialization, visibility changes, and final cleanup use the correct Page lifecycle callbacks.
-- [ ] Widget code uses `onCreate()`, `onAttach()`, `onDetach()`, and `onDestroy()` rather than Page lifecycle callbacks.
+- [ ] Page `onReady()` and component `lifetimes.ready()` wait for their own first presented frame and run once per instance; updates and redisplay do not require another ready callback.
+- [ ] Widget code uses `onCreate(options)`, `onAttach()`, `onDetach()`, and `onDestroy()`; opening query values are handled as strings with defaults for absent values.
 - [ ] Repeated Widget attach/detach and Page show/hide cycles do not duplicate timers or listeners.
 - [ ] Widget layout is relative and adapts to available bounds; the root does not hardcode `239 × 140` or `480 × 140`.
 - [ ] `1x1` and `1x2` are treated as size categories, with content that remains usable at the selected family.
@@ -48,6 +49,8 @@ Use this checklist after generating or modifying an AIUI agent and before declar
 
 - [ ] Every component, attribute, property, event, and method is present in `components.md` or verified against the current implementation.
 - [ ] Every selector and style property is supported by `wxss.md`; browser-only CSS is not assumed.
+- [ ] `calc()` uses the supported two-operand `+` / `-` syntax with compatible units; experimental `random()` declarations have literal fallbacks.
+- [ ] Animation timing, concurrency, generated-text decorations, and cancellation follow [animation.md](./animation.md); no 3D transforms or `animation-play-state` are assumed.
 - [ ] Layout uses Flexbox, Grid, percentages, constraints, and content sizing appropriately instead of relying on one test resolution.
 - [ ] Text remains readable, important content is not clipped, and long or empty content has a deliberate state.
 - [ ] Focus is visible and the primary flow works with the target's confirmation and back controls.
@@ -72,12 +75,16 @@ Apply only the rows used by the agent:
 | Capability | Required checks |
 | --- | --- |
 | Microphone or recording | Declare `RECORD_AUDIO`; start capture from a valid user interaction; stop all tracks; close recorder, writer, and audio context. |
+| Media recording format | Use static `MediaRecorder.isTypeSupported(mimeType)`; handle unsupported target formats. |
 | Web Audio microphone analysis | Do not connect to `context.destination` unless playback is intended; disconnect nodes and close the context. |
 | Location | Declare `GEOLOCATION`; handle permission and timeout errors; clear every watch ID. |
 | BLE client | Check availability; stop scans; remove listeners; disconnect GATT when finished. |
-| Speech recognition | Check supported formats and optional capabilities; serialize audio writes; close the writer for a final result; stop captured tracks. |
+| Speech recognition | No separate `SPEECH_RECOGNITION` permission; microphone capture still needs `RECORD_AUDIO`. Check supported formats and capabilities; serialize audio writes; close the writer for a final result; stop captured tracks. |
+| WebRTC | Page / Widget only, audio and data only; implement SDP/ICE signaling, check actual device networking, queue candidates until remote description, send only on open channels, bound queued data, close peers and stop local tracks separately. |
+| Network status | Treat online / connection metadata as hints; handle actual request errors and remove connectivity listeners. |
+| Stream pipelines | Await writes and pipe completion; handle backpressure, cancellation, and errors; BYOB transfers input buffers, so use returned views. |
 | Language model image input | Use a supported `image_url` value and reject empty URLs; keep text and image parts in the documented message shape. |
-| Canvas or images | Verify dimensions and pixel-buffer lengths; avoid recreating large buffers or bitmaps on every render; release references when no longer needed. |
+| Canvas or images | Verify dimensions and pixel-buffer lengths; avoid drawing closed bitmaps; distinguish encoded PNG/JPEG Blobs from raw pixels; close bitmaps after encoding or use. |
 | Timers or listeners | Store handles and remove or clear them in the matching hide, detach, unload, destroy, or Worker shutdown path. |
 
 ## 8. Executable Validation

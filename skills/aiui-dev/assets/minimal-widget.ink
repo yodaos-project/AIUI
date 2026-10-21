@@ -10,7 +10,7 @@ export default {
     message: 'Hello AIUI',
   },
 
-  onCreate() {},
+  onCreate(options) {},
 
   onAttach() {},
 

@@ -44,7 +44,7 @@ export default {
 
 | Callback | When it runs |
 | --- | --- |
-| `onCreate()` | Once after creation and initial state setup. |
+| `onCreate(options)` | Once after creation; receives opening URL query parameters as strings, or `{}` if absent. |
 | `onAttach()` | When first displayed or displayed again. |
 | `onDetach()` | When hidden or before destruction. |
 | `onDestroy()` | Once on final destruction. |
@@ -53,3 +53,16 @@ Attach and detach may repeat. Pause visible-only work on detach and release
 final resources on destroy. A Widget does not receive Page lifecycle callbacks
 or Page-only routing, world-awareness, and `finish()` methods. See
 [Window](./window.md) for opening or closing an overlay Widget.
+
+For `window.open('widgets/weather/index?city=hangzhou', '_widget')`:
+
+```javascript
+export default {
+  data: { city: '' },
+  onCreate(options) {
+    this.setData({ city: options.city ?? 'hangzhou' });
+  },
+};
+```
+
+The path must match a Widget declared in `app.json`.

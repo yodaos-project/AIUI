@@ -332,6 +332,8 @@ player.play();
 - `lang`
 - `voice`
 - `volume`
+- `pitch`
+- `rate`
 
 ### Behavior notes
 
@@ -339,7 +341,7 @@ player.play();
 - The default initial state is `lang = 'en-US'`.
 - The default initial state is `voice = null`.
 - `lang` is not currently supported and does not change the generated language.
-- `volume` accepts integers from `0` to `10` and defaults to `1`.
+- `pitch`, `rate`, and `volume` default to `1`. Fractional volume values survive assignment; audible volume and pitch/rate adjustments depend on the speech service.
 
 ### Supported voice IDs
 
@@ -404,8 +406,14 @@ player.play();
 
 - Each instance consumes one `SpeechSynthesisTask` created by `synthesize()`.
 - It neither represents nor controls the runtime-managed player shared by `speak()` calls.
+- Generated `textTrack` cues preserve object identity for edits and removal; see [media text tracks](./media.md#text-tracks-and-subtitle-cues).
 
 ## `SpeechRecognition`
+
+Speech recognition no longer requires a separate `SPEECH_RECOGNITION`
+permission. Capturing microphone audio still requires declaring `RECORD_AUDIO`
+and obtaining platform authorization. External-audio sessions do not open the
+microphone themselves.
 
 ### Constructor
 

@@ -13,6 +13,7 @@ Build AIUI agents from the current contracts in this skill. Do not assume an API
 - Read [events.md](./references/events.md) for lifecycle, interaction, key, focus, voice wakeup, head gesture, and environment-awareness events.
 - Read [components.md](./references/components.md) before using or reviewing built-in components and their attributes or events.
 - Read [wxss.md](./references/wxss.md) before writing styles, layout, selectors, animation, or custom fonts.
+- For keyframes, animation events, text-triggered decorations, or 2D transforms, also read [animation.md](./references/animation.md).
 - Read [monochrome-green.md](./references/design/monochrome-green.md) only for the monochrome-green Rokid Glasses visual language.
 - Read [APIs index](./references/apis/index.md), then its matching domain file, before using runtime APIs.
 - For Widget or Agent Worker instance methods, read [Widget API](./references/apis/widget.md) or [Agent Worker API](./references/apis/agent-worker.md).
@@ -31,6 +32,7 @@ Do not load every reference for a narrow task. For example, an Agent Worker norm
 - Treat Widget `family` as a size category. Use relative layout and never hardcode the root to the current Glasses pixel size.
 - Use `agentWorkers`, not the removed `workers` field. Extend asynchronous `onOpen` work synchronously with `event.waitUntil(promise)`.
 - Use data binding for rendered state and `this.setData()` to update it.
+- Page `onReady()` and component `lifetimes.ready()` run once per instance after their first visible frame is presented; parsing or layout completion alone is insufficient.
 - Resolve packaged resources from project paths; do not invent filesystem or network access that the target does not expose.
 - Treat conversation-flow cards as display-only unless the task explicitly targets an interactive full-screen Page or Widget.
 

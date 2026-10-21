@@ -56,3 +56,9 @@ For example, keep a fixed width and calculate the height automatically:
 | `mode` | String | `scaleToFill` | Resizing mode: `scaleToFill`, `aspectFit`, `aspectFill`, `widthFix`, or `heightFix`. |
 
 `scaleToFill` stretches the image to fill its container, so the image ratio may change. Use `aspectFit` or `aspectFill` when preserving the original ratio matters.
+
+## Bound Attributes in Projected Content
+
+Slot/template content uses the current resolved attributes. Updating bound
+`src` or display settings through `setData()` updates the projected image
+without recreating the custom component.

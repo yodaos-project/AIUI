@@ -23,6 +23,17 @@ window.open('widgets/weather/index?city=hangzhou', '_widget');
 The call returns `undefined` immediately, not a Widget instance or launch
 result. An empty URL throws `TypeError`. It cannot open another Page, an
 external URL, or an undeclared Widget.
+Query parameters reach the Widget's `onCreate(options)` as strings; no
+parameters produces `{}`. Invalid non-string or whitespace-only URLs throw
+`TypeError` synchronously.
+
+## Network events
+
+Use `window.addEventListener('online', listener)` and
+`window.addEventListener('offline', listener)` to observe online state changes.
+Read `navigator.onLine` and [connection metadata](./navigator.md#network-information)
+inside the listener; remove listeners during cleanup. These signals do not
+establish reachability of a particular service.
 
 ## `window.close()`
 

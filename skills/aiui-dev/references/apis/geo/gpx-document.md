@@ -17,6 +17,9 @@ import { GPXDocument } from 'gpx';
 Accepted input is GPX XML text, `Blob`, `ArrayBuffer`, a typed array/`BufferSource`, or another `GPXDocument`. `from()` and `parse()` have the same behavior.
 Invalid GPX input throws; handle external or user-provided data with
 `try...catch`. Passing an existing document creates an independent copy.
+XML input must contain one complete `<gpx>...</gpx>` root. Truncated XML,
+rootless route fragments, multiple GPX roots, and mismatched closing tags throw;
+do not treat them as empty routes. Omitted input can still create a new document.
 
 ### Route methods
 
