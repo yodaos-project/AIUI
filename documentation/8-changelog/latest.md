@@ -192,7 +192,7 @@ AIUI 0.18.0 支持开发 Widget 和后台任务，并带来更多常用 Web API�
 
   完整用法请查看[音频处理](/AIUI/api/media-web-audio#分析麦克风输入)。
 
-- **持续识别音频内容**：可以把录制或已有的音频逐段写入 `SpeechRecognitionSession`，持续收到最新识别文字，并随时结束或取消任务。语音播报也支持直接取消。
+- **持续识别音频内容**：可以把录制或已有的音频逐段写入 `SpeechRecognitionSession`，持续收到最新识别文字，并随时结束或取消任务。`segmentation` 支持对象形式；宿主通过 `vadSilenceDuration` 声明支持范围后，应用可以用 `silenceDurationMs` 配置 VAD 判定句段结束所需的连续静音毫秒数。语音播报也支持直接取消。
 
   ```js
   const recognition = new SpeechRecognitionSession({

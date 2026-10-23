@@ -211,6 +211,59 @@ await writer.close();
 
 `phrase` 是希望优先识别的词语，不能为空。`boost` 是可选权重，省略时为 `1`；数值越高，表示越希望识别服务优先考虑这个词。是否支持热词以 `capabilities.phrases` 为准。
 
+## 选择语音分段方式
+
+`segmentation` 用于提示识别服务如何确定一段最终结果的边界。先检查 `segmentationModes` 和 `vadSilenceDuration`，再传入当前服务支持的模式与 VAD 静音阈值：
+
+```javascript
+const capabilities = await SpeechRecognitionSession.getCapabilities();
+let segmentation;
+
+if (capabilities.segmentationModes.includes('vad')) {
+  const timing = capabilities.vadSilenceDuration;
+  const preferredSilenceMs = 800;
+
+  if (
+    timing.supported &&
+    timing.minMs !== undefined &&
+    timing.maxMs !== undefined
+  ) {
+    segmentation = {
+      mode: 'vad',
+      silenceDurationMs: Math.min(
+        timing.maxMs,
+        Math.max(timing.minMs, preferredSilenceMs)
+      ),
+    };
+  } else {
+    // 使用运行时或识别服务的默认 VAD 静音阈值。
+    segmentation = 'vad';
+  }
+} else if (capabilities.segmentationModes.includes('auto')) {
+  segmentation = 'auto';
+}
+
+const session = new SpeechRecognitionSession({
+  lang: 'zh-CN',
+  interimResults: true,
+  segmentation,
+});
+```
+
+三种模式的含义如下：
+
+| 模式 | 分段依据 |
+| --- | --- |
+| `auto` | 使用当前运行时或识别服务的默认分段策略。 |
+| `vad` | 优先使用人声检测（VAD，Voice Activity Detection），根据说话后的连续静音确定语音边界。 |
+| `semantic` | 优先根据识别内容的语义完整性确定句子边界。 |
+
+`vad` 中的时间指“检测到语音后持续静音的时长”，不是从会话开始计算的绝对时间，也不是 `MediaRecorder.start(250)` 中的音频分片间隔。需要自定义时，把 `segmentation` 写成 `{ mode: 'vad', silenceDurationMs }`；`silenceDurationMs` 的单位是毫秒，并且必须是运行时通过 `vadSilenceDuration.minMs` 和 `maxMs` 声明的闭区间内的非负整数。如果 `vadSilenceDuration.supported` 为 `false`，可以继续使用字符串形式的 `'vad'`，但静音阈值由运行时或识别服务决定。
+
+分段只决定识别结果何时成为一个最终句段，不会关闭 `audio` 流或结束会话。调用 `writer.close()` 仍然表示音频输入全部结束。省略 `segmentation` 时，运行时不会发送明确的分段模式；字符串形式仍然兼容，对象形式省略 `silenceDurationMs` 时也使用运行时默认阈值。
+
+`silenceDurationMs` 只能与 `mode: 'vad'` 一起使用。值不是有限非负整数，或在其他模式中设置该字段时，构造函数会抛出 `RangeError` 或 `TypeError`。显式模式不在 `segmentationModes` 中、运行时不支持自定义 VAD 时间或没有声明有效范围时，首次 `writer.write()` 会以 `NotSupportedError` 拒绝；值超出运行时声明范围时则以 `RangeError` 拒绝。
+
 ## 更新 ASR 上下文
 
 上下文用于告诉识别服务当前对话正在讨论什么。可以在写入第一段音频前设置初始上下文，也可以在识别过程中通过 `updateContext()` 替换上下文：
@@ -378,7 +431,19 @@ document.querySelector('#cancel').addEventListener('click', () => recognition.ab
 | `interimResults` | `boolean` | 是否接收尚未最终确认的中间结果，默认 `false`。 |
 | `maxAlternatives` | `number` | 每个结果最多返回多少个候选，默认且最小为 `1`。 |
 | `phrases` | `SpeechRecognitionPhrase[]` | 自定义热词及可选权重。使用前检查 `capabilities.phrases`。 |
+| `segmentation` | `SpeechRecognitionSegmentationMode \| SpeechRecognitionSegmentationOptions` | 可选的分段提示。支持原有字符串形式，也可使用对象形式设置 VAD 静音阈值；省略时不指定模式。 |
 | `audio` | `SpeechRecognitionAudioOptions` | 输入音频格式。 |
+
+**`SpeechRecognitionSegmentationMode`**
+
+类型为 `'auto' | 'vad' | 'semantic'`。
+
+**`SpeechRecognitionSegmentationOptions`**
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `mode` | `SpeechRecognitionSegmentationMode` | 是 | 分段模式。使用前检查 `capabilities.segmentationModes`。 |
+| `silenceDurationMs` | `number` | 否 | VAD 检测到语音后，结束句段所需的连续静音毫秒数。只能用于 `vad`，并且必须在运行时声明的范围内。 |
 
 **`SpeechRecognitionPhrase`**
 
@@ -444,7 +509,7 @@ try {
 const capabilities = await SpeechRecognitionSession.getCapabilities();
 ```
 
-返回 `Promise<SpeechRecognitionCapabilities>`。建议在创建会话前调用，按照实际支持情况选择音频格式、热词和上下文。查询失败时 Promise 会拒绝。
+返回 `Promise<SpeechRecognitionCapabilities>`。建议在创建会话前调用，按照实际支持情况选择音频格式、热词、上下文和分段方式。查询失败时 Promise 会拒绝。
 
 | 属性 | 类型 | 说明 |
 | --- | --- | --- |
@@ -454,6 +519,16 @@ const capabilities = await SpeechRecognitionSession.getCapabilities();
 | `maxAlternatives` | `number` | 每个识别结果支持的最大候选数量。 |
 | `phrases` | `boolean` | 是否支持 `phrases` 自定义热词。 |
 | `contextUpdates` | `boolean` | 是否支持设置和更新 ASR 上下文。 |
+| `segmentationModes` | `SpeechRecognitionSegmentationMode[]` | 运行时能够执行的音频分段方式。 |
+| `vadSilenceDuration` | `{ supported: boolean; minMs?: number; maxMs?: number }` | 是否支持自定义 VAD 静音阈值及运行时接受的范围。 |
+
+`vadSilenceDuration` 包含：
+
+| 属性 | 类型 | 说明 |
+| --- | --- | --- |
+| `supported` | `boolean` | 是否支持通过 `silenceDurationMs` 自定义 VAD 静音阈值。 |
+| `minMs` | `number` | 可接受的最小毫秒数；仅在支持自定义并声明有效范围时存在。 |
+| `maxMs` | `number` | 可接受的最大毫秒数；仅在支持自定义并声明有效范围时存在。 |
 
 `audioFormats` 中的每一项包含：
 

@@ -192,7 +192,7 @@ AIUI 0.18.0 lets you build Widgets and background tasks, and adds more familiar 
 
   See [Audio Processing (Web Audio)](/AIUI/api/media-web-audio#analyse-microphone-input) for complete usage.
 
-- **Continuous Audio Recognition**: Apps can write recorded or existing audio to `SpeechRecognitionSession` in parts, receive updated recognition text as it becomes available, and finish or cancel the task at any time. Spoken output can also be cancelled directly.
+- **Continuous Audio Recognition**: Apps can write recorded or existing audio to `SpeechRecognitionSession` in parts, receive updated recognition text as it becomes available, and finish or cancel the task at any time. `segmentation` now accepts an options object; after the host advertises a supported `vadSilenceDuration` range, applications can use `silenceDurationMs` to configure how many milliseconds of continuous silence end a VAD segment. Spoken output can also be cancelled directly.
 
   ```js
   const recognition = new SpeechRecognitionSession({
