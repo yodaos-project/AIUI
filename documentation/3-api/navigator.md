@@ -46,9 +46,9 @@ updateNetworkState();
 navigator.connection.addEventListener('change', updateNetworkState);
 ```
 
-`onLine` 表示当前在线状态，`connection` 提供连接类型与质量元数据。在线状态不保证某个地址可达，也不保证设备能建立 WebRTC 连接；请求和连接仍需处理错误。质量未知时应回退到应用自己的超时与重试策略。
+`onLine` 表示当前在线状态，`connection` 提供连接类型与质量元数据。在线状态不保证某个地址可达；请求和连接仍需处理错误。质量未知时应回退到应用自己的超时与重试策略。
 
-网络请求通过蓝牙链路转发时，连接类型可以为 `'bluetooth'`。WebRTC 需要设备联网，详见 [WebRTC](/AIUI/api/media-webrtc)。
+网络请求通过蓝牙链路转发时，连接类型可以为 `'bluetooth'`。
 
 ## API Reference
 

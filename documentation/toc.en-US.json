@@ -626,12 +626,6 @@
             "label": "Video Playback",
             "docId": "media-video",
             "docPath": "3-api/media/video.en-US.md"
-          },
-          {
-            "id": "webrtc",
-            "label": "WebRTC",
-            "docId": "media-webrtc",
-            "docPath": "3-api/media/webrtc.en-US.md"
           }
         ]
       },

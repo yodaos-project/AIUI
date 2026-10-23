@@ -1,6 +1,6 @@
 # v0.19.0
 
-AIUI 0.19.0 新增 WebRTC 音频与数据通信、网络状态感知，并完善流式数据处理、加密、绘图、样式与动画能力。此次更新也优化了复杂页面的数据更新、资源加载和内存使用，并修复导航、生命周期、模板与基础 API 的行为。
+AIUI 0.19.0 新增网络状态感知，并完善流式数据处理、加密、绘图、样式与动画能力。此次更新也优化了复杂页面的数据更新、资源加载和内存使用，并修复导航、生命周期、模板与基础 API 的行为。
 
 ## 开发能力
 
@@ -9,7 +9,6 @@ AIUI 0.19.0 新增 WebRTC 音频与数据通信、网络状态感知，并完善
 
 ## API、网络与语音
 
-- **WebRTC 音频与数据通信**：新增 `RTCPeerConnection` 和 `RTCDataChannel`，可在支持 WebRTC 的 Android、桌面和 Web 运行环境之间传输音频、文本和二进制数据，并支持 STUN 与 TURN。此能力依赖设备联网，应用需要自行交换信令；当前支持音频轨道，不支持视频轨道，也不在 Agent Worker 中提供。
 - **流式数据处理更完整**：Streams 新增 `tee()`、BYOB 字节流读取、`ReadableStream.from()` 和异步迭代，完善 `pipeTo()`、`pipeThrough()` 的背压、取消和错误传播，方便把响应流接入后续处理。
 - **流式文本编码**：新增 `TextEncoderStream`、`TextDecoderStream`，支持跨分片连续编码和解码；`TextEncoder.encodeInto()` 可以写入指定缓冲区，并返回实际读取和写入的数量。
 
@@ -193,7 +192,7 @@ AIUI 0.18.0 支持开发 Widget 和后台任务，并带来更多常用 Web API�
 
   完整用法请查看[音频处理](/AIUI/api/media-web-audio#分析麦克风输入)。
 
-- **持续识别音频内容**：可以把录制或已有的音频逐段写入 `SpeechRecognitionSession`，持续收到最新识别文字，并随时结束或取消任务。`segmentation` 支持对象形式；宿主通过 `vadSilenceDuration` 声明支持范围后，应用可以用 `silenceDurationMs` 配置 VAD 判定句段结束所需的连续静音毫秒数。语音播报也支持直接取消。
+- **持续识别音频内容**：可以把录制或已有的音频逐段写入 `SpeechRecognitionSession`，持续收到最新识别文字，并随时结束或取消任务。语音播报也支持直接取消。
 
   ```js
   const recognition = new SpeechRecognitionSession({

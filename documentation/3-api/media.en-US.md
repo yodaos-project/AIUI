@@ -11,6 +11,7 @@ AIUI provides audio playback, short sound effects, audio processing, video playb
 | Generate sound, play PCM data, or analyse microphone volume, waveforms, and frequency data | [Audio Processing (Web Audio)](/AIUI/api/media-web-audio) |
 | Play video in a page and control its playback state | [Video Playback](/AIUI/api/media-video) |
 | Use a microphone or camera to take photos or record audio and video | [Media Capture](/AIUI/api/media-media-capture) |
+| Select a microphone mode or record system playback audio | [Select a Recording Source](/AIUI/api/media-media-capture#select-a-recording-source) |
 
 ## Continue Reading
 
@@ -19,5 +20,3 @@ AIUI provides audio playback, short sound effects, audio processing, video playb
 - **[Audio Processing (Web Audio)](/AIUI/api/media-web-audio)**: Generate sound, play PCM data, adjust sound, or analyse microphone volume, waveforms, and frequency data.
 - **[Video Playback](/AIUI/api/media-video)**: See the `<video>` component and its `VideoContext` playback controls.
 - **[Media Capture](/AIUI/api/media-media-capture)**: Use `navigator.mediaDevices`, `ImageCapture`, `MediaRecorder`, and wx-style APIs to take photos or record audio and video.
-
-- **[WebRTC](/AIUI/api/media-webrtc)**: real-time audio and data channels, requiring device network connectivity and application-managed signaling.

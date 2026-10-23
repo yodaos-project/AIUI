@@ -72,7 +72,7 @@ playback. Closing a Page / Widget fires cancellation before `onUnload` /
 App and Page `onNetworkStatus(event)` receive `event.online: boolean` and
 `event.status: 'online' | 'offline'`. Window also emits `online` / `offline`;
 `navigator.connection` emits `change`. See [Navigator](./apis/navigator.md).
-Online status does not guarantee a request or WebRTC connection will succeed.
+Online status does not guarantee a network operation will succeed.
 
 ## Focus and Default Actions
 

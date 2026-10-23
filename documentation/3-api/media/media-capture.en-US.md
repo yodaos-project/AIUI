@@ -278,102 +278,77 @@ await recorder.start({
 
 Each Web `event.data` value is an encoded `Blob`. The `wx` `frameBuffer` is an `ArrayBuffer`; in Opus mode, `onHeader()` first provides an initialization header. Store or send the header and audio chunks in the order received when processing streaming audio.
 
-## Detect Speech While Recording
+## Select a Recording Source
 
-**VAD** stands for **Voice Activity Detection**. It detects whether someone is speaking during a recording and delivers that state alongside the audio. Think of it as a speaking indicator: an application can use it to show that speech is in progress or help decide whether someone has finished speaking.
+By default, recording captures the microphone in a mode optimized for the device wearer. To capture distant sounds or audio playing on the device, select the source and microphone mode in `getUserMedia()`, then pass the returned stream to `MediaRecorder`.
 
-### Understand What Speech Detection Does
+This example requests far-field microphone recording and reads the settings actually applied to the track:
 
-Suppose a user says, "Check today's weather." VAD detects whether speech is present and whether the speech segment is still in progress. Understanding the words "today's weather" requires speech recognition, which converts audio to text. VAD itself does not produce text or identify who is speaking.
-
-Speech detection also differs from measuring volume. Volume tells you how loud the sound is; speech detection looks for speech in that sound. "No speech detected" does not mean the microphone received no sound: a recording can still contain background sounds such as a fan or passing traffic.
-
-People often pause briefly within a sentence, as in "Could you check... today's weather?" To avoid treating every pause as the end of a speech segment, a detector can wait for a continuous period of silence before marking the segment as finished. During that wait, the state may still indicate that the segment is in progress even though the person has briefly stopped making a sound.
-
-### Read Speech Detection Results While Recording
-
-The Web and `wx` examples below enable `vad` and read each audio chunk's `voiceActive` field. Both examples handle a missing detection result separately so it is not mistaken for "no speech detected."
-
-<!-- aiui-api-style default=web -->
-
-**Web**
-
-```javascript api-style=web
-const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-const recorder = new MediaRecorder(stream, {
-  mimeType: 'audio/wav',
-  vad: { enabled: true, silenceDurationMs: 500 },
+```javascript
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: {
+    captureSource: 'microphone',
+    microphoneMode: 'far-field',
+    echoCancellation: true,
+  },
 });
+const [audioTrack] = stream.getAudioTracks();
+console.log('Actual capture settings', audioTrack.getSettings());
 
-recorder.addEventListener('dataavailable', ({ data, voiceActive }) => {
-  if (voiceActive === undefined) {
-    console.log('No speech detection result for this chunk');
-  } else if (voiceActive) {
-    console.log('Speech in progress (including brief pauses)');
-  } else {
-    console.log('No speech detected');
-  }
-  console.log('Received audio chunk', data.size);
-});
-recorder.addEventListener('stop', () => {
+function releaseTracks() {
   stream.getTracks().forEach((track) => track.stop());
-});
+}
 
-recorder.start(100);
-// Call when recording is complete:
-// recorder.stop();
+let recorder;
+try {
+  recorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
+  recorder.addEventListener('dataavailable', ({ data }) => {
+    console.log('Received audio chunk', data.size);
+  });
+  recorder.addEventListener('stop', releaseTracks);
+  recorder.addEventListener('error', releaseTracks);
+  recorder.start(250);
+} catch (error) {
+  releaseTracks();
+  throw error;
+}
+// Call recorder.stop() when the user finishes recording.
 ```
 
-**wx**
+See [Audio Capture Constraints](#audio-capture-constraints) for microphone modes and defaults. Supported modes vary by device. `getUserMedia()` rejects with `OverconstrainedError` when a requested source or mode is unavailable; offer an available recording option or display an error.
 
-```javascript api-style=wx
-const recorder = wx.media.getRecorderManager();
-if (!recorder) throw new Error('Recorder is unavailable');
+### Record System Playback Audio
 
-recorder.onFrameRecorded(({ frameBuffer, voiceActive }) => {
-  if (voiceActive === undefined) {
-    console.log('No speech detection result for this chunk');
-  } else if (voiceActive) {
-    console.log('Speech in progress (including brief pauses)');
-  } else {
-    console.log('No speech detected');
-  }
-  console.log('Received audio chunk', frameBuffer.byteLength);
-});
-recorder.onError(({ errMsg }) => {
-  console.error('Recording failed', errMsg);
+To record the mix playing on the device, set the source to `system-audio`. Omit the microphone mode and do not enable echo cancellation:
+
+```javascript
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: { captureSource: 'system-audio' },
 });
 
-await recorder.start({
-  format: 'pcm',
-  frameSize: 100,
-  vad: { enabled: true, silenceDurationMs: 500 },
-});
-// Call when recording is complete:
-// await recorder.stop();
+function releaseTracks() {
+  stream.getTracks().forEach((track) => track.stop());
+}
+
+let recorder;
+try {
+  recorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
+  recorder.addEventListener('dataavailable', ({ data }) => {
+    console.log('Received system audio chunk', data.size);
+  });
+  recorder.addEventListener('stop', releaseTracks);
+  recorder.addEventListener('error', releaseTracks);
+  recorder.start(250);
+} catch (error) {
+  releaseTracks();
+  throw error;
+}
+// Call recorder.stop() when the user finishes recording.
 ```
 
-<!-- /aiui-api-style -->
+System audio capture requires device support and does not automatically fall back to the microphone. `MediaRecorder` preserves the source and microphone mode of its input tracks. To change them, end the recording, stop the old tracks, and request a new stream with the new constraints.
 
-### Understand Speech, Pauses, and Audio Chunks
-
-In these examples, `100` requests an audio chunk roughly every `100` milliseconds. This breaks the continuous recording into small pieces that the application can process as they arrive. Separately, `silenceDurationMs: 500` requests `500` milliseconds (half a second) of continuous silence after speech before reporting the segment as finished. One interval controls how often audio is delivered; the other controls how long to wait before deciding that speech has ended.
-
-When the environment supports this setting and speech is successfully detected, a typical sequence is:
-
-1. The user starts speaking. A chunk reports `voiceActive: true`, indicating that a speech segment is in progress.
-2. The user pauses briefly. Before the silence delay has elapsed, the state may remain `true` rather than immediately treating the pause as the end of speech.
-3. After the user stops and the requested silence delay has elapsed, a later chunk may report `false`, indicating that the speech segment has finished.
-
-Chunks may also report `false` before the user has said anything. If the application uses VAD to help decide when to stop recording, first observe `true`, then treat a subsequent transition to `false` as an indication that speech has ended. Do not stop simply because the first result is `false`.
-
-The state arrives with audio chunks, rather than as a separate speech-start or speech-end notification. Do not expect a callback at the exact instant half a second of silence has elapsed. An application can compare successive states, but each chunk carries only one snapshot; it cannot reconstruct whether speech was present at every instant within that chunk.
-
-The `500` milliseconds is not the total recording length. VAD only attaches metadata; it does not trim silence or stop recording automatically. Call `stop()` explicitly when the application needs to end the recording. It does not configure speech recognition either: `SpeechRecognitionSession`'s `segmentation` setting controls how recognized text is split into segments and is independent of recording VAD.
-
-### Handle Missing Detection Results
-
-`voiceActive: undefined` means that the current chunk has no available detection result, for example because detection is disabled or unavailable in the current environment. Recording continues, and the application can still save, upload, or transcribe the audio; it just cannot use this field to determine whether speech is present. Check `voiceActive === undefined` first, as the examples do, rather than converting a missing value to `false`.
+`wx.media.getRecorderManager().start()` currently uses the default microphone and has no source or microphone mode selection parameters. Use the Web APIs above when source selection is required.
 
 ## Record a Video Stream
 
@@ -449,7 +424,7 @@ Each `dataavailable` event provides an encoded video chunk. Combine the complete
 
 #### `getUserMedia(constraints)`
 
-Requests an audio or video media stream and returns `Promise<MediaStream>`. `constraints.audio` and `constraints.video` can be booleans or constraint objects; enable at least one media type. Current fields include `deviceId`, `sampleRate`, `channelCount`, `echoCancellation`, `facingMode`, `width`, `height`, and `frameRate`.
+Requests an audio or video media stream and returns `Promise<MediaStream>`. `constraints.audio` and `constraints.video` can be booleans or constraint objects; enable at least one media type. Current fields include `deviceId`, `captureSource`, `microphoneMode`, `sampleRate`, `channelCount`, `echoCancellation`, `facingMode`, `width`, `height`, and `frameRate`. See [Audio Capture Constraints](#audio-capture-constraints) for source and microphone mode definitions.
 
 Constraints express requested targets; read the settings ultimately selected for each track with `getSettings()`. The promise rejects when permission is denied, a device is unavailable, or the constraints cannot be satisfied.
 
@@ -470,6 +445,38 @@ const stream = await navigator.mediaDevices.getUserMedia({
 #### `getSupportedConstraints()`
 
 Returns `MediaTrackSupportedConstraints`. A field whose value is `true` can be used in a `getUserMedia()` constraint object; this only means that AIUI recognizes the field, not that the current device can satisfy every possible value.
+
+### Audio Capture Constraints
+
+Pass these fields in `getUserMedia({ audio: { ... } })`. They select the audio input; `MediaRecorder`'s `options.mimeType` selects the output encoding.
+
+#### `captureSource`
+
+Optional `'microphone' | 'system-audio'`, also accepting `{ exact?: AudioCaptureSource, ideal?: AudioCaptureSource }`. Defaults to `'microphone'`.
+
+- `'microphone'`: captures microphone audio, with an optional `microphoneMode`.
+- `'system-audio'`: captures the system playback mix rather than environmental sound.
+
+An invalid source or one unsupported by the current device rejects the request with `OverconstrainedError`. `deviceId` selects a specific input device and is separate from the source type.
+
+#### `microphoneMode`
+
+Optional `MicrophoneCaptureMode`, also accepting `{ exact?: MicrophoneCaptureMode, ideal?: MicrophoneCaptureMode }`. Applies only to microphone capture and defaults to `'wearer'`.
+
+| Value | Capture purpose |
+| --- | --- |
+| `'wearer'` | Prioritizes the device wearer's voice. |
+| `'far-field'` | Captures distant speech or sounds. |
+| `'near-field'` | Captures nearby speech or sounds. |
+| `'omnidirectional'` | Captures sound without favoring a particular direction. |
+
+An invalid or unsupported mode rejects the request with `OverconstrainedError`. Combining it with `captureSource: 'system-audio'` also rejects.
+
+#### `echoCancellation`
+
+Optional `boolean` requesting whether echo cancellation is applied to microphone input. Omitting it leaves the constraint unspecified. Combining `true` with `captureSource: 'system-audio'` rejects the request with `OverconstrainedError`.
+
+Read the audio track's `getSettings()` for the actual `captureSource`, `microphoneMode`, and `echoCancellation`. `getSupportedConstraints()` only indicates recognized fields; it does not enumerate device-supported sources or modes.
 
 ### `MediaStream`
 
@@ -625,27 +632,13 @@ bitmap.close();
 
 `Canvas` is an offscreen canvas provided by AIUI and does not require a DOM element. `ImageBitmap` does not provide `arrayBuffer()` itself. To obtain raw pixels, draw the bitmap to the offscreen canvas and read it with `getImageData()`. The `buffer` in this example is an independent `ArrayBuffer`. Its pixels are stored in RGBA order with one byte per channel, so the total byte length is `width * height * 4`. It does not contain JPEG or PNG file bytes.
 
-### `MediaRecordingVADOptions`
-
-Web `MediaRecorderOptions.vad` and `RecorderManager.start()`'s `options.vad` use the same recording VAD options. Omitting `vad` leaves detection disabled. When VAD is unavailable or the requested silence delay is outside the current environment's supported range, recording continues normally without `voiceActive` metadata.
-
-#### `enabled`
-
-An optional `boolean`, defaulting to `false`. Set it to `true` to request speech detection results on audio chunks. Recording support does not guarantee VAD support; check each chunk's `voiceActive` field.
-
-#### `silenceDurationMs`
-
-An optional `number`, defaulting to `500`. It specifies how many milliseconds of continuous silence to wait after detected speech before reporting `voiceActive: false`, meaning that the speech segment has finished. It must be an integer from `0` to `4294967295`, inclusive; the setting is requested only when `enabled: true`. It is separate from the chunk interval in `MediaRecorder.start(timeslice)` or `options.frameSize`, and does not determine when recording stops.
-
-`vad` must be an options object, `enabled` must be a boolean, and `silenceDurationMs` must meet the numeric requirements above. Invalid field types or values make the `MediaRecorder` constructor throw `TypeError` or the Promise returned by `RecorderManager.start()` reject with `TypeError`. Valid options that are unsupported in the current environment fall back to ordinary recording as described above.
-
 ### `MediaRecorder`
 
 #### `new MediaRecorder(stream, options?)`
 
 Creates a recorder for the specified `MediaStream`. Its initial `state` is `'inactive'`. `options.mimeType` selects the output format and defaults to `audio/wav`. AIUI currently supports `audio/wav`, `audio/ogg;codecs=opus`, `video/webm;codecs=vp8,opus`, and `video/mp4`; an unsupported value throws a `TypeError`. The stream must contain at least one audio or video track when recording starts.
 
-The optional `options.vad` accepts [`MediaRecordingVADOptions`](#mediarecordingvadoptions) to request speech detection results on audio chunks. Set it at construction, then read `event.voiceActive` in the `dataavailable` event.
+The input tracks determine the source and microphone mode. Set them in `getUserMedia()`; this constructor cannot switch them.
 
 #### `state`
 
@@ -701,16 +694,6 @@ const recorder = new MediaRecorder(stream, { mimeType });
 
 Dispatched when a new recorded data chunk is available. `event.data` is a `Blob` containing encoded data. A chunk can be produced by `timeslice`, `requestData()`, or `stop()`. Preserve chunk order during asynchronous processing and interpret the encoding using `Blob.type`.
 
-Audio chunks may also include the optional read-only `event.voiceActive` field:
-
-| Value | Meaning |
-| --- | --- |
-| `true` | The detector considers the speech segment to be in progress. This may include a brief pause shorter than the silence delay. |
-| `false` | No speech is currently detected, or the previous speech segment has finished. This is a valid result and does not mean that the audio contains no sound at all. |
-| `undefined` | No detection state is available for this chunk, for example because VAD is disabled or unsupported. This does not establish silence. |
-
-This field is a state snapshot associated with the current audio chunk. It does not indicate whether speech occurred anywhere within the chunk and is not a separate speech-start or speech-end event. Do not interpret it as the proportion of speech in a chunk or as a recognition result. Output containing only initialization headers or no audio may also omit the field.
-
 #### `start` event
 
 Dispatched after `start()` successfully enters the recording state. At this point, `state === 'recording'`.
@@ -765,7 +748,6 @@ Starts a new recording session and returns `Promise<void>`. Register `onFrameRec
 | `options.numberOfChannels` | `number` | No | `1` | Requested channel count. |
 | `options.format` | `'pcm' \| 'opus'` | No | `'pcm'` | Requested encoding format. |
 | `options.frameSize` | `number` | No | `250` | Audio-frame callback interval in milliseconds; only positive values apply. |
-| `options.vad` | `MediaRecordingVADOptions` | No | Disabled | Requests recording VAD. See [recording VAD options](#mediarecordingvadoptions) for fields and fallback behavior. |
 
 #### `pause()`
 
@@ -797,9 +779,7 @@ Registers a recording-stop callback. It receives `{ tempFilePath: '', duration: 
 
 #### `onFrameRecorded(callback)`
 
-Registers an audio-frame callback. It receives `{ frameBuffer: ArrayBuffer, isLastFrame: false, voiceActive?: boolean }`. Each `frameBuffer` contains only that chunk, not bytes delivered earlier. The current implementation does not use `isLastFrame` to mark the final chunk; use `onStop()` for completion.
-
-`voiceActive` has the same semantics as the field on Web [`dataavailable` events](#dataavailable-event). `false` means no speech is detected or a speech segment has finished; an omitted field means detection state is unavailable. Audio frames continue to be delivered when no speech is detected.
+Registers an audio-frame callback. It receives `{ frameBuffer: ArrayBuffer, isLastFrame: false }`. Each `frameBuffer` contains only that chunk, not bytes delivered earlier. The current implementation does not use `isLastFrame` to mark the final chunk; use `onStop()` for completion.
 
 In PCM mode, `frameBuffer` contains a raw PCM chunk with the WAV container header removed. In Opus mode, it contains the Opus payload.
 

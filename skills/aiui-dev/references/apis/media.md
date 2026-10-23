@@ -1,6 +1,6 @@
 # AIUI Media API Reference
 
-This file documents the verified media playback APIs available to AIUI agent code.
+This file documents the verified media playback, capture, and recording APIs available to AIUI agent code.
 
 - Common scope, entry points, and authoring rules live in [apis.md](./index.md).
 - Keep examples aligned with the current local-file-focused implementation.
@@ -184,7 +184,66 @@ Declare `RECORD_AUDIO` in `app.json` and call `getUserMedia()` from a valid user
 - `enumerateDevices(): Promise<MediaDeviceInfo[]>`
 - `getSupportedConstraints(): MediaTrackSupportedConstraints`
 
-Audio/video constraints may be booleans or objects. Supported request fields include `deviceId`, `sampleRate`, `channelCount`, `echoCancellation`, `facingMode`, `width`, `height`, and `frameRate`. Read the final device-selected values from `track.getSettings()`.
+Audio/video constraints may be booleans or objects. Supported request fields include `deviceId`, `captureSource`, `microphoneMode`, `sampleRate`, `channelCount`, `echoCancellation`, `facingMode`, `width`, `height`, and `frameRate`. Read the final device-selected values from `track.getSettings()`.
+
+### Recording source and microphone mode
+
+Choose the input in `getUserMedia({ audio: { ... } })`, then pass that stream
+to `MediaRecorder`. Recorder options select output encoding, not the input
+source. Defaults are `captureSource: 'microphone'` and
+`microphoneMode: 'wearer'`.
+
+| Constraint | Values and behavior |
+| --- | --- |
+| `captureSource` | `'microphone'` captures microphone input; `'system-audio'` captures the device playback mix. Also accepts `{ exact?, ideal? }` using these values. |
+| `microphoneMode` | `'wearer'` prioritizes the device wearer's voice; `'far-field'` captures distant sounds; `'near-field'` captures nearby sounds; `'omnidirectional'` captures without favoring a direction. Also accepts `{ exact?, ideal? }`. Microphone only. |
+| `echoCancellation` | Optional boolean for microphone echo cancellation; omit to leave the constraint unspecified. `true` cannot be combined with `'system-audio'`. |
+
+- Invalid or device-unsupported sources/modes reject with `OverconstrainedError`.
+  Do not assume all devices support every mode or system audio.
+- Omit `microphoneMode` for `'system-audio'`; specifying it rejects with
+  `OverconstrainedError`. System audio does not automatically fall back to the
+  microphone.
+- `getSupportedConstraints()` reports recognized fields, not the sources or
+  modes available on the current device. Read actual values from the audio
+  track's `getSettings()`.
+- `deviceId` selects a specific input device; it is distinct from source type.
+- To change the source or mode, end the recording, stop the old tracks, and
+  request a new stream. Stop tracks on recording completion and errors.
+- `wx.media.getRecorderManager().start()` uses the default microphone and
+  exposes no source/mode selection parameters. Use Web capture when selection
+  is required; do not invent wx `audioSource` or `captureSource` options.
+
+```javascript
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: {
+    captureSource: 'microphone',
+    microphoneMode: 'far-field',
+    echoCancellation: true,
+  },
+});
+console.log(stream.getAudioTracks()[0].getSettings());
+
+function releaseTracks() {
+  stream.getTracks().forEach((track) => track.stop());
+}
+
+let recorder;
+try {
+  recorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
+  recorder.addEventListener('dataavailable', ({ data }) => console.log(data.size));
+  recorder.addEventListener('stop', releaseTracks);
+  recorder.addEventListener('error', releaseTracks);
+  recorder.start(250);
+} catch (error) {
+  releaseTracks();
+  throw error;
+}
+// Call recorder.stop() when recording is complete.
+```
+
+For system playback, use `audio: { captureSource: 'system-audio' }` in the same
+flow, without a microphone mode or enabled echo cancellation.
 
 ### `MediaStream`
 
@@ -196,45 +255,6 @@ Use `getTracks()`, `getAudioTracks()`, `getVideoTracks()`, and `getTrackById(id)
 
 Supported media types currently include `audio/wav`, `audio/ogg;codecs=opus`, `video/webm;codecs=vp8,opus`, and `video/mp4`.
 Call `isTypeSupported()` on `MediaRecorder` itself, never on an instance.
-Supported recording formats do not imply WebRTC video transport support.
-
-### Recording VAD
-
-VAD means Voice Activity Detection; use **人声检测** in Chinese explanations.
-Introduce it as a speaking indicator: it detects speech, not the words spoken
-or the speaker's identity, and is different from measuring volume. Explain that
-a speech segment can include short pauses while the detector waits before
-reporting inactivity. Keep the API identifiers `vad` and `voiceActive` unchanged.
-
-Web `new MediaRecorder(stream, { mimeType, vad })` and
-`wx.media.getRecorderManager().start({ format, frameSize, vad })` accept the
-same optional `vad: { enabled?: boolean; silenceDurationMs?: number }` object.
-Check that `getRecorderManager()` returned a manager before using it.
-
-- `enabled` defaults to `false`; use `vad: { enabled: true }` to request detection.
-- `silenceDurationMs` defaults to `500` and must be an integer in
-  `0–4294967295`, inclusive. It requests the continuous silence delay after
-  speech before inactivity is reported. It is separate from the chunk interval
-  in `start(timeslice)` or `frameSize`.
-- Invalid field types or values cause `TypeError`: the Web constructor throws,
-  while the Promise returned by wx `start()` rejects.
-- Recording support does not guarantee VAD support. If VAD is disabled,
-  unsupported, or the requested delay is outside the environment's supported
-  range, recording continues without activity metadata.
-- Web `dataavailable` events and wx `onFrameRecorded()` callbacks expose
-  `voiceActive?: boolean`. `true` means a speech segment is in progress and may
-  include a brief pause within the silence delay; `false` means no speech is
-  detected or the previous segment has finished. `undefined` means unavailable,
-  not silence. Check for `undefined` explicitly; do not coerce an absent value
-  to `false` or treat `false` as proof that the audio contains no sound.
-  Initial `false` can precede any speech; observe `true` before interpreting a
-  later transition to `false` as an indication that speech has ended.
-- The field is a snapshot associated with the delivered audio chunk, not an
-  indication that speech occurred anywhere in the chunk. Header-only or empty
-  output may omit it. Preserve the state with its chunk during async handling.
-- VAD does not trim audio, stop recording, or produce transcripts. Do not invent
-  recorder VAD events or equate recording VAD with speech recognition's
-  `segmentation` option; stop recording explicitly when the application is done.
 
 ### `ImageCapture`
 
@@ -252,11 +272,3 @@ The default encoded dimensions are `2016 × 2688` for `wide`, `2016 × 1512`
 for `telephoto`, and `3024 × 4032` for `default`. Read the selected video
 track's `getSettings()` for actual stream dimensions; photo dimensions may
 differ from the video stream.
-
-## WebRTC
-
-Read [WebRTC](./webrtc.md) for audio peer connections and text/binary data
-channels. It requires device networking and agent-provided SDP/ICE signaling,
-supports no video transport, and is unavailable in Agent Workers. Remote audio
-needs an explicit Web Audio output graph; closing a peer does not stop the
-agent's local capture tracks.

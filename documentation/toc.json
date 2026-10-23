@@ -791,12 +791,6 @@
             "label": "媒体采集",
             "docId": "media-media-capture",
             "docPath": "3-api/media/media-capture.md"
-          },
-          {
-            "id": "webrtc",
-            "label": "WebRTC",
-            "docId": "media-webrtc",
-            "docPath": "3-api/media/webrtc.md"
           }
         ]
       },

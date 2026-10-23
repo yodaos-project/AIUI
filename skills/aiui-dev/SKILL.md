@@ -16,6 +16,7 @@ Build AIUI agents from the current contracts in this skill. Do not assume an API
 - For keyframes, animation events, text-triggered decorations, or 2D transforms, also read [animation.md](./references/animation.md).
 - Read [monochrome-green.md](./references/design/monochrome-green.md) only for the monochrome-green Rokid Glasses visual language.
 - Read [APIs index](./references/apis/index.md), then its matching domain file, before using runtime APIs.
+- For recording source selection or microphone modes, read [media APIs](./references/apis/media.md#recording-source-and-microphone-mode).
 - For Widget or Agent Worker instance methods, read [Widget API](./references/apis/widget.md) or [Agent Worker API](./references/apis/agent-worker.md).
 - Read and apply [delivery checklist](./references/checklist.md) before declaring a generated or modified AIUI agent complete.
 - Start from the matching scaffold when useful: [minimal Page](./assets/minimal-page.ink), [minimal Widget](./assets/minimal-widget.ink), or [minimal Agent Worker](./assets/minimal-agent-worker.js).

@@ -76,11 +76,11 @@ Apply only the rows used by the agent:
 | --- | --- |
 | Microphone or recording | Declare `RECORD_AUDIO`; start capture from a valid user interaction; stop all tracks; close recorder, writer, and audio context. |
 | Media recording format | Use static `MediaRecorder.isTypeSupported(mimeType)`; handle unsupported target formats. |
+| Recording source selection | Set `captureSource` / `microphoneMode` in `getUserMedia()`; handle `OverconstrainedError`; omit microphone mode and enabled echo cancellation for system audio; use Web capture because wx recording has no source selection parameters. |
 | Web Audio microphone analysis | Do not connect to `context.destination` unless playback is intended; disconnect nodes and close the context. |
 | Location | Declare `GEOLOCATION`; handle permission and timeout errors; clear every watch ID. |
 | BLE client | Check availability; stop scans; remove listeners; disconnect GATT when finished. |
 | Speech recognition | No separate `SPEECH_RECOGNITION` permission; microphone capture still needs `RECORD_AUDIO`. Check supported formats and capabilities; serialize audio writes; close the writer for a final result; stop captured tracks. |
-| WebRTC | Page / Widget only, audio and data only; implement SDP/ICE signaling, check actual device networking, queue candidates until remote description, send only on open channels, bound queued data, close peers and stop local tracks separately. |
 | Network status | Treat online / connection metadata as hints; handle actual request errors and remove connectivity listeners. |
 | Stream pipelines | Await writes and pipe completion; handle backpressure, cancellation, and errors; BYOB transfers input buffers, so use returned views. |
 | Language model image input | Use a supported `image_url` value and reject empty URLs; keep text and image parts in the documented message shape. |

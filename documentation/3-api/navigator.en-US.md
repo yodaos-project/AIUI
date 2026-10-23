@@ -46,9 +46,9 @@ updateNetworkState();
 navigator.connection.addEventListener('change', updateNetworkState);
 ```
 
-`onLine` reports current online status; `connection` provides connection type and quality metadata. Being online does not guarantee that a particular address is reachable or that the device can establish WebRTC. Handle request and connection errors, and use application timeout / retry policies when quality is unknown.
+`onLine` reports current online status; `connection` provides connection type and quality metadata. Being online does not guarantee that a particular address is reachable. Handle request and connection errors, and use application timeout / retry policies when quality is unknown.
 
-Requests forwarded through a Bluetooth link can report type `'bluetooth'`. WebRTC requires device network connectivity; see [WebRTC](/AIUI/api/media-webrtc).
+Requests forwarded through a Bluetooth link can report type `'bluetooth'`.
 
 ## API Reference
 

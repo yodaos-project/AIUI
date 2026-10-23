@@ -14,8 +14,7 @@ Never infer full browser or WeChat compatibility from a familiar API name. If a 
 | `navigator` identity, language, network status, device capabilities | [Navigator](./navigator.md) |
 | `window` viewport, Widget routing, closing, Base64 | [Window](./window.md) |
 | `fetch`, `Headers`, `Response`, Streams, `WebSocket`, `File`, `FormData`, URL, encoding, Crypto, Performance | [Web APIs](./web.md) |
-| `AudioPlayer`, text tracks, `Sound`, Web Audio, microphone/camera streams, recording, video | [media APIs](./media.md) |
-| WebRTC audio, peer connections, data channels, SDP/ICE, STUN/TURN | [WebRTC](./webrtc.md) |
+| `AudioPlayer`, text tracks, `Sound`, Web Audio, microphone/camera streams, recording sources (`captureSource`, `microphoneMode`), video | [media APIs](./media.md) |
 | Language model, image input, speech synthesis, `SpeechRecognition`, `SpeechRecognitionSession` | [AI and speech APIs](./ai.md) |
 | BLE client, accelerometer, orientation, gyroscope | [device APIs](./device.md) |
 | `navigator.geolocation`, current position, location watching | [Geolocation API](./geo/geolocation.md) |
@@ -33,7 +32,6 @@ Never infer full browser or WeChat compatibility from a familiar API name. If a 
 | Language model | global `LanguageModel` or `import { LanguageModel } from 'language-model'` |
 | Speech | globals or named imports from `'speech'` |
 | Audio | globals where documented or named imports from `'audio'` |
-| WebRTC | global `RTCPeerConnection` / `RTCDataChannel` in Pages and Widgets; unavailable in Agent Workers |
 | GPX | global `GPXDocument` or `import { GPXDocument } from 'gpx'` |
 | Barcode | global `BarcodeDetector`, default or named import from `'barcode'` |
 | wx compatibility | `import wx from 'wx'` — the module has a default export only |
@@ -46,7 +44,6 @@ Never infer full browser or WeChat compatibility from a familiar API name. If a 
 - Location: declare `GEOLOCATION`; clear every active `watchPosition()` ID.
 - BLE client scan: stop the scan and disconnect GATT connections when finished.
 - Audio: disconnect nodes and close `AudioContext`; call `destroy()` where the API exposes it.
-- WebRTC: close data channels and peer connections, stop local tracks separately, and close playback audio contexts. Successful signaling alone is not proof of connectivity.
 - Events and timers: remove listeners and clear timers in the matching Page, Widget, or Worker cleanup.
 - Streams: release or close readers/writers and do not consume one response body through multiple incompatible readers.
 

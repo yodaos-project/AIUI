@@ -1,6 +1,6 @@
 # v0.19.0
 
-AIUI 0.19.0 adds WebRTC audio and data communication and network state awareness, while expanding streaming data processing, cryptography, drawing, styles, and animation. It also improves data updates, resource loading, and memory use on complex pages, and fixes navigation, lifecycle, template, and core API behavior.
+AIUI 0.19.0 adds network state awareness, while expanding streaming data processing, cryptography, drawing, styles, and animation. It also improves data updates, resource loading, and memory use on complex pages, and fixes navigation, lifecycle, template, and core API behavior.
 
 ## Development Capabilities
 
@@ -9,7 +9,6 @@ AIUI 0.19.0 adds WebRTC audio and data communication and network state awareness
 
 ## APIs, Networking, and Speech
 
-- **WebRTC Audio and Data Communication**: Added `RTCPeerConnection` and `RTCDataChannel` for audio, text, and binary data between Android, desktop, and Web environments that support WebRTC, with STUN and TURN support. This capability requires device network connectivity, and applications provide their own signaling. It supports audio tracks only and is unavailable in Agent Workers.
 - **More Complete Streams**: Added `tee()`, BYOB byte stream readers, `ReadableStream.from()`, and asynchronous iteration. Improved backpressure, cancellation, and error propagation in `pipeTo()` and `pipeThrough()` for processing response streams.
 - **Streaming Text Encoding**: Added `TextEncoderStream` and `TextDecoderStream` for continuous encoding and decoding across chunks. `TextEncoder.encodeInto()` writes into a supplied buffer and reports how much input it read and how many bytes it wrote.
 
@@ -193,7 +192,7 @@ AIUI 0.18.0 lets you build Widgets and background tasks, and adds more familiar 
 
   See [Audio Processing (Web Audio)](/AIUI/api/media-web-audio#analyse-microphone-input) for complete usage.
 
-- **Continuous Audio Recognition**: Apps can write recorded or existing audio to `SpeechRecognitionSession` in parts, receive updated recognition text as it becomes available, and finish or cancel the task at any time. `segmentation` now accepts an options object; after the host advertises a supported `vadSilenceDuration` range, applications can use `silenceDurationMs` to configure how many milliseconds of continuous silence end a VAD segment. Spoken output can also be cancelled directly.
+- **Continuous Audio Recognition**: Apps can write recorded or existing audio to `SpeechRecognitionSession` in parts, receive updated recognition text as it becomes available, and finish or cancel the task at any time. Spoken output can also be cancelled directly.
 
   ```js
   const recognition = new SpeechRecognitionSession({

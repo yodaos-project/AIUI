@@ -278,102 +278,77 @@ await recorder.start({
 
 Web 的每个 `event.data` 都是编码后的 `Blob`。`wx` 的 `frameBuffer` 是 `ArrayBuffer`；Opus 模式还会先通过 `onHeader()` 提供初始化 header。处理流式音频时，应按收到的顺序保存或发送 header 和音频分片。
 
-## 检测录音中的人声
+## 选择录音音源
 
-VAD 是 **Voice Activity Detection** 的缩写，本文称为**人声检测**。它在录音过程中判断是否有人在说话，并把检测状态随音频数据一起交给应用。你可以把它理解为一个“说话指示灯”，用于在语音助手中显示“正在说话”，或帮助应用判断一次说话是否已经结束。
+默认录音采集麦克风，并使用针对设备佩戴者本人声音优化的拾音模式。需要采集远处的声音或系统正在播放的音频时，应在 `getUserMedia()` 中选择音源和拾音模式，再把返回的流交给 `MediaRecorder`。
 
-### 先了解人声检测能做什么
+下面的示例请求远场麦克风录音，并读取轨道实际采用的设置：
 
-假设用户说了一句“帮我查一下今天的天气”。人声检测关注的是有没有人在说话、说话是否还在继续。要知道用户说了“今天的天气”，还需要使用语音识别，把声音转换成文字；人声检测本身不提供文字，也不判断说话的人是谁。
-
-人声检测也不同于音量检测。音量表示声音有多响，人声检测关注的是声音中是否有说话声。因此，“没有检测到人声”不代表麦克风没有收到声音，录音里仍可能有风扇、车辆等背景声。
-
-说话时经常会有短暂停顿，例如“帮我查一下……今天的天气”。为了避免把一句话拆成多次说话，检测器可以等待一段连续静音，再判断这次说话已经结束。在等待期间，即使用户短暂没有出声，检测状态也可能仍表示这次说话还在继续。
-
-### 边录音边读取人声状态
-
-下面分别使用 Web 和 `wx` API 录音。启用 `vad` 后，通过音频分片中的 `voiceActive` 读取人声检测状态。两个示例都单独处理“没有检测结果”的情况，避免把它误当成“没有人说话”。
-
-<!-- aiui-api-style default=web -->
-
-**Web**
-
-```javascript api-style=web
-const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-const recorder = new MediaRecorder(stream, {
-  mimeType: 'audio/wav',
-  vad: { enabled: true, silenceDurationMs: 500 },
+```javascript
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: {
+    captureSource: 'microphone',
+    microphoneMode: 'far-field',
+    echoCancellation: true,
+  },
 });
+const [audioTrack] = stream.getAudioTracks();
+console.log('实际采集设置', audioTrack.getSettings());
 
-recorder.addEventListener('dataavailable', ({ data, voiceActive }) => {
-  if (voiceActive === undefined) {
-    console.log('当前分片没有人声检测结果');
-  } else if (voiceActive) {
-    console.log('正在说话（包括短暂停顿）');
-  } else {
-    console.log('暂未检测到人声');
-  }
-  console.log('收到音频分片', data.size);
-});
-recorder.addEventListener('stop', () => {
+function releaseTracks() {
   stream.getTracks().forEach((track) => track.stop());
-});
+}
 
-recorder.start(100);
-// 完成录音后调用：
-// recorder.stop();
+let recorder;
+try {
+  recorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
+  recorder.addEventListener('dataavailable', ({ data }) => {
+    console.log('收到音频分片', data.size);
+  });
+  recorder.addEventListener('stop', releaseTracks);
+  recorder.addEventListener('error', releaseTracks);
+  recorder.start(250);
+} catch (error) {
+  releaseTracks();
+  throw error;
+}
+// 用户完成录音后调用 recorder.stop()。
 ```
 
-**wx**
+支持的拾音模式及默认值见[音频采集约束](#音频采集约束)。不同设备支持的模式可能不同；请求不可用的音源或模式时，`getUserMedia()` 会以 `OverconstrainedError` 拒绝，应向用户提供可用的录音方式或错误提示。
 
-```javascript api-style=wx
-const recorder = wx.media.getRecorderManager();
-if (!recorder) throw new Error('当前环境不支持录音');
+### 录制系统播放音频
 
-recorder.onFrameRecorded(({ frameBuffer, voiceActive }) => {
-  if (voiceActive === undefined) {
-    console.log('当前分片没有人声检测结果');
-  } else if (voiceActive) {
-    console.log('正在说话（包括短暂停顿）');
-  } else {
-    console.log('暂未检测到人声');
-  }
-  console.log('收到音频分片', frameBuffer.byteLength);
-});
-recorder.onError(({ errMsg }) => {
-  console.error('录音失败', errMsg);
+需要录制设备正在播放的混音时，将音源设为 `system-audio`。此时不要设置麦克风拾音模式或开启回声消除：
+
+```javascript
+const stream = await navigator.mediaDevices.getUserMedia({
+  audio: { captureSource: 'system-audio' },
 });
 
-await recorder.start({
-  format: 'pcm',
-  frameSize: 100,
-  vad: { enabled: true, silenceDurationMs: 500 },
-});
-// 完成录音后调用：
-// await recorder.stop();
+function releaseTracks() {
+  stream.getTracks().forEach((track) => track.stop());
+}
+
+let recorder;
+try {
+  recorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
+  recorder.addEventListener('dataavailable', ({ data }) => {
+    console.log('收到系统音频分片', data.size);
+  });
+  recorder.addEventListener('stop', releaseTracks);
+  recorder.addEventListener('error', releaseTracks);
+  recorder.start(250);
+} catch (error) {
+  releaseTracks();
+  throw error;
+}
+// 用户完成录音后调用 recorder.stop()。
 ```
 
-<!-- /aiui-api-style -->
+系统音频采集依赖当前设备支持，不会自动改为录制麦克风。`MediaRecorder` 保留输入轨道已选定的音源和拾音模式；需要切换时，应结束当前录制、停止旧轨道，再按新约束请求媒体流。
 
-### 读懂说话、停顿和音频分片
-
-示例中的 `100` 表示请求大约每 `100` 毫秒交付一次音频分片，也就是把连续录音分成小段，方便应用边录边处理。`silenceDurationMs: 500` 则请求在人声之后连续静音 `500` 毫秒（半秒），才报告这次说话结束。这两个时间用途不同：一个控制多久交付一段音频，另一个控制等多久再判断说话结束。
-
-在支持这一设置、且人声被成功检测的环境中，可以这样理解一次说话过程：
-
-1. 用户开始说话，分片中的 `voiceActive` 为 `true`，表示说话片段正在进行。
-2. 用户短暂停顿，尚未达到静音等待时间，状态可能仍为 `true`，不会一停顿就立刻判定说完。
-3. 用户停下后，连续静音达到请求的等待时间，后续分片才可能报告 `false`，表示这次说话已经结束。
-
-用户还没开口时，也可能收到 `false`。如果要用人声检测辅助结束录音，应先确认收到过 `true`，再把后续变为 `false` 作为说话结束的线索，不能一收到 `false` 就停止录音。
-
-检测状态随音频分片返回，不是一个独立的“开始说话”或“结束说话”通知；也不要期待在静音恰好满半秒的时刻收到回调。应用可以比较前后分片的状态变化，但一个分片只有一份状态，不能据此还原分片中每个时刻是否有人说话。
-
-`500` 毫秒不是录音总时长。人声检测只附加状态，不会裁剪静音或自动停止录音；如果业务需要结束录音，仍要显式调用 `stop()`。它也不会自动配置语音识别：`SpeechRecognitionSession` 的 `segmentation` 决定识别文字如何分段，与这里的录音人声检测设置相互独立。
-
-### 正确处理没有检测结果的情况
-
-`voiceActive` 为 `undefined` 表示当前分片没有可用的人声检测结果，例如当前环境不支持检测，或没有开启检测。此时录音仍会继续，应用仍可保存、上传或识别音频，只是不能用这个字段判断有没有人说话。请像示例中一样先检查 `voiceActive === undefined`，不要把它直接转换成 `false`。
+`wx.media.getRecorderManager().start()` 当前使用默认麦克风，不提供音源或拾音模式选择参数。需要选择音源时使用以上 Web API。
 
 ## 录制视频流
 
@@ -449,7 +424,7 @@ recorder.start(1000);
 
 #### `getUserMedia(constraints)`
 
-请求音频或视频媒体流，返回 `Promise<MediaStream>`。`constraints.audio` 与 `constraints.video` 可以是 `boolean` 或约束对象；至少启用一种媒体类型。当前约束字段包括 `deviceId`、`sampleRate`、`channelCount`、`echoCancellation`、`facingMode`、`width`、`height` 与 `frameRate`。
+请求音频或视频媒体流，返回 `Promise<MediaStream>`。`constraints.audio` 与 `constraints.video` 可以是 `boolean` 或约束对象；至少启用一种媒体类型。当前约束字段包括 `deviceId`、`captureSource`、`microphoneMode`、`sampleRate`、`channelCount`、`echoCancellation`、`facingMode`、`width`、`height` 与 `frameRate`。音源与拾音模式的字段定义见[音频采集约束](#音频采集约束)。
 
 约束表示请求目标，最终采用的参数应通过轨道的 `getSettings()` 读取。权限被拒绝、设备不可用或约束无法满足时，Promise 会拒绝。
 
@@ -470,6 +445,38 @@ const stream = await navigator.mediaDevices.getUserMedia({
 #### `getSupportedConstraints()`
 
 返回 `MediaTrackSupportedConstraints`。对象中值为 `true` 的字段可以出现在 `getUserMedia()` 的约束对象中；它只表示字段可识别，不保证当前设备能够满足任意取值。
+
+### 音频采集约束
+
+以下字段放在 `getUserMedia({ audio: { ... } })` 中。它们选择输入音频，`MediaRecorder` 的 `options.mimeType` 则选择输出编码格式。
+
+#### `captureSource`
+
+可选的 `'microphone' | 'system-audio'`，也接受 `{ exact?: AudioCaptureSource, ideal?: AudioCaptureSource }`，默认 `'microphone'`。
+
+- `'microphone'`：采集麦克风声音，可通过 `microphoneMode` 选择拾音模式。
+- `'system-audio'`：采集设备正在播放的系统混音，不采集环境声音。
+
+无效或当前设备不支持的音源会使请求以 `OverconstrainedError` 拒绝。`deviceId` 用于选择具体输入设备，与音源类型不同。
+
+#### `microphoneMode`
+
+可选的 `MicrophoneCaptureMode`，也接受 `{ exact?: MicrophoneCaptureMode, ideal?: MicrophoneCaptureMode }`。只适用于麦克风音源；省略时使用 `'wearer'`。
+
+| 值 | 拾音用途 |
+| --- | --- |
+| `'wearer'` | 优先采集设备佩戴者本人的声音。 |
+| `'far-field'` | 采集远距离的语音或声音。 |
+| `'near-field'` | 采集近距离的语音或声音。 |
+| `'omnidirectional'` | 不偏向特定方向的全向采集。 |
+
+无效或当前设备不支持的模式会使请求以 `OverconstrainedError` 拒绝。与 `captureSource: 'system-audio'` 组合也会拒绝。
+
+#### `echoCancellation`
+
+可选的 `boolean`，请求是否对麦克风输入进行回声消除。省略时不指定此约束。不能将 `true` 与 `captureSource: 'system-audio'` 组合，否则请求以 `OverconstrainedError` 拒绝。
+
+使用音频轨道的 `getSettings()` 读取实际的 `captureSource`、`microphoneMode` 和 `echoCancellation`。`getSupportedConstraints()` 只表明字段可识别，不枚举设备支持的音源或模式。
 
 ### `MediaStream`
 
@@ -625,27 +632,13 @@ bitmap.close();
 
 `Canvas` 是 AIUI 提供的离屏画布，不需要创建 DOM 元素。`ImageBitmap` 本身不提供 `arrayBuffer()`；需要原始像素时，将它绘制到离屏画布，再通过 `getImageData()` 读取。示例中的 `buffer` 是独立的 `ArrayBuffer`，像素按 RGBA 顺序排列，每个通道占 1 字节，因此总字节数为 `width * height * 4`。它不是 JPEG 或 PNG 文件字节。
 
-### `MediaRecordingVADOptions`
-
-Web 的 `MediaRecorderOptions.vad` 和 `RecorderManager.start()` 的 `options.vad` 使用相同的录音人声检测选项。省略 `vad` 时不开启检测。当前环境不支持人声检测，或请求的静音延迟超出当前环境支持的范围时，继续正常录音，但不附加 `voiceActive`。
-
-#### `enabled`
-
-可选的 `boolean`，默认 `false`。设为 `true` 时请求在音频分片中提供人声检测状态；录音可用并不代表人声检测一定可用，应检查每个分片的 `voiceActive`。
-
-#### `silenceDurationMs`
-
-可选的 `number`，默认 `500`。表示检测到人声后，等待多少毫秒的连续静音才报告 `voiceActive: false`，即认为这次说话已经结束。必须是 `0` 到 `4294967295`（含端点）之间的整数；只有 `enabled: true` 时才请求应用该设置。它不是 `MediaRecorder.start(timeslice)` 或 `options.frameSize` 的分片间隔，也不会决定录音何时停止。
-
-`vad` 必须是选项对象，`enabled` 必须是布尔值，`silenceDurationMs` 必须符合上述数值要求。字段类型或数值无效时，`MediaRecorder` 构造函数抛出 `TypeError`，`RecorderManager.start()` 返回的 Promise 则以 `TypeError` 拒绝；合法参数在当前环境不受支持时，按上述规则继续普通录音。
-
 ### `MediaRecorder`
 
 #### `new MediaRecorder(stream, options?)`
 
 为指定 `MediaStream` 创建录制器。构造后 `state` 为 `'inactive'`。`options.mimeType` 用于选择输出格式；省略时默认使用 `audio/wav`。AIUI 当前支持 `audio/wav`、`audio/ogg;codecs=opus`、`video/webm;codecs=vp8,opus` 与 `video/mp4`，不支持的格式会抛出 `TypeError`。开始录制时，流中必须至少有一条音频或视频轨道。
 
-`options.vad` 接受可选的 [`MediaRecordingVADOptions`](#mediarecordingvadoptions)，用于请求音频分片的人声检测状态。应在构造时设置，然后在 `dataavailable` 事件中读取 `event.voiceActive`。
+音源和麦克风拾音模式由输入轨道决定，应在 `getUserMedia()` 中设置，不能通过此构造函数切换。
 
 #### `state`
 
@@ -701,16 +694,6 @@ const recorder = new MediaRecorder(stream, { mimeType });
 
 有新的录制数据分片时触发。`event.data` 是包含编码数据的 `Blob`；分片可能由 `timeslice`、`requestData()` 或 `stop()` 产生。异步处理分片时应保留顺序，并根据 `Blob.type` 解释编码格式。
 
-音频分片还可能包含可选的只读 `event.voiceActive`：
-
-| 值 | 含义 |
-| --- | --- |
-| `true` | 检测器认为说话片段仍在进行中，可能包含尚未达到静音等待时间的短暂停顿。 |
-| `false` | 检测器当前没有检测到人声，或已判断先前的说话片段结束。这是有效结果，不代表音频中完全没有声音。 |
-| `undefined` | 此分片没有可用的检测状态，例如未开启或不支持人声检测；不能据此判断为静音。 |
-
-该字段是与当前音频分片对应的状态快照，不表示分片内任意位置是否曾出现语音，也不是独立的语音开始或结束事件。不要把它当作整个分片的语音占比或识别结果。仅包含初始化 header 或没有音频内容的输出也可能不带该字段。
-
 #### `start` 事件
 
 `start()` 成功进入录制状态后触发，此时 `state === 'recording'`。
@@ -765,7 +748,6 @@ const recorder = new MediaRecorder(stream, { mimeType });
 | `options.numberOfChannels` | `number` | 否 | `1` | 请求的声道数。 |
 | `options.format` | `'pcm' \| 'opus'` | 否 | `'pcm'` | 请求的编码格式。 |
 | `options.frameSize` | `number` | 否 | `250` | 音频帧回调间隔，单位为毫秒；仅正数生效。 |
-| `options.vad` | `MediaRecordingVADOptions` | 否 | 不开启 | 请求录音人声检测，字段与降级行为见[人声检测选项](#mediarecordingvadoptions)。 |
 
 #### `pause()`
 
@@ -797,9 +779,7 @@ const recorder = new MediaRecorder(stream, { mimeType });
 
 #### `onFrameRecorded(callback)`
 
-注册音频帧回调。回调接收 `{ frameBuffer: ArrayBuffer, isLastFrame: false, voiceActive?: boolean }`。`frameBuffer` 只在当前回调中表示这一分片，不包含之前已经交付的数据；当前实现不会用 `isLastFrame` 标记最后一帧，完成状态以 `onStop()` 为准。
-
-`voiceActive` 与 Web [`dataavailable` 事件](#dataavailable-事件)中的同名字段语义相同。`false` 表示没有检测到人声或说话片段已结束，字段缺省表示检测状态不可用；不会因为没有检测到人声而停止交付音频帧。
+注册音频帧回调。回调接收 `{ frameBuffer: ArrayBuffer, isLastFrame: false }`。`frameBuffer` 只在当前回调中表示这一分片，不包含之前已经交付的数据；当前实现不会用 `isLastFrame` 标记最后一帧，完成状态以 `onStop()` 为准。
 
 PCM 模式下，`frameBuffer` 是去除 WAV 容器头的原始 PCM 分片。Opus 模式下，它是 Opus 有效载荷。
 

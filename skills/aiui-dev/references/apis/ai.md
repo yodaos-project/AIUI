@@ -468,7 +468,6 @@ Use this API when audio is already recorded or must arrive incrementally. The se
 | `interimResults` | `boolean` | Enables provisional results when supported; defaults to `false`. |
 | `maxAlternatives` | `number` | Maximum alternatives per result; minimum/default is `1`. |
 | `phrases` | `{ phrase: string, boost?: number }[]` | Custom hotwords; check capabilities first. |
-| `segmentation` | `'auto' \| 'vad' \| 'semantic' \| { mode: 'vad', silenceDurationMs?: number }` | Requested segmentation mode; check supported modes and VAD threshold capability. |
 | `audio` | `{ mimeType?, sampleRate?, channelCount?, sampleFormat? }` | Input format; `sampleFormat` is `'s16'` or `'f32'`. |
 
 The instance exposes writable stream `audio`, read-only `state`, `updateContext(messages)`, and `onstart`, `onaudiostart`, `onresult`, `onerror`, `onaudioend`, and `onend`.
@@ -485,14 +484,6 @@ Returns a Promise for:
 | `maxAlternatives` | Maximum alternatives per result. |
 | `phrases` | Whether custom hotwords are supported. |
 | `contextUpdates` | Whether initial or updated ASR context is supported. |
-| `segmentationModes` | Supported `auto`, `vad`, or `semantic` modes. |
-| `vadSilenceDuration` | Whether a custom VAD silence duration is supported, with `minMs` and `maxMs` bounds. |
-
-For a custom VAD threshold, select a non-negative integer within the reported
-closed interval and pass `{ mode: 'vad', silenceDurationMs }`. Unsupported modes
-or threshold support reject the first audio write; malformed options throw.
-Segmentation ends a result segment, not the audio stream or session. Close the
-audio writer when all input is complete.
 
 ### `session.updateContext(messages)`
 

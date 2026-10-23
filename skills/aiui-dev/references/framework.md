@@ -334,7 +334,7 @@ export default {
 
 Making `onOpen()` async does not automatically extend the event. A running Worker retains values on `this`; values reset when it stops. Persist durable state in storage.
 
-Workers provide timers, Promise, `console`, `performance`, URL/text encoding (including `TextEncoderStream` and `TextDecoderStream`), Web Crypto, WebAssembly, and project ES modules. They do not provide Page/Widget objects, `window`, `document`, `fetch`, routing, rendering, media capture, or WebRTC.
+Workers provide timers, Promise, `console`, `performance`, URL/text encoding (including `TextEncoderStream` and `TextDecoderStream`), Web Crypto, WebAssembly, and project ES modules. They do not provide Page/Widget objects, `window`, `document`, `fetch`, routing, rendering, or media capture.
 
 ## Modules, Components, and Resources
 

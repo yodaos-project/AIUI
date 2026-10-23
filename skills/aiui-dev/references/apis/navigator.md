@@ -46,8 +46,7 @@ navigator.connection.removeEventListener('change', updateNetworkState);
 Window `online` / `offline` events and App / Page `onNetworkStatus(event)` also
 report changes; see [events](../events.md#network-status). Handle operation
 errors even while online. HTTPS forwarded through a phone's Bluetooth link
-may report `bluetooth` and does not establish that the device can connect via
-[WebRTC](./webrtc.md), which needs device network connectivity.
+may report `bluetooth`.
 
 ## Language Matching
 
