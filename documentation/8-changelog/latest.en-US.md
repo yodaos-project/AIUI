@@ -4,7 +4,6 @@ AIUI 0.19.0 adds network state awareness, while expanding streaming data process
 
 ## Development Capabilities
 
-- **Widget Open Parameters**: URL query parameters supplied when opening a Widget with `window.open()` now reach `onCreate(options)`, so a Widget can display a specific city, record, or task.
 - **Clearer Component Loading**: Missing components now report path errors directly instead of misleading default-export errors. Resource loading is unified, and nested component path resolution is more consistent. Directory entry references should explicitly include `index`.
 
 ## APIs, Networking, and Speech
