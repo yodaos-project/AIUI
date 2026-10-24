@@ -4,7 +4,7 @@
 
 AIUI brings together documentation, a starter project, design guidance, examples, and developer skills for building agents on Rokid Glasses.
 
-[简体中文](./README.zh-CN.md) · [Quick start](./documentation/0-guide/quickstart/quickstart.en-US.md) · [Benchmark](./bench/README.md) · [Documentation](./documentation/) · [Examples](./samples/) · [Awesome AIUI](https://github.com/jsar-project/awesome-aiui)
+[简体中文](./README.zh-CN.md) · [Quick start](./documentation/0-guide/quickstart/quickstart.en-US.md) · [Benchmark](./bench/README.md) · [Documentation](./documentation/) · [Examples](./samples/) · [Awesome AIUI](https://github.com/yodaos-project/awesome-aiui)
 
 ## Start building
 
@@ -16,7 +16,7 @@ The starter contains `app.js`, `app.json`, `AGENTS.md`, and an Ink page at `page
 
 ## AIUI Coding Benchmark
 
-The [AIUI Coding Benchmark](./bench/README.md) measures how well an AI coding agent can **create, modify, fix, and migrate AIUI projects**. Its 50 tasks cover page state and events, Widgets, Workers, geolocation, storage, overlays, voice events, migration, and platform constraints. It also works as a regression suite for the [`aiui-dev` skill](./skills/aiui-dev/SKILL.md).
+The [AIUI Coding Benchmark](./bench/README.md) measures how well an AI coding agent can **create, modify, fix, and migrate AIUI projects and align them with design specifications**. Its 79 tasks cover page state and events, Widgets, Workers, geolocation, storage, overlays, voice events, migration, platform boundaries, design selection, multi-stage user flows, asynchronous races, lifecycle cleanup, recovery paths, and multi-file regressions. It also works as a regression suite for the [`aiui-dev` skill](./skills/aiui-dev/SKILL.md).
 
 Each task provides a description and a starting workspace. The grader checks the resulting source, manifest, and selected handler behavior: a task counts as **resolved** only when all required and regression checks pass with no constraint violations. The headline score is resolved tasks divided by graded tasks. The benchmark does not verify rendering or behavior on real glasses.
 
@@ -39,14 +39,14 @@ See the [benchmark guide](./bench/README.md) to prepare a workspace, grade an ag
 | [Design system](./design/) | Monochrome display guidance and a [green display preview](./design/monochrome/preview-green.html). |
 | [Developer skill](./skills/aiui-dev/SKILL.md) | AI coding guidance for Ink, components, APIs, and project structure. |
 | [Cloud integration](./packages/cloud-integration/) | A Node.js package for third-party agents and Rokid Glasses notifications. |
-| [Coding benchmark](./bench/README.md) | 50 tasks, grading tools, and workflows for evaluating AIUI coding agents. |
+| [Coding benchmark](./bench/README.md) | 79 tasks, grading tools, and workflows for evaluating AIUI coding agents. |
 
 Start with the [capabilities showcase](./samples/capabilities/), or explore focused [gyroscope](./samples/gyroscope-test/), [device info](./samples/navigator-info/), [scanner](./samples/scanner/), [text-to-speech](./samples/tts/), and [realtime voice intelligence](./samples/realtime-voice-intelligence/) examples.
 
 ## Develop with an AI coding assistant
 
 ```bash
-npx skills add https://github.com/jsar-project/AIUI/tree/main/skills/aiui-dev
+npx skills add https://github.com/yodaos-project/AIUI/tree/main/skills/aiui-dev
 ```
 
 The [cloud integration skill](./skills/aiui-cloud-integration/SKILL.md) covers notification workflows; the [cloud APIs skill](./skills/aiui-cloud-apis/SKILL.md) covers cloud API usage.
@@ -65,6 +65,6 @@ The [cloud integration skill](./skills/aiui-cloud-integration/SKILL.md) covers n
 
 ## Help and feedback
 
-[Report a bug](https://github.com/jsar-project/AIUI/issues/new?template=bug_report.yml) · [Request a feature](https://github.com/jsar-project/AIUI/issues/new?template=feature_request.yml) · [Explore the ecosystem](https://github.com/jsar-project/awesome-aiui)
+[Report a bug](https://github.com/yodaos-project/AIUI/issues/new?template=bug_report.yml) · [Request a feature](https://github.com/yodaos-project/AIUI/issues/new?template=feature_request.yml) · [Explore the ecosystem](https://github.com/yodaos-project/awesome-aiui)
 
 Licensed under Apache 2.0.
