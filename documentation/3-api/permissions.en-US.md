@@ -49,7 +49,7 @@ export default {
 | Camera | `CAMERA` | `camera` |
 | Microphone | `RECORD_AUDIO` | `microphone` |
 
-A manifest declaration does not grant system permission. Full applications should declare the permissions they need. [Standalone single-file projects](/AIUI/guide/structure#standalone-single-file-projects) request permission dynamically when sensitive capabilities are used. Permission state belongs to an application session; reopening the application starts a new session. Editing `app.json` during execution does not update current permissions.
+A manifest declaration does not grant system permission. Applications should declare the permissions they need. Permission state belongs to an application session; reopening the application starts a new session. Editing `app.json` during execution does not update current permissions.
 
 Capture requiring both camera and microphone can proceed only after both are allowed. There is no generic `navigator.permissions.request()` method. Queries do not support other names such as media-library or Bluetooth permissions.
 

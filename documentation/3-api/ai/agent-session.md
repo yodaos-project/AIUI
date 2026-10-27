@@ -1,6 +1,6 @@
 # Agent 会话
 
-通过 `getApp().getAgent()` 向当前 Agent 会话发布背景数据、发送用户消息、展示可更新的卡片，以及调用远端工具和读取资源。它不会创建模型或新对话；需要让模型调用应用方法时，使用 [ModelContext](/AIUI/api/ai-model-context)。
+通过 `getApp().getAgent()` 向当前 Agent 会话发布背景数据、发送用户消息、展示可更新的卡片，以及调用远端工具和读取资源。它不会创建模型或新对话。
 
 ## 发送用户消息
 

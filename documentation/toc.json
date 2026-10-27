@@ -899,12 +899,6 @@
             "label": "大语言模型"
           },
           {
-            "id": "model-context",
-            "label": "ModelContext",
-            "docId": "ai-model-context",
-            "docPath": "3-api/ai/model-context.md"
-          },
-          {
             "id": "agent-session",
             "label": "Agent 会话",
             "docId": "ai-agent-session",

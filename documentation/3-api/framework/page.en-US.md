@@ -67,10 +67,6 @@ export default {
 
 This capability is separate from Web Fullscreen. Unsupported environments report `supported: false`, `controllable: false`, and `visible: null`. A successfully processed preference can leave the status bar visible.
 
-## Offer Page Methods to a Model
-
-Use `ModelContext.defineAction()` on the Page default export to expose business methods while the page is visible. Tools register before `onShow` and are withdrawn before `onHide`; see [ModelContext](/AIUI/api/ai-model-context). Use `getApp().getAgent()` for explicit context, messages, and cards; see [Agent Sessions](/AIUI/api/ai-agent-session).
-
 ## API Reference
 
 ### Instance Properties and Methods

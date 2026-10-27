@@ -1,6 +1,6 @@
 # Agent Sessions
 
-Use `getApp().getAgent()` to publish background data, send user messages, display updatable cards, call remote tools, and read resources in the current Agent session. It does not create a model or a new conversation. To let a model call application methods, use [ModelContext](/AIUI/api/ai-model-context).
+Use `getApp().getAgent()` to publish background data, send user messages, display updatable cards, call remote tools, and read resources in the current Agent session. It does not create a model or a new conversation.
 
 ## Send a User Message
 

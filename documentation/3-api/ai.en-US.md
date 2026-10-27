@@ -8,10 +8,9 @@ If you are building a complete voice agent, you will typically combine these thr
 - **Large Language Model**: Understands the context and generates a reply.
 - **Speech Synthesis**: Reads the generated result back to the user.
 
-## Connect Application Logic to a Model
+## Work with the Current Agent Session
 
-- Use [ModelContext](/AIUI/api/ai-model-context) to expose business methods as model-callable tools.
-- Use [Agent Sessions](/AIUI/api/ai-agent-session) to publish background context, send user messages and cards, call remote tools, and read resources.
+Use [Agent Sessions](/AIUI/api/ai-agent-session) to publish background context, send user messages and cards, call remote tools, and read resources.
 
 These session capabilities are separate from directly creating a `LanguageModelSession`. Application state and cards do not automatically become model input.
 

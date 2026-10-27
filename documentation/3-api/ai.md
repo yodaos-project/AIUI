@@ -8,10 +8,9 @@ AIUI 面向 AI 应用开发，常见能力可以分成三类：听懂用户说�
 - **大语言模型**：理解上下文并生成回复。
 - **语音播报**：把生成结果再读给用户听。
 
-## 让模型参与应用流程
+## 与当前 Agent 会话协作
 
-- 通过 [ModelContext](/AIUI/api/ai-model-context) 把业务方法声明为模型可调用的工具。
-- 通过 [Agent 会话](/AIUI/api/ai-agent-session) 发布背景上下文、发送用户消息和卡片，以及调用远端工具和读取资源。
+通过 [Agent 会话](/AIUI/api/ai-agent-session) 发布背景上下文、发送用户消息和卡片，以及调用远端工具和读取资源。
 
 这些会话能力与直接创建 `LanguageModelSession` 分开；应用状态和卡片不会自动成为模型输入。
 

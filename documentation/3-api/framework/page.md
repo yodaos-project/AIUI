@@ -66,10 +66,6 @@ export default {
 
 该能力与 Web Fullscreen 独立。不支持的环境返回 `supported: false`、`controllable: false`、`visible: null`；偏好处理成功也可能继续显示状态栏。
 
-## 把页面方法提供给模型
-
-在 Page 默认导出对象上使用 `ModelContext.defineAction()`，可在页面可见时提供业务方法。工具在 `onShow` 前注册，在 `onHide` 前撤下，详见 [ModelContext](/AIUI/api/ai-model-context)。发布上下文、发送消息和卡片则使用 `getApp().getAgent()`，详见 [Agent 会话](/AIUI/api/ai-agent-session)。
-
 ## API Reference
 
 ### 实例属性与方法

@@ -739,12 +739,6 @@
             "label": "Large Language Model"
           },
           {
-            "id": "model-context",
-            "label": "ModelContext",
-            "docId": "ai-model-context",
-            "docPath": "3-api/ai/model-context.en-US.md"
-          },
-          {
             "id": "agent-session",
             "label": "Agent Sessions",
             "docId": "ai-agent-session",
