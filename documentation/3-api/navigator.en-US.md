@@ -50,9 +50,17 @@ navigator.connection.addEventListener('change', updateNetworkState);
 
 Requests forwarded through a Bluetooth link can report type `'bluetooth'`.
 
+## Read Permission State
+
+Use `navigator.permissions.query({ name: 'microphone' })` to read the current permission without starting capture or showing a dialog. The supported names, live change notifications, and distinction between declarations and authorization are documented in [Permission State](/AIUI/api/permissions).
+
 ## API Reference
 
 ### Properties
+
+#### `navigator.permissions`
+
+Read-only permission query object. `query(descriptor)` returns a live status for geolocation, camera, or microphone. It does not request authorization; see [Permission State](/AIUI/api/permissions).
 
 #### `navigator.onLine`
 
@@ -67,7 +75,7 @@ Persistent `NetworkInformation` / `EventTarget` object; repeated access returns 
 #### `navigator.userAgent`
 
 - **Type**: Read-only `string`.
-- **Description**: Returns the User-Agent used by AIUI and the Ink runtime. The default format is `AIUI/{major.minor} Ink/{inkVersion}`. When the host provides platform or architecture metadata, a parenthesized segment is inserted, for example `AIUI/0.1 (YodaOS Sprite; aarch64) Ink/0.1.0`.
+- **Description**: Returns the User-Agent used by the AIUI runtime, including runtime and available platform information. Its exact format should not be used as a compatibility contract.
 - **Behavior**: The same value is also used for the HTTP `User-Agent` request header sent by the networking layer. Use it for capability identification and diagnostics, not tightly coupled string parsing.
 
 ```javascript
@@ -127,17 +135,17 @@ console.log('Region:', region);
 #### `navigator.versions.ink`
 
 - **Type**: Read-only `string`.
-- **Description**: Returns the current Ink runtime version string. A host may override it at build time. Use it for logging, troubleshooting, and compatibility checks rather than as an application version.
+- **Description**: Returns the current AIUI runtime version string. A host may override it at build time. Use it for logging, troubleshooting, and compatibility checks rather than as an application version.
 
 ```javascript
 const inkVersion = navigator.versions.ink;
-console.log('Ink:', inkVersion);
+console.log('Runtime:', inkVersion);
 ```
 
 #### `navigator.versions.skia`
 
 - **Type**: Read-only `string`.
-- **Description**: Returns the current Skia graphics-engine milestone string, such as `m126`. It is intended for graphics-rendering diagnostics and is not an AIUI or Ink version.
+- **Description**: Returns the current Skia graphics-engine milestone string, such as `m126`. It is intended for graphics-rendering diagnostics and is not an AIUI application or runtime version.
 
 #### `navigator.renderingEnabled`
 

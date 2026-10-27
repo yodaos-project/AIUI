@@ -897,6 +897,18 @@
           {
             "id": "language-model",
             "label": "大语言模型"
+          },
+          {
+            "id": "model-context",
+            "label": "ModelContext",
+            "docId": "ai-model-context",
+            "docPath": "3-api/ai/model-context.md"
+          },
+          {
+            "id": "agent-session",
+            "label": "Agent 会话",
+            "docId": "ai-agent-session",
+            "docPath": "3-api/ai/agent-session.md"
           }
         ]
       },
@@ -930,6 +942,16 @@
       {
         "id": "crypto",
         "label": "加密"
+      },
+      {
+        "id": "permissions",
+        "label": "权限状态",
+        "docPath": "3-api/permissions.md"
+      },
+      {
+        "id": "webassembly",
+        "label": "WebAssembly",
+        "docPath": "3-api/webassembly.md"
       },
       {
         "id": "console",

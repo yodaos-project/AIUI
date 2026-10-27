@@ -84,6 +84,10 @@ self.addEventListener('open', (event) => {
 
 Agent Worker 的声明方式和运行时长配置请参阅 [Agent Worker 开发](/AIUI/framework/open-agent-format-agent-worker)。
 
+## 把后台方法提供为工具
+
+在 Worker 默认导出对象上使用 `ModelContext.defineAction()` 声明方法，执行回调中的 `this` 指向 Worker。其 `getApp().modelContext` 使用独立注册表，不共享 App/Page 状态；此受限应用句柄没有 `getAgent()`。定义、取消与配额见 [ModelContext](/AIUI/api/ai-model-context)。
+
 ## API Reference
 
 ### `AgentWorker`
@@ -136,3 +140,9 @@ self.addEventListener('open', listener);
 self.removeEventListener('open', listener);
 close();
 ```
+
+### 后台应用入口
+
+#### `getApp()`
+
+返回包含只读 `modelContext` 注册表的受限应用句柄，不提供 Page 导航、App 生命周期或 Agent 会话服务。不要将它当成前台 App 实例。

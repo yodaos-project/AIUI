@@ -36,11 +36,31 @@ export default {
 };
 ```
 
+## Offer Tools and Use the Agent Conversation
+
+Mark methods on the default export with `ModelContext.defineAction()`. App tools register before `onLaunch` and remain until the App closes. Use `getApp().modelContext` to discover, execute, or dynamically register tools; see [ModelContext](/AIUI/api/ai-model-context).
+
+Use `this.getAgent()` in App methods, or `getApp().getAgent()` in Page scripts, to publish context and send messages or cards. See [Agent Sessions](/AIUI/api/ai-agent-session) for capability checks, acknowledgment semantics, and cleanup.
+
 ## API Reference
 
 ### `getApp()`
 
 Returns the current `App` instance so pages or components can access app-level state and methods.
+
+### Model and Session Access
+
+#### `app.modelContext`
+
+Read-only application tool registry supporting dynamic registration, discovery, execution, and tool events. See [ModelContext](/AIUI/api/ai-model-context).
+
+#### `app.getAgent()`
+
+Returns the current Agent session without creating a model or new conversation. Sessions may be unavailable or lack individual operations; see [Agent Sessions](/AIUI/api/ai-agent-session).
+
+#### `app.environment`
+
+Independent, read-only public environment with theme, locale, display modes, safe-area insets, and a `change` event. It does not automatically publish model context or modify rendering and language settings. See [Agent Sessions](/AIUI/api/ai-agent-session).
 
 ### `app.postMessage(data, options?)`
 

@@ -84,6 +84,10 @@ The `AgentWorker` instance is not an `EventTarget`; use `self` when you need `ad
 
 For declarations and lifetime configuration, see [Agent Worker Development](/AIUI/framework/open-agent-format-agent-worker).
 
+## Expose a Worker Method as a Tool
+
+Declare `ModelContext.defineAction()` methods on the Worker default export. The execution callback receives the Worker as `this`. Its `getApp().modelContext` uses an independent registry without App/Page state; this restricted app handle has no `getAgent()`. See [ModelContext](/AIUI/api/ai-model-context) for tool definitions, cancellation, and quotas.
+
 ## API Reference
 
 ### `AgentWorker`
@@ -136,3 +140,9 @@ self.addEventListener('open', listener);
 self.removeEventListener('open', listener);
 close();
 ```
+
+### Worker App Access
+
+#### `getApp()`
+
+Returns a restricted app handle with a read-only `modelContext` registry. It does not expose Page navigation, App lifecycle, or Agent session services. Do not use it as the foreground App instance.

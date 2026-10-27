@@ -104,6 +104,36 @@ text {
 </style>
 ```
 
+## 独立单文件项目
+
+从 AIUI 0.20 起，支持独立源码的预览环境可以直接打开一个 `.ink` 文件作为完整的单页面项目，无需 `app.json` 或 `app.js`。文件包含一个 `<page>`，可选 `<script def>`、`<style>` 和 `<script setup>`；纯静态页面可以省略脚本，TypeScript 使用 `<script setup lang="ts">`。
+
+```html
+<style>
+view { padding: 24px; }
+</style>
+
+<page>
+  <view>
+    <text>计数：{{count}}</text>
+    <button bindtap="increment">加一</button>
+  </view>
+</page>
+
+<script setup>
+export default {
+  data: { count: 0 },
+  increment() {
+    this.setData({ count: this.data.count + 1 });
+  },
+};
+</script>
+```
+
+源码也可以逐步到达：先提供样式，再提供页面内容，可以较早显示静态预览。生成期间不执行脚本、自定义组件脚本或事件处理函数；数据绑定暂留空，条件和列表等待激活。生成结束且完整源码校验通过后，Page 只激活一次；不完整或错误源码不会作为可交互页面运行。
+
+该模式使用敏感能力时动态申请权限，查询本身不弹窗，详见[权限状态](/AIUI/api/permissions)。模块仅从已提供的内置模块和预置包解析，不读取设备任意文件；外部资源应使用显式 URL。独立项目没有 Widget 或 Agent Worker 入口；需要这些能力或打包资源时，使用完整项目结构。
+
 ## 继续阅读
 
 - [资源（Assets）](/AIUI/framework/open-agent-format-assets)

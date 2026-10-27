@@ -11,7 +11,7 @@
 **Web**
 
 ```javascript api-style=web
-const response = await fetch('/api/agent/chat', {
+const response = await fetch('https://api.example.com/agent/chat', {
   method: 'POST',
   headers: {
     'content-type': 'application/json',
@@ -33,7 +33,7 @@ console.log(data);
 
 ```javascript api-style=wx
 wx.request({
-  url: '/api/agent/chat',
+  url: 'https://api.example.com/agent/chat',
   method: 'POST',
   header: {
     'content-type': 'application/json',
@@ -55,7 +55,7 @@ wx.request({
 ## 使用 `fetch` 流式读取文本响应
 
 ```javascript
-const response = await fetch('/api/agent/stream');
+const response = await fetch('https://api.example.com/agent/stream');
 const reader = response.body.getReader();
 const decoder = new TextDecoder('utf-8');
 let text = '';
@@ -72,6 +72,27 @@ while (true) {
 text += decoder.decode();
 console.log(text);
 ```
+
+## 读取包内资源并检查请求内容
+
+GET/HEAD Fetch 请求可以读取完整应用包内的根路径。`/assets/route.gpx` 与 `file:///assets/route.gpx` 访问同一个包内资源，不能访问设备任意文件。远端 API 地址应使用显式 `https://` URL。
+
+```javascript
+const response = await fetch('/assets/route.gpx');
+const route = await response.text();
+console.log(route);
+
+const request = new Request('https://api.example.com/order', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ quantity: 2 }),
+});
+console.log(await request.clone().json());
+console.log(request.bodyUsed); // false
+await fetch(request);
+```
+
+`Request` 的便捷读取和流式读取共用消费状态。需要检查请求体并继续发送时，先克隆再读取；锁定或已经消费的 body 不能再次读取或克隆。
 
 ## 上传文件和表单
 
@@ -98,7 +119,7 @@ await fetch('https://example.com/upload', {
 
 ```javascript
 const task = wx.request({
-  url: '/api/agent/stream',
+  url: 'https://api.example.com/agent/stream',
   method: 'GET',
   success(res) {
     console.log('最终结果:', res.data);
@@ -227,25 +248,65 @@ await fetch('https://example.com/items', {
 用于取消请求的 `AbortSignal`。
 
 ```javascript
-const signal = new AbortSignal();
+const controller = new AbortController();
 
-fetch('https://example.com/items', { signal });
-signal.abort();
+fetch('https://example.com/items', { signal: controller.signal });
+controller.abort();
 ```
 
 ### `Request`
 
-使用 `new Request(input, options?)` 可以提前组合并复用请求。实例包含 `method`、`url`、`headers`、`body`、`signal`、`redirect` 等只读属性，并支持 `clone()`、`text()`、`json()`、`arrayBuffer()` 和 `blob()`。
+#### `new Request(input, options?)`
 
-```javascript
-const request = new Request('https://example.com/items', {
-  method: 'POST',
-  headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ title: 'hello' })
-});
+从 URL 字符串、`URL` 或另一个 `Request` 构建请求，支持上方请求选项；显式选项覆盖原请求设置。
 
-const response = await fetch(request);
-```
+#### `method`
+
+只读 HTTP 方法，默认为 `GET`。包内资源只支持 GET/HEAD。
+
+#### `url`
+
+只读请求地址。包根路径和限定在包内的 `file:///` URL 是本地资源；远端地址应使用显式 HTTP/HTTPS URL。
+
+#### `headers`
+
+请求 `Headers` 对象，可在发送前读取和更新请求头。
+
+#### `body`
+
+只读 `ReadableStream` 或 `null`。流式读取与便捷方法共用同一请求体；锁定期间阻止其他消费，释放锁不会恢复已经消费的字节。
+
+#### `bodyUsed`
+
+只读 `boolean`，表示是否已开始消费请求体。锁定与消费不同；body 尚未消费时也可能已经锁定，此时即使值为 false 也不能由另一消费者读取。
+
+#### `signal`
+
+只读的关联 `AbortSignal`，使用传入该 signal 的控制器取消请求。
+
+#### `redirect`
+
+只读的请求重定向模式配置。
+
+#### `clone()`
+
+返回 body 可独立读取的新 `Request`。必须在获取 reader 或消费前克隆；body 已锁定或消费时抛出 `TypeError`。
+
+#### `text()`
+
+返回 `Promise<string>`，以 UTF-8 文本消费请求体。body 已锁定或消费时以 `TypeError` 拒绝。
+
+#### `json()`
+
+返回从请求体文本解析出的 JSON 值的 Promise。与其他读取方法共用消费状态，非法 JSON 会拒绝。
+
+#### `arrayBuffer()`
+
+返回 `Promise<ArrayBuffer>` 并消费请求体；没有 body 时得到空缓冲区。
+
+#### `blob()`
+
+返回 `Promise<Blob>` 并消费请求体；存在 `content-type` 请求头时用它设置 Blob 类型。
 
 ### `Blob`、`File` 与 `FormData`
 
@@ -305,7 +366,7 @@ console.log(buffer);
 
 #### `response.bodyUsed`
 
-表示响应体是否已经被消费。一旦 body 被 `getReader()` 锁定，或者已经通过 `text()`、`json()`、`arrayBuffer()` 读取，`bodyUsed` 就会变为 `true`。
+表示响应体是否已开始被消费。锁定与消费不同：获取 reader 后 body 可能仍未消费，但锁定期间其他读取方法仍会失败；读取开始后 `bodyUsed` 为 `true`。
 
 #### 常用方法
 

@@ -184,3 +184,5 @@ In this mode:
 - Prefer components for reusable UI structure, and modules for reusable logic or assets
 
 See [Assets](/AIUI/framework/open-agent-format-assets) for component `src`, relative-path, application-root, and network-asset rules.
+
+For synchronous construction, JavaScript imports, Memory/Table/Global, streaming response helpers, and resource limits, see [WebAssembly](/AIUI/api/webassembly). Reuse a compiled Module with `instantiate(module)`; `validate()` and `compile()` accept bytes only.

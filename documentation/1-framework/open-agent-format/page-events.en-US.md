@@ -28,6 +28,50 @@ export default {
 | `onKeyUp` | Listens for page-level key-up events | Triggered when the user releases a key |
 | `onVoiceWakeup` | Listens for page-level voice wakeup events | Triggered when voice wakeup is matched |
 
+## Register and Clean Up Listeners
+
+Global objects, Page, and Entity support DOM-style listeners. Keep callback identity and the same capture value when removing a listener, or use a signal to remove a group:
+
+```javascript
+const lifetime = new AbortController();
+const onKeyDown = (event) => console.log(event.code);
+addEventListener('keydown', onKeyDown, {
+  capture: true,
+  signal: lifetime.signal,
+});
+
+// Cleanup when this workflow or page ends:
+removeEventListener('keydown', onKeyDown, true);
+lifetime.abort();
+```
+
+| Option | Default | Behavior |
+| --- | --- | --- |
+| `capture` | `false` | Selects capture listeners; passing `true` as the third argument is equivalent. |
+| `once` | `false` | Removes the listener before its first call, including nested dispatch. |
+| `passive` | `false` | `preventDefault()` and `returnValue = false` cannot cancel from this listener. |
+| `signal` | None | Removes the listener on abort; an already aborted signal prevents registration. |
+
+Callbacks can be functions or objects with `handleEvent(event)`. Duplicate registrations with the same type, callback, and capture are ignored; changing other options does not update the original listener. Removal requires the original callback. Omitting it or passing `null` does not clear all listeners of that type.
+
+## Dispatch Through the Entity Tree
+
+Entities returned by queries are identity-stable `EventTarget` objects; `parentNode` follows the rendered entity tree. Events visit ancestor capture listeners, target listeners, and then ancestor bubble listeners when `bubbles` is true. Non-bubbling events still reach ancestor capture listeners; standalone `EventTarget` objects have no ancestor path.
+
+`target` identifies the origin; `currentTarget` and `eventPhase` describe the current listener. `composedPath()` returns a copy of the path. After dispatch, `currentTarget` is `null`, `eventPhase` is `Event.NONE`, and the path is empty. Tree mutations during a callback do not change the current path.
+
+`dispatchEvent()` runs synchronously and returns `false` only if the event was cancelled. Listener exceptions are reported without stopping later listeners. Dispatching the same event again while it is being dispatched throws `InvalidStateError`. Event construction accepts `bubbles`, `cancelable`, and `composed`; supplied target or dispatch-state fields are ignored. Constructed events are untrusted.
+
+`preventDefault()` prevents a cancelable event's default action without stopping propagation. `stopPropagation()` prevents delivery to later targets, while `stopImmediatePropagation()` also stops remaining listeners on the current target.
+
+## Handle Completed Taps
+
+Primary mouse clicks, completed touch gestures, and navigation activation produce `tap`. Drags moving more than 8 logical pixels, scrolling, cancellation, unmatched releases, and non-primary buttons do not activate controls.
+
+For `bindtap` and `catchtap`, `target` remains the original descendant or selected navigation node; `currentTarget` is the node with the binding. Capture listeners run first, then delivery proceeds from the target toward ancestors. An ancestor `catchtap` runs after handlers closer to the target and stops propagation beyond that ancestor. It does not undo handlers that already ran.
+
+`preventDefault()` preserves propagation and prevents the subsequent pointer-focus update. If propagation reaches the Page, its `addEventListener('tap', listener)` callback runs last. All deliveries share the same event object.
+
 ## Interception Mechanism
 
 Some page-level events not only notify the page, but also continue to trigger the host's built-in default behavior, such as going back, scrolling, or activating the current target.

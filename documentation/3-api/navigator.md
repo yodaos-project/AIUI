@@ -50,9 +50,17 @@ navigator.connection.addEventListener('change', updateNetworkState);
 
 网络请求通过蓝牙链路转发时，连接类型可以为 `'bluetooth'`。
 
+## 读取权限状态
+
+使用 `navigator.permissions.query({ name: 'microphone' })` 读取当前权限，不开始采集或弹出授权界面。支持的名称、实时变化通知及声明与授权的区别，详见[权限状态](/AIUI/api/permissions)。
+
 ## API Reference
 
 ### 属性
+
+#### `navigator.permissions`
+
+只读权限查询对象。`query(descriptor)` 返回定位、相机或麦克风的实时状态，不发起授权申请；详见[权限状态](/AIUI/api/permissions)。
 
 #### `navigator.onLine`
 
@@ -67,7 +75,7 @@ navigator.connection.addEventListener('change', updateNetworkState);
 #### `navigator.userAgent`
 
 - **类型**：`string`，只读。
-- **说明**：返回 AIUI 与 Ink 运行时使用的 User-Agent。默认格式为 `AIUI/{major.minor} Ink/{inkVersion}`；宿主提供平台或架构信息时，会在中间插入括号段，例如 `AIUI/0.1 (YodaOS Sprite; aarch64) Ink/0.1.0`。
+- **说明**：返回 AIUI 运行时使用的 User-Agent，包含运行时及可用的平台信息；不要将具体字符串格式作为兼容性契约。
 - **行为**：该值也用于网络层发送的 HTTP `User-Agent` 请求头。应将其用于能力识别和诊断，不要依赖字符串解析来实现强耦合逻辑。
 
 ```javascript
@@ -127,17 +135,17 @@ console.log('Region:', region);
 #### `navigator.versions.ink`
 
 - **类型**：`string`，只读。
-- **说明**：返回当前 Ink 运行时版本字符串。构建时可由宿主覆盖，用于日志、问题排查和兼容性判断；不应将其当作业务版本号。
+- **说明**：返回当前 AIUI 运行时版本字符串。构建时可由宿主覆盖，用于日志、问题排查和兼容性判断；不应将其当作业务版本号。
 
 ```javascript
 const inkVersion = navigator.versions.ink;
-console.log('Ink:', inkVersion);
+console.log('Runtime:', inkVersion);
 ```
 
 #### `navigator.versions.skia`
 
 - **类型**：`string`，只读。
-- **说明**：返回当前 Skia 图形引擎 milestone 字符串，例如 `m126`。适合用于图形渲染问题排查，不代表 AIUI 或 Ink 的版本号。
+- **说明**：返回当前 Skia 图形引擎 milestone 字符串，例如 `m126`。适合用于图形渲染问题排查，不代表 AIUI 应用或运行时的版本号。
 
 #### `navigator.renderingEnabled`
 

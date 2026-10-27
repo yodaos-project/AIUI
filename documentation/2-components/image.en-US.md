@@ -54,6 +54,7 @@ For example, keep a fixed width and calculate the height automatically:
 | --- | --- | --- | --- |
 | `src` | String | `""` | Local image path or network image URL. |
 | `mode` | String | `scaleToFill` | Resizing mode: `scaleToFill`, `aspectFit`, `aspectFill`, `widthFix`, or `heightFix`. |
+| `tint-color` | String | No explicit tint | CSS color replacing RGB with source alpha as a mask; valid SVG theme tint takes precedence. |
 
 `scaleToFill` stretches the image to fill its container, so the image ratio may change. Use `aspectFit` or `aspectFill` when preserving the original ratio matters.
 
@@ -62,3 +63,25 @@ See [Assets](/AIUI/framework/open-agent-format-assets) for local path and networ
 ## Bind attributes in slots
 
 When content is projected through custom-component slots or templates, bound attributes such as `src` use the current resolved values. Updating resource addresses or display settings with `setData()` updates projected content without recreating the entire component.
+
+## Tint Images and Preserve Animation
+
+Use `tint-color` to replace RGB while retaining source transparency:
+
+```xml
+<image src="/assets/plane.svg" tint-color="#adadad" mode="aspectFit" />
+```
+
+This affects SVG and raster images, including multicolor images, without preserving their original shading. Output alpha is `source alpha × tint alpha`. Changing or clearing a tint uses original pixels, so repeated updates do not multiply alpha again.
+
+A valid `--image-svg-tint` CSS color overrides explicit tint on SVG images. Raster images ignore that token. Set the token to `none` to disable forced SVG tint; remove explicit tint as well to restore original colors.
+
+```css
+.original-vector {
+  --image-svg-tint: none;
+}
+```
+
+GIFs decode sequentially with bounded pixel buffers. Recomposing a view preserves playback position and loop count, and finite-loop animations retain their final frame.
+
+For A2UI image props and fit mapping, see [A2UI](/AIUI/components/a2ui).

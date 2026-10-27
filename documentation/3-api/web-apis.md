@@ -26,6 +26,9 @@ AIUI 积极拥护并主要支持 **WinterCG (Web-interoperable Runtimes Communit
 - **[控制台](/AIUI/api/console)**：查看标准调试输出接口。
 - **[性能](/AIUI/api/performance)**：查看运行性能监控能力。
 
+- **[权限状态](/AIUI/api/permissions)**：只读查询权限并监听变化，不触发授权弹窗。
+- **[WebAssembly](/AIUI/api/webassembly)**：加载计算模块，绑定 JavaScript 导入和资源。
+
 ## 推荐阅读
 
 - **[URL](/AIUI/api/network-url)**：URL 构造、解析与查询参数处理。

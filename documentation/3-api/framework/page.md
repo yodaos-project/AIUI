@@ -45,6 +45,31 @@ export default {
 }
 ```
 
+## 设置系统状态栏偏好
+
+当前位于前台、获得焦点且 target 为 `_blank` 的 Page 可以请求状态栏偏好。读取返回的实际状态，不要假设请求一定改变显隐：
+
+```javascript
+export default {
+  async hideStatusBar() {
+    const state = await this.setPreferredStatusBarVisibility('hidden');
+    console.log(state.supported, state.controllable, state.visible);
+  },
+  async restoreStatusBar() {
+    await this.resetPreferredStatusBarVisibility();
+  },
+  onStatusBarChange(event) {
+    console.log(event.state.visible);
+  },
+};
+```
+
+该能力与 Web Fullscreen 独立。不支持的环境返回 `supported: false`、`controllable: false`、`visible: null`；偏好处理成功也可能继续显示状态栏。
+
+## 把页面方法提供给模型
+
+在 Page 默认导出对象上使用 `ModelContext.defineAction()`，可在页面可见时提供业务方法。工具在 `onShow` 前注册，在 `onHide` 前撤下，详见 [ModelContext](/AIUI/api/ai-model-context)。发布上下文、发送消息和卡片则使用 `getApp().getAgent()`，详见 [Agent 会话](/AIUI/api/ai-agent-session)。
+
 ## API Reference
 
 ### 实例属性与方法
@@ -248,3 +273,32 @@ Page 生命周期描述单个页面从创建、显示、首次渲染到隐藏和
 #### `onNetworkStatus(event)`
 
 连接状态变化时调用。`event.online` 为布尔值，`event.status` 为 `'online'` 或 `'offline'`。详细网络类型与质量从 [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator) 读取；在线状态不是请求成功的保证。
+
+### 系统状态栏
+
+#### `this.setPreferredStatusBarVisibility(visibility)`
+
+`visibility` 为 `'auto'`、`'visible'` 或 `'hidden'`。返回 `Promise<StatusBarState>`，完成表示偏好已处理，不保证实际显隐与偏好相同；`auto` 使用环境默认策略。
+
+#### `this.resetPreferredStatusBarVisibility()`
+
+返回 `Promise<StatusBarState>`，清除动态偏好并恢复 `auto`。偏好跟随保留的页面，返回时重新应用，销毁时清理。
+
+#### `this.getStatusBarState()`
+
+返回 `Promise<StatusBarState>`，不重新应用偏好。与设置方法一样，要求当前聚焦的前台 `_blank` Page。页面失效或不具备控制权时以 `InvalidStateError` 拒绝；被新请求或页面切换替代时以 `AbortError` 拒绝。
+
+#### `StatusBarState`
+
+| 字段 | 类型 | 含义 |
+| --- | --- | --- |
+| `preferredVisibility` | `'auto' \| 'visible' \| 'hidden'` | 页面合并后的偏好。 |
+| `supported` | `boolean` | 当前环境是否提供此能力。 |
+| `controllable` | `boolean` | 当前环境策略是否允许控制。 |
+| `visible` | `boolean \| null` | 确认的实际显隐，未知时为 `null`。 |
+
+保留状态栏是正常结果，不代表请求失败；通信或处理失败才拒绝 Promise。
+
+#### `this.onStatusBarChange(event)`
+
+状态变化时通过 `event.state` 接收实际状态。Page 还会发出带相同字段的 `statusbarchange` 事件；过期页面或请求的通知会被忽略。

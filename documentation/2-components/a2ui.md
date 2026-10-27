@@ -97,3 +97,17 @@ if (context) {
 | `context.clear()` | 清除当前生成的界面内容。 |
 
 `a2ui` 不提供 `agent-id`、`session-id` 或 `bindmessage` 属性。智能体会话和消息接收应由页面或 Agent Worker 管理，再把最终的 A2UI 指令交给组件显示。
+
+## 为生成的图片着色和适配
+
+A2UI `Image` / `image` 的属性映射到原生图片属性：
+
+| A2UI 属性 | 原生属性 | 行为 |
+| --- | --- | --- |
+| `tintColor` | `tint-color` | 颜色字符串或数据绑定；同时提供两种拼写时，显式 `tint-color` 优先。 |
+| `fit: 'contain'` | `mode="aspectFit"` | 保持比例，完整显示图片。 |
+| `fit: 'cover'` | `mode="aspectFill"` | 保持比例并裁剪以填满区域。 |
+| `fit: 'fill'` | `mode="scaleToFill"` | 拉伸以填满区域。 |
+| `mode` | `mode` | 显式 `mode` 优先于 `fit`。 |
+
+透明度相乘和 SVG 主题着色规则见 [Image](/AIUI/components/image)。更新保留相同类型的图片组件，并按位置复用模板项，减少重复加载并保留播放状态；组件类型改变时会重新创建。

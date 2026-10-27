@@ -11,7 +11,7 @@ If you are building configuration fetching, ordinary REST APIs, form submissions
 **Web**
 
 ```javascript api-style=web
-const response = await fetch('/api/agent/chat', {
+const response = await fetch('https://api.example.com/agent/chat', {
   method: 'POST',
   headers: {
     'content-type': 'application/json',
@@ -33,7 +33,7 @@ console.log(data);
 
 ```javascript api-style=wx
 wx.request({
-  url: '/api/agent/chat',
+  url: 'https://api.example.com/agent/chat',
   method: 'POST',
   header: {
     'content-type': 'application/json',
@@ -55,7 +55,7 @@ wx.request({
 ## Read a streaming text response with `fetch`
 
 ```javascript
-const response = await fetch('/api/agent/stream');
+const response = await fetch('https://api.example.com/agent/stream');
 const reader = response.body.getReader();
 const decoder = new TextDecoder('utf-8');
 let text = '';
@@ -72,6 +72,27 @@ while (true) {
 text += decoder.decode();
 console.log(text);
 ```
+
+## Read Packaged Assets and Inspect a Request
+
+GET/HEAD Fetch requests can read paths rooted in a full application's package. `/assets/route.gpx` and `file:///assets/route.gpx` access the same packaged resource, not arbitrary device files. Use explicit `https://` URLs for remote API endpoints.
+
+```javascript
+const response = await fetch('/assets/route.gpx');
+const route = await response.text();
+console.log(route);
+
+const request = new Request('https://api.example.com/order', {
+  method: 'POST',
+  headers: { 'content-type': 'application/json' },
+  body: JSON.stringify({ quantity: 2 }),
+});
+console.log(await request.clone().json());
+console.log(request.bodyUsed); // false
+await fetch(request);
+```
+
+`Request` convenience readers and stream reads share consumption state. To inspect a body and still send it, clone before reading. Locked or consumed bodies cannot be read or cloned again.
 
 ## Upload a File and Form Fields
 
@@ -98,7 +119,7 @@ Do not set `content-type` manually for `FormData`; the runtime creates the reque
 
 ```javascript
 const task = wx.request({
-  url: '/api/agent/stream',
+  url: 'https://api.example.com/agent/stream',
   method: 'GET',
   success(res) {
     console.log('Final result:', res.data);
@@ -227,25 +248,65 @@ await fetch('https://example.com/items', {
 An `AbortSignal` used to cancel the request.
 
 ```javascript
-const signal = new AbortSignal();
+const controller = new AbortController();
 
-fetch('https://example.com/items', { signal });
-signal.abort();
+fetch('https://example.com/items', { signal: controller.signal });
+controller.abort();
 ```
 
 ### `Request`
 
-Use `new Request(input, options?)` to prepare and reuse a request. An instance exposes read-only properties including `method`, `url`, `headers`, `body`, `signal`, and `redirect`, and supports `clone()`, `text()`, `json()`, `arrayBuffer()`, and `blob()`.
+#### `new Request(input, options?)`
 
-```javascript
-const request = new Request('https://example.com/items', {
-  method: 'POST',
-  headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ title: 'hello' })
-});
+Prepares a request from a URL string, `URL`, or another `Request`, with the request options above. Supplied options override the original request settings.
 
-const response = await fetch(request);
-```
+#### `method`
+
+Read-only HTTP method, defaulting to `GET`. Packaged resources support GET/HEAD only.
+
+#### `url`
+
+Read-only request URL. Package-root and package-scoped `file:///` URLs are local resources; remote endpoints require explicit HTTP/HTTPS URLs.
+
+#### `headers`
+
+Request `Headers` object for reading and updating headers before sending.
+
+#### `body`
+
+Read-only `ReadableStream` or `null`. Stream reads and convenience readers consume the same body; locking prevents other consumers until the lock is released, and consumed bytes cannot be reread.
+
+#### `bodyUsed`
+
+Read-only `boolean` indicating whether body consumption has started. A body can be locked before it is consumed; even while `bodyUsed` is false, another consumer cannot use a locked body.
+
+#### `signal`
+
+Read-only associated `AbortSignal`. Use the controller that supplied it to cancel a request.
+
+#### `redirect`
+
+Read-only configured redirect mode for the request.
+
+#### `clone()`
+
+Returns a new `Request` with an independently readable body. Clone before acquiring a reader or consuming the body; locked or consumed bodies throw `TypeError`.
+
+#### `text()`
+
+Returns `Promise<string>` and consumes the body as UTF-8 text. Reusing a locked or consumed body rejects with `TypeError`.
+
+#### `json()`
+
+Returns a Promise for the JSON value parsed from body text. Shares consumption state with all other readers; invalid JSON rejects.
+
+#### `arrayBuffer()`
+
+Returns `Promise<ArrayBuffer>` containing the body's bytes and consumes the body. An absent body produces an empty buffer.
+
+#### `blob()`
+
+Returns `Promise<Blob>` and consumes the body. The Blob type derives from the `content-type` header when present.
 
 ### `Blob`, `File`, and `FormData`
 
@@ -305,7 +366,7 @@ console.log(buffer);
 
 #### `response.bodyUsed`
 
-Indicates whether the body has already been consumed. Once the body is locked to `getReader()`, or has already been read through `text()`, `json()`, or `arrayBuffer()`, `bodyUsed` becomes `true`.
+Indicates whether response-body consumption has started. Locking and consumption differ: acquiring a reader can leave the body unused, but other readers still fail while it is locked. Once reading starts, `bodyUsed` is `true`.
 
 #### Common Methods
 

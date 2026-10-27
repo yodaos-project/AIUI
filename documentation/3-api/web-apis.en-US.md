@@ -26,6 +26,9 @@ To help developers find documentation faster by usage scenario, Web-standard cap
 - **[Console](/AIUI/api/console)**: See standard debugging output APIs.
 - **[Performance](/AIUI/api/performance)**: See runtime performance monitoring capabilities.
 
+- **[Permission State](/AIUI/api/permissions)**: Read permission status and observe changes without prompting.
+- **[WebAssembly](/AIUI/api/webassembly)**: Load computational modules and bind JavaScript imports and resources.
+
 ## Recommended Reading
 
 - **[URL](/AIUI/api/network-url)**: URL construction, parsing, and query parameter handling.

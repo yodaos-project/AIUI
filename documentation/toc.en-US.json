@@ -592,6 +592,11 @@
         "label": "Routing"
       },
       {
+        "id": "window",
+        "label": "Window",
+        "docPath": "3-api/window.en-US.md"
+      },
+      {
         "id": "navigator",
         "label": "Navigator",
         "docId": "weixin-compatible-apis-navigator"
@@ -698,6 +703,25 @@
         ]
       },
       {
+        "id": "geo-data",
+        "label": "Geography and Location",
+        "expanded": false,
+        "children": [
+          {
+            "id": "geolocation",
+            "label": "Geolocation",
+            "docId": "geo-data-geolocation",
+            "docPath": "3-api/geo-data/geolocation.en-US.md"
+          },
+          {
+            "id": "gpx-document",
+            "label": "GPXDocument",
+            "docId": "geo-data-gpx-document",
+            "docPath": "3-api/geo-data/gpx-document.en-US.md"
+          }
+        ]
+      },
+      {
         "id": "ai",
         "label": "AI",
         "expanded": false,
@@ -713,6 +737,18 @@
           {
             "id": "language-model",
             "label": "Large Language Model"
+          },
+          {
+            "id": "model-context",
+            "label": "ModelContext",
+            "docId": "ai-model-context",
+            "docPath": "3-api/ai/model-context.en-US.md"
+          },
+          {
+            "id": "agent-session",
+            "label": "Agent Sessions",
+            "docId": "ai-agent-session",
+            "docPath": "3-api/ai/agent-session.en-US.md"
           }
         ]
       },
@@ -746,6 +782,16 @@
       {
         "id": "crypto",
         "label": "Crypto"
+      },
+      {
+        "id": "permissions",
+        "label": "Permission State",
+        "docPath": "3-api/permissions.en-US.md"
+      },
+      {
+        "id": "webassembly",
+        "label": "WebAssembly",
+        "docPath": "3-api/webassembly.en-US.md"
       },
       {
         "id": "console",

@@ -1,3 +1,35 @@
+# v0.20.0
+
+AIUI 0.20.0 新增模型可调用的业务方法、Agent 会话与对话卡片，支持独立及流式生成的单文件页面，并完善权限、WebAssembly、网络和事件行为。
+
+## 开发与模型交互
+
+- **模型 Action**：使用 `ModelContext.defineAction()` 将 App、Page 和 Agent Worker 方法声明为工具；支持动态注册、发现、调用及取消。Page 工具在页面可见时提供，隐藏时撤下。详见 [ModelContext](/AIUI/api/ai-model-context)。
+- **Agent 会话**：通过 `getApp().getAgent()` 显式发布及更新模型上下文、发送用户文本消息、调用远端工具和读取资源。上下文发布成功表示确认接收，不保证模型已经读取；App/Page 状态不会自动成为模型输入。详见 [Agent 会话](/AIUI/api/ai-agent-session)。
+- **可更新的对话卡片**：使用 `conversation.sendCard()` 发送展示数据，通过返回句柄更新同一卡片。更新完整替换内容；卡片不自动触发推理或发布模型上下文。
+- **独立与流式单文件页面**：一个 `.ink` 文件即可作为完整单页面项目；支持源码逐步到达时显示静态预览，生成完成并校验后才激活脚本。详见[代码结构](/AIUI/guide/structure#独立单文件项目)。
+
+## API 与界面
+
+- **只读权限查询**：新增 `navigator.permissions.query()`，支持定位、相机、麦克风及实时 `PermissionStatus` 变化通知。查询本身不弹窗；需要使用能力时调用对应的敏感 API。详见[权限状态](/AIUI/api/permissions)。
+- **WebAssembly 能力补齐**：支持同步 Module/Instance、JavaScript 导入、Memory/Table/Global、`i64` BigInt，以及 `compileStreaming()` / `instantiateStreaming()`。原生与 Web 使用相同的受支持子集，资源配额和不支持的特性已明确。详见 [WebAssembly](/AIUI/api/webassembly)。
+- **请求体读取与包内 Fetch**：`Request` 支持 `text()`、`json()`、`arrayBuffer()`、`blob()` 及共享消费状态；`fetch()` 的 GET/HEAD 可读取包根路径和限定在包内的 `file:///` URL。详见 [HTTPS](/AIUI/api/network-https)。
+- **系统状态栏偏好**：当前聚焦的前台 `_blank` 页面可请求 `auto`、`visible`、`hidden`，查询实际状态并监听变化。请求的偏好与实际可见性分开报告。详见 [Page](/AIUI/api/framework-page)。
+- **图片着色与适配**：新增 `tint-color`，以源 alpha 为遮罩着色；A2UI 支持 `tintColor` 和 `fit`，显式 `mode` 优先。SVG 可使用 `--image-svg-tint` 主题颜色。详见 [Image](/AIUI/components/image)。
+
+## 性能与稳定性
+
+- **网络资源回收**：修复取消 Fetch 后请求名额耗尽、排队时间未计入超时、响应体重复保留，以及 WebSocket 读写相互阻塞；图片请求携带配置的 User-Agent。
+- **图片和生成界面更稳定**：GIF 按顺序解码并限制像素缓冲，重组时保留播放位置和循环次数，有限循环结束保留末帧。A2UI 更新复用相同类型的图片和模板项，减少重复加载并保留播放状态；修复文字、按钮字号和图片适配。
+- **样式与绑定修复**：修复纯色 `background` 简写、线性渐变端点、保留文本裁切、自定义组件类型化属性在 `attached` 前的初始化、字符串 `.length` 绑定，以及空 GPX 边界和 `TextEncoder.encode(undefined)`。
+- **视口与点击一致性**：窗口尺寸实时更新且只读；统一指针和导航产生的完整 `tap`，拖动、滚动、取消和非主键手势不会激活控件。
+
+## 兼容性说明
+
+- **同步脚本执行时限**：默认每个实例有 2,000 ms 同步 JavaScript 执行预算。超时会中断脚本运行环境并请求销毁实例；交还控制权后的异步等待不计入。长任务应拆分并主动让出控制权，详见 [JavaScript 兼容性](/AIUI/guide/runtime-js)。
+- **事件监听器语义**：支持回调身份、`capture`、`once`、`passive`、`AbortSignal` 及 Entity 树传播。移除监听器须传入原回调与相同的 capture；省略回调不再清空该类型全部监听器。事件目标和派发状态由运行时维护，详见[事件](/AIUI/framework/open-agent-format-page-events)。
+- **编译模块复用方式**：`WebAssembly.validate()` 和 `compile()` 不再接收 Module，请使用 `instantiate(module)` 复用。共享内存、线程、SIMD、memory64 和 WASI 仍不可用。
+
 # v0.19.0
 
 AIUI 0.19.0 新增网络状态感知，并完善流式数据处理、加密、绘图、样式与动画能力。此次更新也优化了复杂页面的数据更新、资源加载和内存使用，并修复导航、生命周期、模板与基础 API 的行为。

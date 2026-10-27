@@ -28,6 +28,50 @@ export default {
 | `onKeyUp` | 监听页面级按键抬起事件 | 用户松开按键时触发 |
 | `onVoiceWakeup` | 监听页面级语音唤醒事件 | 语音唤醒命中时触发 |
 
+## 注册和清理监听器
+
+全局对象、Page 和 Entity 支持 DOM 风格的监听器。移除时保留回调身份和相同的 capture，或使用 signal 统一清理：
+
+```javascript
+const lifetime = new AbortController();
+const onKeyDown = (event) => console.log(event.code);
+addEventListener('keydown', onKeyDown, {
+  capture: true,
+  signal: lifetime.signal,
+});
+
+// 业务或页面结束时清理：
+removeEventListener('keydown', onKeyDown, true);
+lifetime.abort();
+```
+
+| 选项 | 默认值 | 行为 |
+| --- | --- | --- |
+| `capture` | `false` | 选择捕获监听器；第三个参数传 `true` 与此等价。 |
+| `once` | `false` | 首次调用前移除监听器，包含回调中的嵌套派发。 |
+| `passive` | `false` | 该监听器中的 `preventDefault()` 和 `returnValue = false` 不能取消事件。 |
+| `signal` | 无 | 中止时移除监听器；已经中止的 signal 阻止注册。 |
+
+回调可以是函数或包含 `handleEvent(event)` 的对象。类型、回调和 capture 相同的重复注册会被忽略；改变其他选项不会更新原监听器。移除必须使用原回调，省略或传入 `null` 不会清空该类型的全部监听器。
+
+## 沿 Entity 树派发事件
+
+查询返回的 Entity 是身份稳定的 `EventTarget`，`parentNode` 对应渲染后的实体树。事件依次经过祖先捕获、目标监听器，并在 `bubbles` 为 true 时经过祖先冒泡监听器。不冒泡的事件也会经过祖先捕获；独立 `EventTarget` 没有祖先传播路径。
+
+`target` 表示起点，`currentTarget` 和 `eventPhase` 表示当前监听器的位置与阶段，`composedPath()` 返回传播路径副本。派发结束后，`currentTarget` 为 `null`，`eventPhase` 为 `Event.NONE`，路径为空；回调中修改节点树不改变本次路径。
+
+`dispatchEvent()` 同步执行，只有事件被取消才返回 `false`。监听器异常会被报告而不阻止后续监听器；派发期间再次派发同一事件抛出 `InvalidStateError`。构造事件时接受 `bubbles`、`cancelable`、`composed`，调用方提供的目标或派发状态字段会被忽略；构造的事件不受信任。
+
+`preventDefault()` 阻止可取消事件的默认行为，不停止传播；`stopPropagation()` 阻止继续向后续目标传播，`stopImmediatePropagation()` 还会停止当前目标的剩余监听器。
+
+## 处理已完成的点击
+
+鼠标主按钮点击、已完成触摸手势和导航激活产生 `tap`。位移超过 8 个逻辑像素的拖动、滚动、取消、未匹配的释放和非主按钮不会激活控件。
+
+`bindtap` 和 `catchtap` 的 `target` 保持最初命中的后代或选中的导航节点，`currentTarget` 是绑定所在节点。捕获监听器先执行，再从目标向祖先交付。祖先 `catchtap` 在更靠近目标的处理器执行后运行，并停止继续向该祖先之外传播，不会撤销已经执行的回调。
+
+`preventDefault()` 保留传播并阻止后续指针焦点更新。若传播到 Page，其 `addEventListener('tap', listener)` 最后执行；所有交付共享同一事件对象。
+
 ## 拦截机制
 
 部分页面级事件除了会通知页面，还会继续触发宿主内置的默认行为，例如返回、滚动或激活当前目标。

@@ -36,11 +36,31 @@ export default {
 };
 ```
 
+## 提供模型工具并使用 Agent 对话
+
+在默认导出对象上使用 `ModelContext.defineAction()` 标记方法。App 工具在 `onLaunch` 前注册，保持到 App 关闭。通过 `getApp().modelContext` 可以发现、执行或动态注册工具，详见 [ModelContext](/AIUI/api/ai-model-context)。
+
+App 方法中使用 `this.getAgent()`，Page 脚本中使用 `getApp().getAgent()`，可发布上下文并发送消息或卡片。能力检查、确认接收的含义和清理要求，详见 [Agent 会话](/AIUI/api/ai-agent-session)。
+
 ## API Reference
 
 ### `getApp()`
 
 返回当前 `App` 实例，可用于从页面或组件访问应用级状态与方法。
+
+### 模型与会话入口
+
+#### `app.modelContext`
+
+只读应用工具注册表，支持动态注册、发现、执行和工具事件，详见 [ModelContext](/AIUI/api/ai-model-context)。
+
+#### `app.getAgent()`
+
+返回当前 Agent 会话，不创建模型或新对话。会话可能不可用或缺少特定操作，详见 [Agent 会话](/AIUI/api/ai-agent-session)。
+
+#### `app.environment`
+
+独立的只读公开环境，包含主题、语言、显示模式、安全区域及 `change` 事件；不自动发布模型上下文，也不改变渲染或语言配置，详见 [Agent 会话](/AIUI/api/ai-agent-session)。
 
 ### `app.postMessage(data, options?)`
 

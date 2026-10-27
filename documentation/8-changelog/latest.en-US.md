@@ -1,3 +1,35 @@
+# v0.20.0
+
+AIUI 0.20.0 adds model-callable business methods, Agent sessions, conversation cards, and standalone or streamed single-file pages, while improving permissions, WebAssembly, networking, and events.
+
+## Development and Model Interaction
+
+- **Model Actions**: Declare App, Page, and Agent Worker methods as tools with `ModelContext.defineAction()`. Dynamically register, discover, execute, and cancel tools. Page tools are offered while visible and withdrawn when hidden. See [ModelContext](/AIUI/api/ai-model-context).
+- **Agent Sessions**: Use `getApp().getAgent()` to explicitly publish and update model context, send user text messages, call remote tools, and read resources. Publishing acknowledges receipt without guaranteeing that a model has read the data; App/Page state is not automatically model input. See [Agent Sessions](/AIUI/api/ai-agent-session).
+- **Updatable Conversation Cards**: Send presentation data with `conversation.sendCard()` and update the same card through its handle. Updates replace the full content. Cards neither start inference nor publish model context automatically.
+- **Standalone and Streamed Single-File Pages**: A single `.ink` file can run as a complete one-page project. Source can appear as a static preview while arriving, with scripts activated only after generation completes and validation passes. See [Code Structure](/AIUI/guide/structure#standalone-single-file-projects).
+
+## APIs and Interface
+
+- **Read-Only Permission Queries**: Added `navigator.permissions.query()` for geolocation, camera, and microphone with live `PermissionStatus` notifications. Queries show no dialog; use the relevant sensitive API when access is needed. See [Permission State](/AIUI/api/permissions).
+- **Expanded WebAssembly**: Supports synchronous Module/Instance construction, JavaScript imports, Memory/Table/Global, `i64` BigInt, and `compileStreaming()` / `instantiateStreaming()`. Native and Web share the supported subset, with documented quotas and unsupported features. See [WebAssembly](/AIUI/api/webassembly).
+- **Request Body Readers and Packaged Fetch**: `Request` supports `text()`, `json()`, `arrayBuffer()`, and `blob()` with shared consumption state. GET/HEAD Fetch requests can read package-root paths and `file:///` URLs restricted to the package. See [HTTPS](/AIUI/api/network-https).
+- **System Status Bar Preferences**: The focused foreground `_blank` page can request `auto`, `visible`, or `hidden`, query actual state, and observe changes. Requested preferences and actual visibility are reported separately. See [Page](/AIUI/api/framework-page).
+- **Image Tinting and Fit**: Added `tint-color` using source alpha as a mask. A2UI supports `tintColor` and `fit`, with explicit `mode` taking precedence. SVG images can use the `--image-svg-tint` theme color. See [Image](/AIUI/components/image).
+
+## Performance and Stability
+
+- **Network Cleanup**: Fixed exhausted request slots after Fetch cancellation, timeout accounting that excluded queue time, retained response bodies, and WebSocket reads blocked by writes. Image requests send the configured User-Agent.
+- **More Stable Images and Generated Interfaces**: GIFs decode sequentially with bounded pixel buffers, preserve position and loop counts during recomposition, and retain the final frame after finite loops. A2UI reuses same-type images and template items to avoid reloads and preserve playback. Fixed Text/Button font sizes and image fit.
+- **Style and Binding Fixes**: Fixed solid-color `background` shorthand, gradient endpoints, retained text clipping, typed custom-component properties initialized before `attached`, string `.length` bindings, empty GPX bounds, and `TextEncoder.encode(undefined)`.
+- **Consistent Viewport and Taps**: Window dimensions are live and read-only. Completed pointer and navigation `tap` dispatch is unified; drags, scrolling, cancellations, and non-primary gestures do not activate controls.
+
+## Compatibility Notes
+
+- **Synchronous Script Deadline**: Each instance has a default 2,000 ms synchronous JavaScript budget. Exceeding it interrupts the script realm and requests instance destruction. Asynchronous waiting after yielding control is excluded. Split long tasks and yield control; see [JavaScript Compatibility](/AIUI/guide/runtime-js).
+- **Event Listener Semantics**: Supports callback identity, `capture`, `once`, `passive`, `AbortSignal`, and Entity-tree propagation. Removal requires the original callback and matching capture value; omitting the callback no longer clears all listeners of a type. The runtime maintains event targets and dispatch state. See [Events](/AIUI/framework/open-agent-format-page-events).
+- **Compiled Module Reuse**: `WebAssembly.validate()` and `compile()` no longer accept Module input. Use `instantiate(module)` to reuse compiled modules. Shared memory, threads, SIMD, memory64, and WASI remain unavailable.
+
 # v0.19.0
 
 AIUI 0.19.0 adds network state awareness, while expanding streaming data processing, cryptography, drawing, styles, and animation. It also improves data updates, resource loading, and memory use on complex pages, and fixes navigation, lifecycle, template, and core API behavior.

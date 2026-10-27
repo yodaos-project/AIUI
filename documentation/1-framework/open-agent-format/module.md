@@ -184,3 +184,5 @@ console.log(click instanceof Sound);
 - 如果需要复用组件能力，请优先使用组件；如果只是复用逻辑或资源，优先使用模块
 
 有关组件 `src`、相对路径、包根路径和网络资源的规则，请查看[资源（Assets）](/AIUI/framework/open-agent-format-assets)。
+
+同步构造、JavaScript 导入、Memory/Table/Global、流式响应入口及资源限制见 [WebAssembly](/AIUI/api/webassembly)。复用已编译 Module 时使用 `instantiate(module)`；`validate()` 和 `compile()` 只接收字节输入。

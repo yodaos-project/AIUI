@@ -121,6 +121,8 @@ The following permissions can currently be declared:
 
 `permissions` is a capability declaration in the application manifest; it does not replace authorization from the device operating system. Location, camera, microphone, and media-library access may also require the user to grant system permission. Even when a permission is declared in `app.json`, the API can still fail if system authorization is denied or the device does not support the capability. Applications should handle permission denial and unavailable capabilities.
 
+Use [Permission State](/AIUI/api/permissions) to query geolocation, camera, or microphone state without prompting. Request access through the relevant sensitive API; there is no generic `navigator.permissions.request()`. Declarations are read at application startup, so changing the manifest does not update the current session.
+
 ## Its Relationship With `AGENTS.md`
 
 If `AGENTS.md` defines "who this agent is and what capabilities it has," then `app.json` defines "where this agent application starts and how its UI is organized."

@@ -97,3 +97,17 @@ Call `context.clear()` when the generated interface should be removed.
 | `context.clear()` | Clears the generated interface. |
 
 `a2ui` does not provide `agent-id`, `session-id`, or `bindmessage`. Manage the agent session and incoming messages in the page or an Agent Worker, then pass the resulting A2UI instructions to this component.
+
+## Tint and Fit Generated Images
+
+A2UI `Image` / `image` props map to the native Image attributes below:
+
+| A2UI prop | Native attribute | Behavior |
+| --- | --- | --- |
+| `tintColor` | `tint-color` | Color string or data binding; explicit `tint-color` wins when both spellings occur. |
+| `fit: 'contain'` | `mode="aspectFit"` | Shows the entire image at its original aspect ratio. |
+| `fit: 'cover'` | `mode="aspectFill"` | Fills the region, cropping as needed. |
+| `fit: 'fill'` | `mode="scaleToFill"` | Stretches to fill the region. |
+| `mode` | `mode` | Explicit `mode` takes precedence over `fit`. |
+
+See [Image](/AIUI/components/image) for alpha multiplication and SVG theme tint. Updates preserve same-type image components and reuse template items by position, avoiding unnecessary image reloads and preserving playback. Changing the component type recreates it.

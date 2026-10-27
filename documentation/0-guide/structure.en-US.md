@@ -104,6 +104,36 @@ text {
 </style>
 ```
 
+## Standalone Single-File Projects
+
+Starting with AIUI 0.20, preview environments supporting standalone source can open one `.ink` file as a complete single-page project, without `app.json` or `app.js`. Include one `<page>` and optional `<script def>`, `<style>`, and `<script setup>` blocks. Static pages can omit scripts; TypeScript uses `<script setup lang="ts">`.
+
+```html
+<style>
+view { padding: 24px; }
+</style>
+
+<page>
+  <view>
+    <text>Count: {{count}}</text>
+    <button bindtap="increment">Add one</button>
+  </view>
+</page>
+
+<script setup>
+export default {
+  data: { count: 0 },
+  increment() {
+    this.setData({ count: this.data.count + 1 });
+  },
+};
+</script>
+```
+
+Source can also arrive incrementally. Sending styles before page content enables an early static preview. Scripts, custom-component scripts, and event handlers do not run during generation. Bindings remain empty, and conditional/list content waits for activation. The Page activates once after generation finishes and complete source passes validation. Incomplete or invalid source does not run as an interactive page.
+
+Sensitive operations request authorization dynamically; queries alone show no dialog. See [Permission State](/AIUI/api/permissions). Imports resolve only from provided built-in modules and preinstalled packages, without arbitrary device-file access. Use explicit URLs for external resources. Standalone projects have no Widget or Agent Worker entry points; use a full project for those capabilities or packaged assets.
+
 ## Continue Reading
 
 - [Assets](/AIUI/framework/open-agent-format-assets)

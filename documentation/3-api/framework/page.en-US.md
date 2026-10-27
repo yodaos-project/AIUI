@@ -46,6 +46,31 @@ export default {
 ```
 
 
+## Set a System Status Bar Preference
+
+The focused foreground `_blank` Page can request a status bar preference. Read the returned actual state instead of assuming the request changed visibility:
+
+```javascript
+export default {
+  async hideStatusBar() {
+    const state = await this.setPreferredStatusBarVisibility('hidden');
+    console.log(state.supported, state.controllable, state.visible);
+  },
+  async restoreStatusBar() {
+    await this.resetPreferredStatusBarVisibility();
+  },
+  onStatusBarChange(event) {
+    console.log(event.state.visible);
+  },
+};
+```
+
+This capability is separate from Web Fullscreen. Unsupported environments report `supported: false`, `controllable: false`, and `visible: null`. A successfully processed preference can leave the status bar visible.
+
+## Offer Page Methods to a Model
+
+Use `ModelContext.defineAction()` on the Page default export to expose business methods while the page is visible. Tools register before `onShow` and are withdrawn before `onHide`; see [ModelContext](/AIUI/api/ai-model-context). Use `getApp().getAgent()` for explicit context, messages, and cards; see [Agent Sessions](/AIUI/api/ai-agent-session).
+
 ## API Reference
 
 ### Instance Properties and Methods
@@ -249,3 +274,32 @@ Runs when the host sends a message to the current page. `event.data` can contain
 #### `onNetworkStatus(event)`
 
 Runs when network status changes. `event.online` is a boolean; `event.status` is `'online'` or `'offline'`. Read connection type and quality from [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator). Online status does not guarantee request success.
+
+### System Status Bar
+
+#### `this.setPreferredStatusBarVisibility(visibility)`
+
+`visibility` is `'auto'`, `'visible'`, or `'hidden'`. Returns `Promise<StatusBarState>` after the preference is processed, without guaranteeing matching visibility. `auto` uses the environment's default policy.
+
+#### `this.resetPreferredStatusBarVisibility()`
+
+Returns `Promise<StatusBarState>`, clearing the dynamic preference to `auto`. Preferences stay with a retained page, apply again on return, and are cleared on destruction.
+
+#### `this.getStatusBarState()`
+
+Returns `Promise<StatusBarState>` without reapplying a preference. Like the setters, it requires the current focused foreground `_blank` Page. Invalid or uncontrollable page ownership rejects with `InvalidStateError`; requests superseded by another request or page switch reject with `AbortError`.
+
+#### `StatusBarState`
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `preferredVisibility` | `'auto' \| 'visible' \| 'hidden'` | Effective Page preference. |
+| `supported` | `boolean` | Whether this capability is available. |
+| `controllable` | `boolean` | Whether the current environment policy allows control. |
+| `visible` | `boolean \| null` | Confirmed visibility; `null` when unknown. |
+
+Keeping the bar visible is a valid result, not a request failure. Communication or processing failures reject the Promise.
+
+#### `this.onStatusBarChange(event)`
+
+Receives actual state changes in `event.state`. The Page also emits `statusbarchange` with the same field. Notifications from stale pages or requests are ignored.
