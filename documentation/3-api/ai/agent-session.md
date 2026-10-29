@@ -45,25 +45,40 @@ selection.dispose();
 
 ## 发送和更新卡片
 
-卡片提供标题、说明和结构化展示数据，布局由会话界面呈现。它不定义 HTML、页面布局或按钮回调：
+使用 `sendCard()` 可以在 Rokid AI App 的会话中展示一张卡片。例如，智能体可以发送一张商品卡片，让用户点击后打开商品页面。目前卡片支持标题和跳转链接；描述和 `data` 的展示将在后续支持。
+
+在 App 或 Page 的业务方法中调用：
 
 ```javascript
-const conversation = getApp().getAgent().conversation;
-const card = await conversation.sendCard({
-  title: '商品 DEMO',
-  description: '库存 100 件',
-  href: 'https://example.com/products/DEMO',
-  data: { sku: 'DEMO', available: 100 },
-});
-await card.update({
-  title: '商品 DEMO',
-  description: '库存 99 件',
-  href: 'https://example.com/products/DEMO',
-  data: { sku: 'DEMO', available: 99 },
-});
+async function sendProductCard() {
+  const conversation = getApp().getAgent().conversation;
+  try {
+    const card = await conversation.sendCard({
+      title: '查看商品 DEMO',
+      href: 'https://example.com/products/DEMO',
+    });
+    return card;
+  } catch (error) {
+    console.error('发送卡片失败', error);
+  }
+}
 ```
 
-`href` 用于指定卡片跳转地址，目前尚待运行时支持；当前传入该字段会返回 `DataError`。更新会替换整张卡片，省略可选字段会清除对应字段。每次 `sendCard()` 新建一张卡片，目前没有删除接口。卡片不会自动成为模型输入；需要模型使用同一数据时另行 `provideContext()`。
+`title` 是用户看到的标题，`href` 是点击卡片后打开的地址。部分运行时版本尚不支持 `href`，传入时会返回 `DataError`。
+
+调用成功后会返回卡片句柄，可以用它更新卡片：
+
+```javascript
+const card = await sendProductCard();
+if (card) {
+  await card.update({
+    title: '查看更新后的商品',
+    href: 'https://example.com/products/DEMO',
+  });
+}
+```
+
+更新会替换整张卡片，因此需要重新提供要保留的字段。每次 `sendCard()` 都会新建一张卡片，目前没有删除接口。卡片内容不会自动提供给模型；如果模型也需要这些信息，请另外调用 `provideContext()`。
 
 ## 使用远端工具和资源
 
@@ -192,10 +207,10 @@ if (resource) console.log(await agent.readResource(resource.uri));
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `title` | `string` | 是 | 必须包含非空白文本。 |
-| `description` | `string` | 否 | 展示说明；更新时省略会清空。 |
-| `href` | `string` | 否 | 卡片跳转地址；尚待运行时支持，当前传入会返回 `DataError`。 |
-| `data` | JSON 对象 | 否 | 可选的展示数据；更新时省略会清空。 |
+| `title` | `string` | 是 | 卡片标题，必须包含非空白文本。 |
+| `href` | `string` | 否 | 点击卡片后打开的地址；部分运行时版本尚不支持，传入会返回 `DataError`。 |
+| `description` | `string` | 否 | 卡片描述；展示将在后续支持。 |
+| `data` | JSON 对象 | 否 | 可选的卡片数据；展示将在后续支持。 |
 
 ### `ContextEntry`
 
