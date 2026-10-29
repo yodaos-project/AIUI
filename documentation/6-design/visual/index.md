@@ -1,50 +1,30 @@
 # 视觉设计
 
-本目录用于承接仓库根目录 `design/` 下的视觉设计语言内容，并按显示类型组织 AIUI 的视觉规范。
-
-AIUI 运行在显示能力差异很大的设备上，因此视觉规范不是单一的一篇文档，而是一组按显示类型拆分的设计语言文档。
-
-## 目录结构
-
-```text
-visual/
-├── index.md
-└── monochrome.md
-```
-
-当前文档结构与仓库中的 `design/` 保持对应关系：
-
-- `design/README.md` -> 本页
-- `design/monochrome/README.md` + `design/monochrome/design-system-green.md` -> `Monochrome`
+AIUI 按显示类型提供视觉规范。先根据目标设备选择规范，再用主题 Token、布局与资源调整实现一致的任务体验。
 
 ## 显示类型
 
-| 类型 | 说明 | 状态 |
+| 类型 | 适用设备 | 核心约束 |
 | --- | --- | --- |
-| `Monochrome` | 单色显示，只能在纯黑背景上渲染单一发光通道 | 已启用 |
-| `Full Color` | 全彩显示能力 | 规划中 |
+| [Monochrome](/AIUI/design/visual-monochrome) | RokidGlasses1 / RokidGlasses2 的单绿色显示 | 单一绿色通道，参考画布 480 × 352，使用单色透明度与描边建立层级 |
+| [Full Color](/AIUI/design/visual-full-color) | Rokid Color、乐奇全彩眼镜 | 宽 448、最高 170，白色文字与彩色强调，透明容器与清晰描边 |
 
-当前只有 `Monochrome` 分支处于启用状态，面向 Rokid Glasses 的单绿色显示硬件。
+两类显示都使用纯黑页面背景，黑色在眼镜上呈透明效果。全彩增加了色相表达能力，仍需限制大面积填充、保持可读字号，并在真实背景下验证。
 
-## 当前生效规范
+## 选择与复用规范
 
-当前主规范是 `Monochrome`，其中包含当前启用的 `Green` 变体，用于 RokidGlasses1 / RokidGlasses2：
+同一个智能体可以复用业务逻辑、Page 与 Widget，再根据显示能力调整配色，根据可用空间调整布局。不应将单色的字号和整页布局直接缩放到全彩，也不应把全彩的多色状态直接搬到单色设备。
 
-- 单一绿色发光通道
-- 纯黑背景
-- 以描边、透明填充和稳定留白构成 HUD 风格界面
-- 以 Design Tokens 作为宿主注入和应用覆盖的统一接口
+优先复用主题 Token，自定义样式、图片和 Canvas 需要单独检查。完整迁移流程见[全彩眼镜适配指南](/AIUI/guide/full-color)。
 
-## 与仓库的关系
+## 规范与设计源
 
-| 使用对象 | 入口 |
-| --- | --- |
-| 人类开发者 | 本文档目录 |
-| 设计源文件维护者 | 仓库根目录 `design/` |
-| AI 代码生成与辅助工具 | 与设计源同步的规范副本 |
-
-这组文档的目标不是替代 `design/` 目录，而是把其中的设计语言整理进对外文档体系，便于导航、引用和后续扩展。
+本目录提供开发者使用的视觉规范；仓库根目录 `design/monochrome/` 保留单色设计源文件与预览。全彩的尺寸、颜色、排版与组件基线见 [Full Color](/AIUI/design/visual-full-color)。
 
 ## 下一步阅读
 
 - [Monochrome](/AIUI/design/visual-monochrome)
+- [Full Color](/AIUI/design/visual-full-color)
+- [全彩眼镜适配指南](/AIUI/guide/full-color)
+- [全彩优化指南](/AIUI/guide/performance-full-color)
+- [交互设计](/AIUI/design/interaction)

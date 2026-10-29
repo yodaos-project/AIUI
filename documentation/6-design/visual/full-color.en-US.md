@@ -1,0 +1,96 @@
+# Full Color
+
+`Full Color` is the AIUI visual specification for Rokid Color and 乐奇全彩眼镜. It combines white text, color accents, and clear outlines on a see-through display so users can read results quickly within a limited field of view.
+
+Before adapting an existing agent, read the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color). Continue using [Monochrome](/AIUI/design/visual-monochrome) for monochrome devices; keep the dimensions, type scales, and fill rules of each specification separate.
+
+## Core Design Constraints
+
+Dimensions below use logical design units; text sizes use dp. In WXSS, use logical `px` values consistent with the theme rather than hardware physical pixels.
+
+| Item | Requirement |
+| --- | --- |
+| Content area | Width 448, maximum height 170; content and outer margins fit within this area |
+| Text | 14–24 dp |
+| Icons | At least 12 × 12 |
+| Background | Theme background always pure black `#000000`; prefer transparent cards and controls |
+| Large fills | Avoid large filled backgrounds; build structure with whitespace and outlines |
+| Visible content alpha | At least 40% recommended |
+| Cards | Radius 12, inside stroke 2, default stroke alpha 60% |
+| Selected cards | Stroke alpha 100%, with width remaining 2 |
+| Card padding | 10 horizontally and 24 vertically between content and border |
+| FOV clearance | 10 between cards and FOV edges |
+| Dividers | Width 1, alpha 40%, matching the muted outer-border tier |
+
+“40% opacity” here means a color alpha of `0.4`. Default card borders remain at 60%, selected borders at 100%, and dividers and muted outlines at 40%. Transparent containers and black backgrounds are exempt from the visible-foreground alpha recommendation.
+
+## Black and See-Through Rendering
+
+Pure black appears transparent on the glasses. It cannot act as an opaque panel that blocks the real world. Do not use black text, or low-brightness dark gray, dark blue, and similar colors for essential text, icons, or lines.
+
+A black page background and transparent cards form the baseline. Prefer white or clearly visible bright colors for essential content, and verify them against bright and complex real backgrounds. Contrast in a black desktop preview does not establish readability on the glasses.
+
+## Color System
+
+The following values are key defaults in the built-in full-color theme. Semantic colors support status communication; errors, success, and selection should retain text, icon, or shape cues.
+
+| Token | Use | Default |
+| --- | --- | --- |
+| `--color-background` | Page background | `#000000` |
+| `--color-surface` / `--color-surface-highlight` | Container and highlighted-container backgrounds | `transparent` |
+| `--color-text-primary` | Body and essential text | `#ffffff` |
+| `--color-text-secondary` | Secondary text | `rgba(255,255,255,0.6)` |
+| `--color-primary` | Primary accent | `#66b3ff` |
+| `--color-secondary` / `--border-color-success` | Secondary accent and success | `#80e6b0` |
+| `--border-color-danger` | Error indication | `#ff8080` |
+| `--border-color-warning` | Warning indication | `#ffd966` |
+| `--border-color-highlight` | Category accent | `#c4a6ff` |
+| `--border-color-default` | Default borders | `rgba(255,255,255,0.6)` |
+| `--border-color-muted` | Muted borders and dividers | `rgba(255,255,255,0.4)` |
+| `--border-color-strong` | Selected and focused borders | `#ffffff` |
+
+Set color alpha on individual text or borders instead of applying `opacity: 0.4` to an entire card. Parent opacity also weakens child content and can reduce an already translucent foreground below the readability baseline.
+
+## Typography and Icons
+
+| Level | Suggested Size | Theme Value |
+| --- | --- | --- |
+| Major heading | 24 | `--font-size-max`; used by `header` by default |
+| Card title | 20 | `--card-title-font-size` |
+| Body and actions | 16 | Default for `text`, `p`, inputs, and buttons |
+| Supporting information | 14 | `--card-footer-font-size`; minimum size `--font-size-min` |
+| Icons | Default 16, minimum 12 × 12 | `--icon-size-min` |
+
+These tokens and defaults do not automatically correct all custom content. Check explicitly styled text, text embedded in images, and Canvas annotations. Reduce information and split the flow when content does not fit, while preserving minimum text and icon sizes.
+
+## Cards, Spacing, and Focus
+
+| Token | Default |
+| --- | --- |
+| `--app-width` | `448px` |
+| `--card-margin` | `10px` |
+| `--card-padding` | `10px`, horizontal content spacing |
+| `--card-padding-y` | `24px`, vertical content spacing |
+| `--card-radius` | `12px` |
+| `--card-border-width` | `2px` |
+| `--card-border-color` | White at alpha 60% |
+| `--card-focus-border-color` | White at alpha 100% |
+| `--card-divider-width` / `--card-divider-color` | `1px` / white at alpha 40% |
+
+The maximum height of 170 is a content design constraint, not automatic clipping applied by the theme. Budget for margins, borders, padding, titles, and actions together. Split, paginate, or scroll overflow content instead of simply hiding it with `overflow: hidden`.
+
+Built-in `card` uses `:focus` and `:host-focus` to strengthen its border. Custom interactive containers also need visible focus. Maintain business selection state separately, and do not rely only on hover or color changes. See the [Focus System](/AIUI/framework/open-agent-format-page-focus).
+
+## Component and Asset Baselines
+
+- **Cards, buttons, and inputs**: Prefer transparent backgrounds, clear outlines, and white text. Use the selected outline treatment for focus.
+- **Images and icons**: Prefer clear silhouettes and recognizable subjects. Use transparent backgrounds for decorative assets, and avoid large background blocks or dark details.
+- **Charts**: Prefer lines and outline shapes. Support colors with labels, units, and legends; avoid large solid areas.
+- **Maps**: Prioritize routes, positions, and essential labels instead of filling the field of view with colored surfaces.
+- **Errors and empty states**: Explain the state and next action briefly, with icons or outlines as well as color.
+
+## Delivery Checks
+
+Check the content area, text, icons, padding, margins, and focus against the values above. Inspect black and dark details, compounded opacity, and large fills. Finally, verify reading, confirmation, back navigation, and scrolling on the target glasses under different lighting conditions and real backgrounds.
+
+For implementation, see the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color). For troubleshooting and refinement, see the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).

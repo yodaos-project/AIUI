@@ -12,6 +12,8 @@ These devices can render only one luminous channel over pure black, so they cann
 
 At the moment, `Green` is the only public monochrome spec.
 
+For Rokid Color and 乐奇全彩眼镜, use [Full Color](/AIUI/design/visual-full-color). One agent can serve both display types, with dimensions, text sizes, and colors adapted to each specification. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color).
+
 ## Why A Separate Monochrome System
 
 Single-color display hardware differs substantially from full-color devices:

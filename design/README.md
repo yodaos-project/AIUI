@@ -8,19 +8,24 @@ different color reproduction capabilities.
 
 ```text
 design/
-├── monochrome/          # single-color display specs (one channel on pure black)
-│   ├── design-system-green.md
-│   └── preview-green.html
-└── fullcolor/           # planned — full-RGB display specs (not yet authored)
+└── monochrome/          # single-color display specs (one channel on pure black)
+    ├── design-system-green.md
+    └── preview-green.html
 ```
 
-Today only the **monochrome-green** variant exists; the full-color area is
-reserved for future hardware.
+Full-color guidelines are maintained in the public documentation:
 
-| Subdir | Display type | Status |
+```text
+documentation/6-design/visual/full-color.md
+```
+
+The **monochrome-green** design sources live here. Full-color guidance for
+Rokid Color and 乐奇全彩眼镜 lives in the documentation linked below.
+
+| Source | Display type | Status |
 |--------|--------------|--------|
 | [`monochrome/`](./monochrome/) | Single-color display (one channel on pure black) | Active — `green` hue variant available |
-| `fullcolor/` | Full-RGB color display | Planned — not yet authored |
+| [`Full Color`](../documentation/6-design/visual/full-color.en-US.md) | Full-color glasses | Guidelines available |
 
 ## Active spec
 

@@ -225,6 +225,10 @@
         "hasIndex": true
       },
       {
+        "id": "full-color",
+        "label": "全彩眼镜适配"
+      },
+      {
         "id": "performance",
         "label": "性能与体验",
         "expanded": false,
@@ -248,6 +252,10 @@
           {
             "id": "network",
             "label": "弱网体验"
+          },
+          {
+            "id": "full-color",
+            "label": "全彩优化指南"
           }
         ],
         "hasIndex": true
@@ -1165,6 +1173,10 @@
           {
             "id": "monochrome",
             "label": "单色显示"
+          },
+          {
+            "id": "full-color",
+            "label": "全彩显示"
           }
         ],
         "hasIndex": true
