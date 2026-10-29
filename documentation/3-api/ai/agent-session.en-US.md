@@ -45,25 +45,40 @@ Publishing and updating context neither sends a user message nor starts inferenc
 
 ## Send and Update a Card
 
-A card supplies a title, description, and structured presentation data for the conversation interface. It defines no HTML, page layout, or button callbacks:
+Use `sendCard()` to display a card in a conversation in the Rokid AI App. For example, an agent can send a product card that the user can tap to open the product page. Cards currently support a title and a destination link; display of a description and `data` will be supported later.
+
+Call it from an App or Page method:
 
 ```javascript
-const conversation = getApp().getAgent().conversation;
-const card = await conversation.sendCard({
-  title: 'Product DEMO',
-  description: '100 items available',
-  href: 'https://example.com/products/DEMO',
-  data: { sku: 'DEMO', available: 100 },
-});
-await card.update({
-  title: 'Product DEMO',
-  description: '99 items available',
-  href: 'https://example.com/products/DEMO',
-  data: { sku: 'DEMO', available: 99 },
-});
+async function sendProductCard() {
+  const conversation = getApp().getAgent().conversation;
+  try {
+    const card = await conversation.sendCard({
+      title: 'View product DEMO',
+      href: 'https://example.com/products/DEMO',
+    });
+    return card;
+  } catch (error) {
+    console.error('Failed to send card', error);
+  }
+}
 ```
 
-`href` specifies the card's destination, but runtime support is pending; passing it currently returns a `DataError`. Updates replace the entire card, clearing omitted optional fields. Each `sendCard()` creates a new card, and there is no removal API. Cards do not automatically become model input. Publish the data separately with `provideContext()` if the model needs it.
+`title` is the text shown to the user, and `href` is the address opened when they tap the card. Some runtime versions do not yet support `href` and return a `DataError` when it is provided.
+
+When the call succeeds, it returns a card handle that you can use to update the card:
+
+```javascript
+const card = await sendProductCard();
+if (card) {
+  await card.update({
+    title: 'View the updated product',
+    href: 'https://example.com/products/DEMO',
+  });
+}
+```
+
+An update replaces the entire card, so include any fields you want to keep. Each `sendCard()` creates a new card, and there is no removal API. Card content is not automatically provided to the model; call `provideContext()` separately if the model needs it.
 
 ## Use Remote Tools and Resources
 
@@ -192,10 +207,10 @@ Returns `Promise<CardHandle>` and requires `conversation.sendCard`. Creation and
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
-| `title` | `string` | Yes | Must contain non-whitespace text. |
-| `description` | `string` | No | Display description; cleared when omitted from an update. |
-| `href` | `string` | No | Card destination; runtime support is pending, and passing it currently returns a `DataError`. |
-| `data` | JSON object | No | Optional presentation data; cleared when omitted from an update. |
+| `title` | `string` | Yes | Card title; must contain non-whitespace text. |
+| `href` | `string` | No | Address opened when the card is tapped; some runtime versions do not yet support it and return a `DataError` when it is provided. |
+| `description` | `string` | No | Card description; display support is planned. |
+| `data` | JSON object | No | Optional card data; display support is planned. |
 
 ### `ContextEntry`
 
