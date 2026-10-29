@@ -1,10 +1,12 @@
 # v0.20.0
 
-AIUI 0.20.0 brings applications into the current conversation: share what the user is viewing with an Agent, present business results as cards, and update those cards as their status changes. This release also adds permission-state queries, broader WebAssembly support, image tinting, and status bar preferences to help developers build connected conversation and interface experiences.
+AIUI 0.20.0 lets an agent on the glasses work with the current conversation. For example, after a user selects a product on the glasses, the agent can share its details with the conversation and send a message asking for an introduction. It can also send a card to the Rokid AI App so the user can open the product page later. This release also makes permission feedback, glasses interfaces, and computation modules easier to use.
 
-## Bring Page Content into the Conversation
+## Help the Conversation Understand What Is Happening on the Glasses
 
-The new Agent session API lets an application explicitly share background information, such as a selected product or the content being viewed, then send a user message to continue the conversation around that task.
+When a user browses products on the glasses, the conversation does not automatically know which one they selected. An **Agent session** is the agent's way to communicate with the current conversation. The new session API can provide the selected product as **context**: background information the conversation can use when answering. The agent can then send a user message asking the conversation to describe that product.
+
+For example, call these methods from an App or Page method:
 
 ```javascript
 const agent = getApp().getAgent();
@@ -19,29 +21,49 @@ await agent.conversation.sendMessage({
 });
 ```
 
-Call `selection.update(value)` when the selection changes and `selection.dispose()` when the workflow ends. Application state is not published automatically. Successful publication acknowledges receipt without guaranteeing that a model has read the data. Sessions also support remote tool calls and resource access; see [Agent Sessions](/AIUI/api/ai-agent-session).
+`provideContext()` supplies background information; `sendMessage()` sends the message. Providing context alone does not send a message or start a response. The example only supplies a product identifier. To describe its name or price, also provide those details or let the conversation query an available service. When the user selects another product, call `selection.update({ selectedSku: 'SKU-002' })` to update the background. Call `selection.dispose()` when it is no longer needed. Successful publication acknowledges receipt but does not guarantee that the model has read the data. Application state does not automatically become context.
 
-## Present Results in Updatable Cards
+The session can also call available remote tools or read resources, such as a service's product inventory. Available operations depend on the current session. See [Agent Sessions](/AIUI/api/ai-agent-session) for details.
 
-Show order progress, stock levels, or query results in a conversation card. Use its returned handle to update the same card so users can keep following the latest result.
+### Let the Conversation Call an Agent's Operations
+
+An agent can also expose its own methods as tools for a model to call when needed. For example, when a user asks through the glasses, “What did I select?”, the agent can provide a method that reads the current selection. Use `ModelContext.defineAction()` to define the tool's name, purpose, and implementation. Whether the model can call it depends on tool support in the current session.
+
+For example, define a tool in `app.js` that returns the selected product identifier:
+
+```javascript
+export default {
+  selectedSku: 'DEMO',
+  getSelection: ModelContext.defineAction({
+    name: 'get_selection',
+    description: 'Read the selected product',
+    execute() {
+      return { selectedSku: this.selectedSku };
+    },
+  }),
+};
+```
+
+`selectedSku` is an initial example value; update it when the user selects another product.
+
+## Send Results to the Rokid AI App
+
+An agent on the glasses can use `sendCard()` to send a card to a conversation in the Rokid AI App. For example, after finding a product on the glasses, the user can view the card on their phone and open the product page. Cards currently support a title and a destination link; display of a description and `data` will be supported later.
 
 ```javascript
 const conversation = getApp().getAgent().conversation;
 const card = await conversation.sendCard({
-  title: 'Product DEMO',
-  data: { sku: 'DEMO', available: 100 },
-});
-await card.update({
-  title: 'Product DEMO',
-  data: { sku: 'DEMO', available: 99 },
+  title: 'View product DEMO',
 });
 ```
 
-Updates replace the complete card; omitted optional fields are cleared. Cards are presentation data, not automatic model input. Publish context separately when a model needs the same data. Check `agent.capabilities.operations` for available session operations before use; see [Agent Sessions](/AIUI/api/ai-agent-session).
+In runtime versions that support links, add `href: 'https://example.com/products/DEMO'` to the card definition so the user can tap the card to open that address. Some runtime versions return a `DataError` when `href` is provided. The returned `card` is a handle: call `card.update({ title: 'Product updated' })` to update the same card. An update replaces the entire card, so include the link and any other fields you want to keep.
+
+Cards are shown to the user and are not automatically provided to the model. Use `provideContext()` separately for information the model needs. Each `sendCard()` creates a new card, and there is no removal API. Check `agent.capabilities.operations` for available operations; see [Agent Sessions](/AIUI/api/ai-agent-session).
 
 ## Give Clear Feedback About Permissions
 
-Read microphone, camera, or geolocation permission state before use, and update the interface when it changes. A query neither shows an authorization dialog nor starts capture.
+For example, before a user starts a voice feature on the glasses, an agent can check microphone permission and show a message if access was denied. It can also check camera or location permission and update the interface when permission changes. A query does not open an authorization dialog or start recording, capture, or location access.
 
 ```javascript
 const microphone = await navigator.permissions.query({ name: 'microphone' });
@@ -51,11 +73,11 @@ microphone.addEventListener('change', () => {
 });
 ```
 
-To request access, call the relevant capture or geolocation API and handle authorization failure. Manifest declarations and system authorization requirements still apply. See [Permission State](/AIUI/api/permissions).
+`granted` means allowed, `denied` means refused, and `prompt` means the user has not decided. To use the microphone, call `getUserMedia()`, handle authorization failure, and declare `RECORD_AUDIO` in `app.json`. Camera and location access also require their own declarations and API calls. See [Permission State](/AIUI/api/permissions).
 
 ## Reuse WebAssembly Computational Modules
 
-Expanded WebAssembly support includes module reuse, JavaScript function imports, and Memory, Table, and Global resources. Package computational logic as a module and use the same supported API subset in native and Web environments.
+WebAssembly, or Wasm, is a format for computation modules that an application can load. An agent on the glasses can put existing computation logic in a Wasm module and call it from JavaScript, for example to process sensor data. This release expands module reuse, JavaScript function imports, and Memory, Table, and Global resources. Native and Web environments use the same supported API subset.
 
 Place a `math.wasm` module exporting `add` in `assets/`, then load and reuse it from `app.js`:
 
@@ -75,7 +97,7 @@ This release also supports synchronous Module/Instance construction, `i64` BigIn
 
 ### Give Images a Consistent Color
 
-The new `tint-color` attribute colors SVG and raster images while preserving transparent regions. Use it to give icons or status markers a consistent appearance.
+Navigation and status icons on the glasses can share a consistent color. The new `tint-color` attribute colors SVG and raster images while preserving transparent regions.
 
 ```xml
 <image
@@ -89,7 +111,7 @@ A2UI images also support `tintColor` and `contain`, `cover`, or `fill` for `fit`
 
 ### Adjust the Status Bar for a Page Task
 
-Reading and presentation flows can request a hidden status bar, then restore the default preference when finished. Returned state distinguishes the request from actual visibility so the interface can adapt when control is unavailable.
+When displaying a long text on the glasses, request a hidden status bar to leave more room for the content, then restore the default preference when reading ends. Returned state distinguishes the request from actual visibility so the interface can adapt when control is unavailable.
 
 ```javascript
 export default {
@@ -107,8 +129,8 @@ Only the focused foreground `_blank` page can use this capability. A successfull
 
 ## Everyday Improvements
 
-- **More Reliable Networking**: Requests release resources after cancellation. Fixed exhausted slots during repeated requests, timeout accounting that excluded queue time, and WebSocket reads blocked by writes.
-- **Animation Continues Across Content Updates**: GIFs retain playback position and loop count, holding their final frame after finite loops. A2UI updates reuse same-type images to reduce reloads.
+- **More Reliable Networking**: When the glasses make repeated requests or receive live messages, canceled requests release their resources. Fixed exhausted request slots, queue timeout accounting, and WebSocket reads blocked by writes.
+- **Animation Continues Across Content Updates**: When text changes on the glasses, GIFs retain playback position and loop count and hold their final frame after finite loops. A2UI updates reuse same-type images to reduce reloads.
 - **Easier Resource and Request Handling**: GET/HEAD Fetch requests can read package-root paths and package-scoped `file:///` URLs. New `Request.text()`, `json()`, `arrayBuffer()`, and `blob()` readers help inspect and convert request bodies. See [HTTPS](/AIUI/api/network-https).
 - **More Consistent Complex Interfaces**: Fixed solid backgrounds, gradients, text clipping, A2UI Text/Button font sizes, and custom-component property initialization.
 - **More Accurate Activation**: Pointer and navigation input share completed `tap` behavior. Drags, scrolling, cancellations, and non-primary gestures do not activate controls. Window dimensions remain live and read-only.
