@@ -98,3 +98,5 @@
 ## 设计源
 
 完整的 design.md 格式设计源见 [design/fullcolor/design.md](https://github.com/yodaos-project/AIUI/blob/main/design/fullcolor/design.md)，包含 YAML Token 定义、组件模式、状态、主题映射与验收要求。修改规范时，请同步更新设计源与本页的中英文版本。
+
+全彩效果预览见 [preview-color.html](https://github.com/yodaos-project/AIUI/blob/main/design/fullcolor/preview-color.html)。下载后可在浏览器直接打开，无需构建。

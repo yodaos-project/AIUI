@@ -380,6 +380,7 @@ The theme supplies defaults. Custom typography, asset pixels, Canvas labels, max
 
 ## Related Documentation
 
+- [Interactive HTML Preview](./preview-color.html)
 - [Full-Color Visual Guidelines — English](../../documentation/6-design/visual/full-color.en-US.md)
 - [Full-Color Visual Guidelines — Chinese](../../documentation/6-design/visual/full-color.md)
 - [Adaptation Guide](../../documentation/0-guide/full-color.en-US.md)

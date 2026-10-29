@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rokid AIUI — Full-Color Design Preview</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      color-scheme: dark;
+      --color-primary: #66b3ff;
+      --color-secondary: #80e6b0;
+      --color-background: #000000;
+      --color-surface: transparent;
+      --color-text-primary: #ffffff;
+      --color-text-secondary: rgba(255, 255, 255, 0.6);
+      --border-color-default: rgba(255, 255, 255, 0.6);
+      --border-color-muted: rgba(255, 255, 255, 0.4);
+      --border-color-strong: #ffffff;
+      --border-color-danger: #ff8080;
+      --border-color-warning: #ffd966;
+      --border-color-highlight: #c4a6ff;
+      --app-width: 448px;
+      --card-margin: 10px;
+      --card-padding: 10px;
+      --card-padding-y: 24px;
+      --card-radius: 12px;
+      --card-border-width: 2px;
+      --card-title-font-size: 20px;
+      --font-size-min: 14px;
+      --font-size-max: 24px;
+      --icon-size-min: 12px;
+      --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+      --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    }
+    html { scroll-padding-top: 100px; }
+    body { margin: 0; background: #0b0e12; color: #fff; font: 16px/1.6 var(--sans); }
+    a { color: var(--color-primary); text-underline-offset: 4px; }
+    a:hover { color: #fff; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, a:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+    .nav { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 32px; border-bottom: 1px solid #303741; background: #0b0e12; }
+    .brand { display: flex; align-items: center; gap: 10px; font: 14px var(--mono); white-space: nowrap; }
+    .brand svg { color: var(--color-primary); }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 14px; }
+    .nav-links a { color: #b9c2cd; text-decoration: none; }
+    .nav-links a:hover { color: #fff; }
+    main, footer { max-width: 1120px; margin: auto; padding-inline: 32px; }
+    .hero { padding-block: 64px 40px; }
+    .eyebrow { margin: 0 0 14px; color: var(--color-primary); font: 14px/1.6 var(--mono); }
+    h1 { max-width: 760px; margin: 0 0 20px; font-size: 48px; line-height: 1.12; font-weight: 600; letter-spacing: -0.035em; }
+    .lead { max-width: 740px; margin: 0; color: #bac3ce; font-size: 18px; }
+    .summary { display: flex; flex-wrap: wrap; gap: 16px 32px; margin-top: 28px; font: 14px var(--mono); color: #b9c2cd; }
+    .summary strong { color: #fff; font-weight: 500; }
+    section { padding-block: 40px; border-top: 1px solid #303741; }
+    h2 { margin: 0 0 10px; font-size: 28px; line-height: 1.3; font-weight: 600; }
+    .section-label { display: block; margin-bottom: 10px; font: 14px var(--mono); color: var(--color-primary); }
+    .description { max-width: 760px; margin: 0 0 24px; color: #b9c2cd; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 32px; align-items: start; }
+    .frame-scroll { min-width: 0; overflow-x: auto; padding: 1px 1px 12px; }
+    .fov { position: relative; width: var(--app-width); height: 170px; margin-inline: auto; isolation: isolate; background: #000; outline: 1px solid #46515f; overflow: hidden; }
+    .display-plane { position: absolute; inset: 0; background: var(--color-background); color: var(--color-text-primary); }
+    .fov[data-background="scene"] { background: linear-gradient(125deg, transparent 45%, #3f5141 45% 51%, transparent 51%), linear-gradient(23deg, #8f9982 0 32%, #67756d 32% 56%, #9caeb8 56%); }
+    .fov[data-background="scene"] .display-plane { mix-blend-mode: screen; }
+    .glass-card { position: absolute; inset: var(--card-margin); display: flex; flex-direction: column; gap: 12px; padding: var(--card-padding-y) var(--card-padding); border: var(--card-border-width) solid var(--border-color-default); border-radius: var(--card-radius); background: var(--color-surface); color: var(--color-text-primary); font-size: 16px; line-height: 22px; }
+    .glass-card[data-selected="true"], .glass-card:focus { border-color: var(--border-color-strong); outline: none; }
+    .glass-card.is-error { border-color: var(--border-color-muted); }
+    .glass-title { margin: 0; font-size: var(--card-title-font-size); line-height: 24px; font-weight: 600; }
+    .glass-copy { margin: 0; font-size: 16px; line-height: 22px; }
+    .glass-caption { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-min); line-height: 20px; }
+    .glass-value { font: 500 24px/28px var(--mono); }
+    .glass-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+    .glass-row.start { justify-content: flex-start; }
+    .glass-row .icon { flex: none; }
+    .glass-row .glass-copy { min-width: 0; }
+    .icon { width: 24px; height: 24px; min-width: var(--icon-size-min); min-height: var(--icon-size-min); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .accent { color: var(--sample-accent, var(--color-primary)); }
+    .success { color: var(--color-secondary); }
+    .danger { color: var(--border-color-danger); }
+    .muted { color: var(--color-text-secondary); }
+    .caption { margin: 12px 0 0; font-size: 14px; color: #b9c2cd; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .controls-label { margin: 0 0 8px; color: #b9c2cd; font-size: 14px; }
+    .tool-button { padding: 7px 12px; border: 1px solid #586574; border-radius: 6px; background: transparent; color: #c5cdd7; font-size: 14px; line-height: 20px; }
+    .tool-button[aria-pressed="true"] { color: var(--color-primary); border-color: var(--color-primary); }
+    .spec-list { display: grid; grid-template-columns: auto 1fr; gap: 8px 18px; margin: 0; font-size: 14px; }
+    .spec-list dt { color: #b9c2cd; }
+    .spec-list dd { margin: 0; }
+    .palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .swatch { padding: 18px; border: 1px solid #3c4653; border-radius: 12px; }
+    .swatch-dot { width: 20px; height: 20px; margin-bottom: 16px; border-radius: 50%; background: var(--swatch); }
+    .swatch h3 { margin: 0 0 4px; font-size: 16px; font-weight: 500; }
+    .swatch code { color: #b9c2cd; font: 14px var(--mono); }
+    .stroke-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+    .stroke-example { height: 48px; margin-bottom: 10px; border: 2px solid var(--stroke); border-radius: 12px; background: #000; }
+    .stroke-example.divider { position: relative; border: 0; }
+    .stroke-example.divider::after { content: ""; position: absolute; inset: 24px 12px auto; border-top: 1px solid var(--border-color-muted); }
+    .stroke-label { margin: 0; font-size: 14px; color: #b9c2cd; }
+    .type-row { display: grid; grid-template-columns: 210px minmax(0, 1fr); align-items: center; gap: 24px; padding: 18px 0; border-bottom: 1px solid #303741; }
+    .type-meta { color: #b9c2cd; font: 14px/1.6 var(--mono); }
+    .type-meta strong { color: #fff; font-weight: 500; }
+    .type-sample { margin: 0; }
+    .content-guide { height: 98px; flex: none; display: grid; place-content: center; border: 1px dashed var(--border-color-muted); color: #fff; text-align: center; font-size: 14px; line-height: 20px; }
+    .diagram-card { gap: 0; }
+    .budget { margin-top: 20px; }
+    .budget strong { font-weight: 500; color: #fff; }
+    .specimen-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
+    .specimen { min-width: 0; margin: 0; }
+    .specimen h3 { margin: 0 0 12px; font-size: 16px; font-weight: 500; }
+    .glass-button { flex: none; border: 2px solid var(--border-color-default); border-radius: 12px; padding: 10px 16px; color: #fff; background: transparent; font: 500 16px/20px var(--sans); }
+    .glass-button:focus-visible { border-color: #fff; outline: none; }
+    .glass-button[aria-pressed="true"] { border-color: #fff; }
+    .glass-input { min-width: 0; width: 100%; height: 44px; padding: 10px; border: 2px solid var(--border-color-default); border-radius: 12px; background: transparent; color: #fff; font: 400 16px/20px var(--sans); }
+    .glass-input::placeholder { color: var(--color-text-secondary); opacity: 1; }
+    .glass-input:focus { border-color: #fff; outline: none; }
+    .error-content { display: flex; align-items: center; gap: 12px; }
+    .error-content .icon { flex: none; }
+    .error-content .glass-title { margin-bottom: 8px; }
+    .chart { display: block; width: 404px; height: 98px; flex: none; overflow: visible; }
+    .chart text { fill: #fff; font: 14px var(--sans); }
+    .rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+    .rules h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 16px; font-size: 20px; font-weight: 600; }
+    .rules ul { margin: 0; padding-left: 20px; color: #b9c2cd; }
+    .rules li { margin-bottom: 10px; }
+    footer { padding-block: 28px 36px; border-top: 1px solid #303741; color: #b9c2cd; font-size: 14px; }
+    footer p { margin: 0 0 8px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+    @media (max-width: 1040px) { .workspace, .specimen-grid { grid-template-columns: minmax(0, 1fr); } }
+    @media (max-width: 720px) {
+      .nav { position: static; flex-wrap: wrap; padding: 16px 20px; }
+      .nav-links { gap: 14px; }
+      main, footer { padding-inline: 20px; }
+      .hero { padding-block: 40px 32px; }
+      h1 { font-size: 34px; }
+      .lead { font-size: 16px; }
+      .palette { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stroke-list, .rules { grid-template-columns: minmax(0, 1fr); }
+      .type-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+      section { padding-block: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <symbol id="icon-turn" viewBox="0 0 24 24"><path d="M5 20v-9a4 4 0 0 1 4-4h10M14 2l5 5-5 5"/></symbol>
+      <symbol id="icon-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/></symbol>
+      <symbol id="icon-error" viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3Z"/><path d="M12 9v5m0 3v.1"/></symbol>
+      <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+      <symbol id="icon-frame" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="4"/><path d="M8 6V3m8 15v3"/></symbol>
+    </defs>
+  </svg>
+  <nav class="nav" aria-label="Preview sections">
+    <div class="brand"><svg class="icon" aria-hidden="true"><use href="#icon-frame"/></svg>AIUI / FULL COLOR</div>
+    <div class="nav-links"><a href="#canvas">Preview</a><a href="#palette">Color</a><a href="#typography">Type</a><a href="#components">Components</a><a href="#rules">Guidelines</a></div>
+  </nav>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">ROKID COLOR · 乐奇全彩眼镜 · v alpha</p>
+      <h1>Color with clarity.<br>Space for the real world.</h1>
+      <p class="lead">White text, bright accents, and transparent cards. A full-color reference for the small moments that matter in your field of view.</p>
+      <div class="summary"><span><strong>448 × 170</strong> content area</span><span><strong>14–24 dp</strong> text</span><span><strong>12 × 12</strong> minimum icon</span><span><strong>Black</strong> is transparent</span></div>
+    </header>
+
+    <section id="canvas" aria-labelledby="canvas-heading">
+      <span class="section-label">01 / LIVE PREVIEW</span>
+      <h2 id="canvas-heading">One result. A clear next step.</h2>
+      <p class="description">Every glasses example below renders at 1:1 logical pixels in a 448 × 170 frame. On narrow windows, scroll the example horizontally to retain its original text and layout sizes.</p>
+      <div class="workspace">
+        <div>
+          <div class="controls" aria-label="Example scenario">
+            <button class="tool-button" type="button" data-scenario="route" aria-pressed="true">Route</button>
+            <button class="tool-button" type="button" data-scenario="task" aria-pressed="false">Task</button>
+            <button class="tool-button" type="button" data-scenario="error" aria-pressed="false">Error</button>
+          </div>
+          <div class="frame-scroll" tabindex="0" role="region" aria-label="Full-color example, scroll horizontally on narrow screens">
+            <div class="fov" id="live-fov" data-background="black">
+              <div class="display-plane">
+                <article class="glass-card" id="live-card" tabindex="0" data-selected="false" aria-label="Example card; focus to inspect the focus stroke">
+                  <div class="glass-row start"><svg class="icon accent" aria-hidden="true"><use id="live-icon" href="#icon-turn"/></svg><h3 class="glass-title" id="live-title" lang="zh-CN">前方路口右转</h3></div>
+                  <div class="glass-row"><p class="glass-copy muted" id="live-detail" lang="zh-CN">步行 8 分钟</p><span class="glass-value accent" id="live-value">1.2 km</span></div>
+                </article>
+              </div>
+            </div>
+          </div>
+          <p class="caption">448 × 170 FOV · 10 outer clearance · 428 × 150 card · 2 inside stroke</p>
+          <p class="sr-only" id="preview-status" aria-live="polite"></p>
+        </div>
+        <div>
+          <p class="controls-label">Background comparison</p>
+          <div class="controls" aria-label="Background comparison"><button class="tool-button" type="button" data-background="black" aria-pressed="true">Black floor</button><button class="tool-button" type="button" data-background="scene" aria-pressed="false">Scene approximation</button></div>
+          <div class="controls"><button class="tool-button" id="selection-toggle" type="button" aria-pressed="false" aria-controls="live-card">Selected: off</button></div>
+          <dl class="spec-list"><dt>Default outline</dt><dd>White / 60% alpha</dd><dt>Selected or focused</dt><dd>White / 100% alpha</dd><dt>Card surface</dt><dd>Transparent / radius 12</dd><dt>Content padding</dt><dd>10 horizontal / 24 vertical</dd></dl>
+          <p class="caption">The scene comparison uses screen blending to approximate black-as-transparent. It illustrates the layering; optical readability and color still need checking on the glasses.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="palette" aria-labelledby="palette-heading">
+      <span class="section-label">02 / COLOR &amp; OPACITY</span>
+      <h2 id="palette-heading">Bright accents. Quiet surfaces.</h2>
+      <p class="description">Keep body text white, use color to support meaning, and leave large surfaces transparent. Semantic states retain a label or shape cue alongside their color.</p>
+      <div class="palette">
+        <div class="swatch" style="--swatch:var(--color-text-primary)"><div class="swatch-dot"></div><h3>Primary text</h3><code>#ffffff</code></div>
+        <div class="swatch" style="--swatch:var(--color-text-secondary)"><div class="swatch-dot"></div><h3>Secondary text</h3><code>white / 60%</code></div>
+        <div class="swatch" style="--swatch:var(--color-primary)"><div class="swatch-dot"></div><h3>Primary accent</h3><code>#66b3ff</code></div>
+        <div class="swatch" style="--swatch:var(--color-secondary)"><div class="swatch-dot"></div><h3>Success / secondary</h3><code>#80e6b0</code></div>
+        <div class="swatch" style="--swatch:var(--border-color-warning)"><div class="swatch-dot"></div><h3>Warning</h3><code>#ffd966</code></div>
+        <div class="swatch" style="--swatch:var(--border-color-danger)"><div class="swatch-dot"></div><h3>Error</h3><code>#ff8080</code></div>
+        <div class="swatch" style="--swatch:var(--border-color-highlight)"><div class="swatch-dot"></div><h3>Category highlight</h3><code>#c4a6ff</code></div>
+        <div class="swatch" style="--swatch:var(--border-color-muted)"><div class="swatch-dot"></div><h3>Muted outline</h3><code>white / 40%</code></div>
+      </div>
+      <div class="stroke-list">
+        <div><div class="stroke-example" style="--stroke:var(--border-color-default)"></div><p class="stroke-label">Default card · 2 / 60%</p></div>
+        <div><div class="stroke-example" style="--stroke:var(--border-color-strong)"></div><p class="stroke-label">Selected card · 2 / 100%</p></div>
+        <div><div class="stroke-example divider"></div><p class="stroke-label">Divider · 1 / 40%</p></div>
+      </div>
+      <p class="caption">40% means alpha 0.4. Apply alpha to individual foreground colors; keep the card itself at full opacity so its children are not dimmed together.</p>
+    </section>
+
+    <section id="typography" aria-labelledby="type-heading">
+      <span class="section-label">03 / TYPOGRAPHY</span>
+      <h2 id="type-heading">Readable at every level.</h2>
+      <p class="description">Use the full-color 14–24 dp type scale. These samples follow design.md; weights are design recommendations. Reduce content before reducing text size.</p>
+      <div class="type-row"><div class="type-meta"><strong>display</strong><br>24 / 600 / sans-serif</div><p class="type-sample" style="font-size:24px;font-weight:600">Your next step, clearly.</p></div>
+      <div class="type-row"><div class="type-meta"><strong>heading</strong><br>20 / 600 / sans-serif</div><p class="type-sample" style="font-size:20px;font-weight:600">路线已更新 · Route updated</p></div>
+      <div class="type-row"><div class="type-meta"><strong>body</strong><br>16 / 400 / sans-serif</div><p class="type-sample" style="font-size:16px">Keep the main result and essential action in view.</p></div>
+      <div class="type-row"><div class="type-meta"><strong>label</strong><br>16 / 500 / sans-serif</div><p class="type-sample" style="font-size:16px;font-weight:500">Continue · 继续</p></div>
+      <div class="type-row"><div class="type-meta"><strong>caption</strong><br>14 / 400 / sans-serif</div><p class="type-sample muted" style="font-size:14px">Updated just now · 刚刚更新</p></div>
+      <div class="type-row"><div class="type-meta"><strong>data</strong><br>24 / 500 / monospace</div><p class="type-sample" style="font:500 24px var(--mono);color:var(--color-primary)">1.2 km / 8 min</p></div>
+    </section>
+
+    <section id="layout" aria-labelledby="layout-heading">
+      <span class="section-label">04 / LAYOUT BUDGET</span>
+      <h2 id="layout-heading">Count the whole card.</h2>
+      <p class="description">The 10-unit FOV clearance is included in the 448 × 170 area. Card margins and canvas safe insets describe the same clearance; apply it once.</p>
+      <div class="workspace">
+        <div class="frame-scroll" tabindex="0" role="region" aria-label="Full-color layout diagram"><div class="fov"><div class="display-plane"><div class="glass-card diagram-card"><div class="content-guide">404 × 98 inner area<br><span class="muted">Titles, content, and actions share this space.</span></div></div></div></div></div>
+        <dl class="spec-list budget"><dt>Overall area</dt><dd><strong>448 × 170</strong></dd><dt>Minus outer clearance</dt><dd>10 on each side → 428 × 150</dd><dt>Minus border</dt><dd>2 on each side → 424 × 146</dd><dt>Minus padding</dt><dd>10 horizontal, 24 vertical</dd><dt>Inner content budget</dt><dd><strong>404 × 98</strong></dd></dl>
+      </div>
+      <p class="caption">A 98-high chart fills the inner height of this standard card. It leaves no extra height for a title or footer. Use another view or a smaller visualization when the task needs both.</p>
+    </section>
+
+    <section id="components" aria-labelledby="components-heading">
+      <span class="section-label">05 / COMPONENTS &amp; STATES</span>
+      <h2 id="components-heading">Small surfaces, complete states.</h2>
+      <p class="description">Each example keeps the same 448 × 170 frame and card spacing. The input and controls are interactive; keyboard focus uses a white 100% outline.</p>
+      <div class="specimen-grid">
+        <figure class="specimen"><h3>Default card</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Default card example"><div class="fov"><div class="display-plane"><article class="glass-card" tabindex="0"><h4 class="glass-title" lang="zh-CN">下一场会议</h4><div class="glass-row"><p class="glass-copy muted" lang="zh-CN">产品设计评审</p><span class="glass-value accent">14:30</span></div></article></div></div></div><figcaption class="caption">2 inside stroke / 60% alpha · transparent surface</figcaption></figure>
+        <figure class="specimen"><h3>Selected card</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Selected card example"><div class="fov"><div class="display-plane"><article class="glass-card" data-selected="true" tabindex="0"><div class="glass-row start"><svg class="icon success" aria-hidden="true"><use href="#icon-check"/></svg><h4 class="glass-title" lang="zh-CN">已选择步行路线</h4></div><p class="glass-copy muted" lang="zh-CN">途经公园 · 预计 8 分钟</p></article></div></div></div><figcaption class="caption">2 inside stroke / 100% alpha · stable card geometry</figcaption></figure>
+        <figure class="specimen"><h3>Action and divider</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Button and divider example"><div class="fov"><div class="display-plane"><article class="glass-card"><div class="glass-row"><h4 class="glass-title" lang="zh-CN">准备出发</h4><span class="glass-caption" id="action-state">Not selected</span></div><div class="glass-row" style="border-top:1px solid var(--border-color-muted);padding-top:8px"><span class="glass-copy muted" lang="zh-CN">确认当前路线</span><button class="glass-button" id="action-example" type="button" aria-pressed="false">选择</button></div></article></div></div></div><figcaption class="caption">16 text · transparent button · 1 / 40% divider</figcaption></figure>
+        <figure class="specimen"><h3>Text input</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Text input example"><div class="fov"><div class="display-plane"><article class="glass-card"><label class="glass-title" for="destination" lang="zh-CN">目的地</label><input class="glass-input" id="destination" type="text" placeholder="输入地点 / Enter a place" autocomplete="off"></article></div></div></div><figcaption class="caption">16 text · 60% placeholder · visible keyboard focus</figcaption></figure>
+        <figure class="specimen"><h3>Error and recovery guidance</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Error state example"><div class="fov"><div class="display-plane"><article class="glass-card is-error"><div class="error-content"><svg class="icon danger" aria-hidden="true"><use href="#icon-error"/></svg><div><h4 class="glass-title" lang="zh-CN">暂时无法连接</h4><p class="glass-copy" lang="zh-CN">请检查网络后重试</p></div></div></article></div></div></div><figcaption class="caption">Explicit label + icon · 40% frame · no error fill</figcaption></figure>
+        <figure class="specimen"><h3>Outline chart</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Outline chart example"><div class="fov"><div class="display-plane"><div class="glass-card"><svg class="chart" viewBox="0 0 404 98" role="img" aria-label="Weekly activity trend: 4,200 steps Monday, 7,600 steps Friday"><path d="M0 24H404M0 58H404" fill="none" stroke="var(--border-color-muted)" stroke-width="1"/><polyline points="2,66 80,50 158,56 236,26 314,35 402,8" fill="none" stroke="var(--color-primary)" stroke-width="2"/><text x="0" y="94">Mon · 4,200</text><text x="404" y="94" text-anchor="end">Fri · 7,600 steps</text></svg></div></div></div></div><figcaption class="caption">98 plot height · 14 labels · 2 outline / 1 grid · no fill</figcaption></figure>
+      </div>
+    </section>
+
+    <section id="rules" aria-labelledby="rules-heading">
+      <span class="section-label">06 / GUIDELINES</span>
+      <h2 id="rules-heading">Leave room for the world.</h2>
+      <div class="rules">
+        <div><h3><svg class="icon success" aria-hidden="true"><use href="#icon-check"/></svg>Do</h3><ul><li>Show one clear result and keep essential actions reachable.</li><li>Use white text, bright accents, and transparent containers.</li><li>Keep text at 14–24 dp and icons at least 12 × 12.</li><li>Keep visible foreground alpha at or above 40%.</li><li>Pair color with text, icons, or shapes.</li><li>Check real backgrounds and interactions on the target glasses.</li></ul></div>
+        <div><h3><svg class="icon danger" aria-hidden="true"><use href="#icon-close"/></svg>Don't</h3><ul><li>Scale a whole monochrome page into the shorter full-color frame.</li><li>Add large solid backgrounds or use dark critical details.</li><li>Expect black to hide the physical environment.</li><li>Dim a parent card and weaken all its children together.</li><li>Clip essential content or reduce required spacing to fit.</li><li>Treat a desktop preview as proof of optical readability.</li></ul></div>
+      </div>
+    </section>
+  </main>
+  <footer><p>Rokid AIUI / Full Color · Self-contained HTML · No build step or network dependencies</p><p><a href="./design.md">Design source</a> · <a href="./README.md">Full-color directory</a> · <a href="../monochrome/preview-green.html">Monochrome preview</a></p></footer>
+  <script>
+    {
+      const scenarios = {
+        route: { title: '前方路口右转', detail: '步行 8 分钟', value: '1.2 km', icon: 'icon-turn', accent: 'var(--color-primary)' },
+        task: { title: '任务已完成', detail: '已同步到你的日程', value: '完成', icon: 'icon-check', accent: 'var(--color-secondary)' },
+        error: { title: '暂时无法连接', detail: '请检查网络后重试', value: '离线', icon: 'icon-error', accent: 'var(--border-color-danger)' }
+      };
+      const card = document.getElementById('live-card');
+      const status = document.getElementById('preview-status');
+      document.querySelectorAll('[data-scenario]').forEach(button => {
+        button.addEventListener('click', () => {
+          const scenario = scenarios[button.dataset.scenario];
+          document.getElementById('live-title').textContent = scenario.title;
+          document.getElementById('live-detail').textContent = scenario.detail;
+          document.getElementById('live-value').textContent = scenario.value;
+          document.getElementById('live-icon').setAttribute('href', `#${scenario.icon}`);
+          card.style.setProperty('--sample-accent', scenario.accent);
+          document.querySelectorAll('[data-scenario]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+          status.textContent = `${button.textContent} example: ${scenario.title}.`;
+        });
+      });
+      document.querySelectorAll('button[data-background]').forEach(button => {
+        button.addEventListener('click', () => {
+          document.getElementById('live-fov').dataset.background = button.dataset.background;
+          document.querySelectorAll('button[data-background]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+        });
+      });
+      document.getElementById('selection-toggle').addEventListener('click', event => {
+        const selected = card.dataset.selected !== 'true';
+        card.dataset.selected = String(selected);
+        event.currentTarget.setAttribute('aria-pressed', String(selected));
+        event.currentTarget.textContent = `Selected: ${selected ? 'on' : 'off'}`;
+      });
+      document.getElementById('action-example').addEventListener('click', event => {
+        const selected = event.currentTarget.getAttribute('aria-pressed') !== 'true';
+        event.currentTarget.setAttribute('aria-pressed', String(selected));
+        event.currentTarget.textContent = selected ? '已选择' : '选择';
+        document.getElementById('action-state').textContent = selected ? 'Selected' : 'Not selected';
+      });
+    }
+  </script>
+</body>
+</html>

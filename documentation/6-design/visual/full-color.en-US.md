@@ -98,3 +98,5 @@ For implementation, see the [Full-Color Glasses Adaptation Guide](/AIUI/guide/fu
 ## Design Source
 
 The complete design.md-format source is [design/fullcolor/design.md](https://github.com/yodaos-project/AIUI/blob/main/design/fullcolor/design.md). It includes YAML token definitions, component patterns, states, theme mapping, and acceptance requirements. Keep the source and both language versions of this page aligned when changing the specification.
+
+See [preview-color.html](https://github.com/yodaos-project/AIUI/blob/main/design/fullcolor/preview-color.html) for the full-color visual preview. Download it and open it directly in a browser; no build step is required.

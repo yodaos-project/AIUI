@@ -13,7 +13,8 @@ design/
 │   └── preview-green.html
 └── fullcolor/           # full-color transparent glasses
     ├── README.md
-    └── design.md
+    ├── design.md
+    └── preview-color.html
 ```
 
 Both display types have design sources here. Full-color tokens and guidelines
@@ -39,6 +40,7 @@ See [`monochrome/README.md`](./monochrome/README.md) for details.
 The full-color system lives at:
 
 - [`fullcolor/design.md`](./fullcolor/design.md) — tokens, component patterns, states, and acceptance requirements
+- [`fullcolor/preview-color.html`](./fullcolor/preview-color.html) — self-contained, interactive visual showcase
 - [`fullcolor/README.md`](./fullcolor/README.md) — scope and documentation links
 
 Keep the full-color source aligned with the public visual guidelines in
