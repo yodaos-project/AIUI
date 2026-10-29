@@ -7,7 +7,7 @@ target:
     en-US: "Rokid Color"
     zh-CN: "乐奇全彩眼镜"
   display: "full-color transparent display"
-  reference-canvas: "448x170"
+  reference-canvas: "448x352"
   units: "logical px in WXSS; text sizes correspond to design dp"
 
 description: >
@@ -17,7 +17,7 @@ description: >
   emits no light and remains transparent to the physical environment.
 
 constraints:
-  - "Fit content and outer margins within a width of 448px and a maximum height of 170px."
+  - "Fit content and outer margins within a width of 448px and a maximum height of 352px."
   - "Keep text between 14dp and 24dp; do not shrink text to fit more content."
   - "Icons must be at least 12x12px."
   - "Do not use large filled backgrounds. Prefer transparent containers and outlines."
@@ -107,7 +107,7 @@ components:
   app-canvas:
     description: "Content area including card margins; safeInsets describe those same margins, not additional padding."
     width: 448px
-    maxHeight: 170px
+    maxHeight: 352px
     safeInsetX: "{spacing.fov-inset}"
     safeInsetY: "{spacing.fov-inset}"
     backgroundColor: "{colors.background}"
@@ -115,7 +115,7 @@ components:
   card:
     description: "Outer border box fits inside the FOV clearance; children share its inner space."
     maxWidth: 428px
-    maxHeight: 150px
+    maxHeight: 332px
     boxSizing: border-box
     margin: "{spacing.fov-inset}"
     backgroundColor: "{colors.surface}"
@@ -221,9 +221,9 @@ components:
 
 ## Overview
 
-This specification defines the full-color AIUI design language for **Rokid Color** (Chinese name: **乐奇全彩眼镜**). These are the English and Chinese names of the same device. Content fits within a logical width of **448** and maximum height of **170**, including its outer clearance.
+This specification defines the full-color AIUI design language for **Rokid Color** (Chinese name: **乐奇全彩眼镜**). These are the English and Chinese names of the same device. Content fits within a logical width of **448** and maximum height of **352**, including its outer clearance.
 
-The document follows the same YAML token and Markdown structure as the [monochrome specification](../monochrome/design-system-green.md). Its values are specific to full-color glasses: do not import monochrome dimensions, small text, low-alpha treatments, or border rules into this system.
+The document follows the same YAML token and Markdown structure as the [monochrome specification](../monochrome/design-system-green.md). Both display types share a maximum content height of 352; full color uses a width of 448. Apply the full-color typography, opacity, and border rules rather than importing the monochrome treatments.
 
 The front matter describes design tokens and component patterns. Curly-brace references resolve within this document; they are not WXSS syntax or runtime configuration. The token mapping below identifies the corresponding theme variables. Typography weights are design recommendations rather than automatic runtime defaults.
 
@@ -239,20 +239,20 @@ The front matter describes design tokens and component patterns. Curly-brace ref
 
 | Item | Requirement |
 | --- | --- |
-| Overall content area | Width 448; maximum height 170 |
+| Overall content area | Width 448; maximum height 352 |
 | Clearance to FOV edges | 10 on every side |
-| Maximum card outer border box | 428 × 150 after the outer clearance |
+| Maximum card outer border box | 428 × 332 after the outer clearance |
 | Card padding | 10 horizontally, 24 vertically |
 | Card radius | 12 |
 | Inside stroke | 2 |
 
 Use logical `px` in WXSS consistently with the theme; text sizes correspond to design dp. Hardware physical pixel dimensions are not layout dimensions.
 
-Include margins, borders, padding, headings, body content, and actions in the same height budget. In a standard card that fills the available area, a 150-high border box with 24 padding and a 2 border on each vertical side leaves **98** for all inner content. A 98-high chart therefore leaves no extra vertical space for a title or footer in that card.
+Include margins, borders, padding, headings, body content, and actions in the same height budget. In a standard card that fills the available area, a 332-high border box with 24 padding and a 2 border on each vertical side leaves **280** for all inner content. A 98-high chart leaves **182** to share between headings, captions, actions, and spacing.
 
 The canvas safe insets and card outer margins describe the same 10-unit clearance. Apply that clearance once; do not add another canvas padding layer around an already-margined card.
 
-The 170 maximum is a design constraint. Theme defaults do not automatically cap or paginate arbitrary content. Use a summary and details, pagination, or an operable scroll region when content exceeds the budget. Preserve essential actions and the minimum type size; do not solve overflow by clipping required content.
+The 352 maximum is a design constraint. Theme defaults do not automatically cap or paginate arbitrary content. Use a summary and details, pagination, or an operable scroll region when content exceeds the budget. Preserve essential actions and the minimum type size; do not solve overflow by clipping required content.
 
 ## 3. Color and Opacity
 
@@ -352,7 +352,7 @@ The theme supplies defaults. Custom typography, asset pixels, Canvas labels, max
 
 ### Do
 
-- Keep content, card clearance, and actions inside the 448 × 170 budget.
+- Keep content, card clearance, and actions inside the 448 × 352 budget.
 - Use white readable text, a few bright accents, transparent containers, and clear outlines.
 - Preserve 14–24 dp text, minimum 12 × 12 icons, and the specified card padding.
 - Keep focus and selection visible through 100% stroke alpha.
@@ -370,7 +370,7 @@ The theme supplies defaults. Custom typography, asset pixels, Canvas labels, max
 
 ## 9. Acceptance Checklist
 
-- [ ] Content and margins fit a width of 448 and a maximum height of 170.
+- [ ] Content and margins fit a width of 448 and a maximum height of 352.
 - [ ] Cards retain 10 FOV clearance, 10 horizontal padding, and 24 vertical padding.
 - [ ] Cards use a 12 radius and 2 inside stroke: 60% alpha by default, 100% when selected or focused.
 - [ ] Dividers use 1 at 40% alpha, matching muted outlines.

@@ -13,7 +13,7 @@ Full-color glasses still use a see-through display: pure black emits no light an
 | Adaptation Area | Monochrome Green | Full-Color Glasses |
 | --- | --- | --- |
 | Target devices | RokidGlasses1 / RokidGlasses2 | Rokid Color |
-| Content area | Reference canvas width 480, maximum height 352 | Width 448, maximum height 170 |
+| Content area | Reference canvas width 480, maximum height 352 | Width 448, maximum height 352 |
 | Color | One green channel; hierarchy through opacity, outlines, and typography | White body text with color accents; retain text and shape cues |
 | Text | Follow the monochrome type scale | 14–24 dp; do not carry over smaller monochrome text sizes |
 | Cards | Monochrome outlines and light fills | Transparent containers, radius 12, inside stroke 2; default alpha 60%, selected 100% |
@@ -30,7 +30,7 @@ Keep status text, task results, and interaction flows in shared logic. Keep pale
 
 The built-in full-color theme provides a black page background, white text, color accents, transparent cards, and default typography and component styles. Reuse tokens such as `--color-text-primary`, `--color-text-secondary`, `--color-primary`, and `--card-border-color` to reduce hardcoded green colors and fixed fills.
 
-Theme defaults do not complete the adaptation automatically. Check inline styles, custom components, Canvas content, and images for fixed colors, small text, and large fills. The theme also does not automatically constrain arbitrary content to a height of 170. See the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) for key tokens.
+Theme defaults do not complete the adaptation automatically. Check inline styles, custom components, Canvas content, and images for fixed colors, small text, and large fills. The theme also does not automatically constrain arbitrary content to a height of 352. See the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) for key tokens.
 
 ## 3. Handle Color and Layout Separately
 
@@ -57,7 +57,7 @@ AIUI runtime versions that support display capability queries accept `(color)` a
   }
 }
 
-@media (max-height: 170px) {
+@media (max-height: 352px) {
   .optional-illustration {
     display: none;
   }
@@ -106,16 +106,16 @@ Keep `unknown` when neither query matches. A failure to match color must not aut
 
 ## 5. Reallocate Content Space
 
-Arrange content within an overall area of width 448 and maximum height 170, including the 10-unit clearance between cards and the FOV edges. Do not treat 448 as the card's inner content width and then add margins outside it.
+Arrange content within an overall area of width 448 and maximum height 352, including the 10-unit clearance between cards and the FOV edges. Do not treat 448 as the card's inner content width and then add margins outside it.
 
-For a card filling the area, margins of 10 on every side leave a maximum outer border box of 428 × 150. Inside the card, allow horizontal padding of 10, vertical padding of 24, and a stroke of 2. Titles, body content, charts, and actions must share the remaining space.
+For a card filling the area, margins of 10 on every side leave a maximum outer border box of 428 × 332. Subtract horizontal padding of 10, vertical padding of 24, and a stroke of 2 on every side to leave an inner content area of 404 × 280. Titles, body content, charts, and actions must share this space.
 
 Show a clear result and essential actions first. Use summaries with details, pagination, or an operable scroll region for longer text. Do not fit an entire page by shrinking text below 14 dp, clipping actions, or reducing the specified padding.
 
 ## 6. Validate Both Display Types
 
 1. Check monochrome and full-color presentations with the same business data, including shared flows, empty states, loading, failures, and long text.
-2. Verify that full-color content fits within 448 × 170 and follows the spacing, text, icon, outline, and focus requirements.
+2. Verify that full-color content fits within 448 × 352 and follows the spacing, text, icon, outline, and focus requirements.
 3. Check colors and dimensions in images, charts, and Canvas content. Ensure critical states do not rely on color alone.
 4. On the target glasses, verify voice input, confirmation, back navigation, scrolling, and readability against different real backgrounds and lighting conditions.
 5. Repackage and update the glasses resources after changes, and confirm that the device is running the adapted version.

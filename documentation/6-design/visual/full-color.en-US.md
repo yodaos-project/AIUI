@@ -10,7 +10,7 @@ Dimensions below use logical design units; text sizes use dp. In WXSS, use logic
 
 | Item | Requirement |
 | --- | --- |
-| Content area | Width 448, maximum height 170; content and outer margins fit within this area |
+| Content area | Width 448, maximum height 352; content and outer margins fit within this area |
 | Text | 14–24 dp |
 | Icons | At least 12 × 12 |
 | Background | Theme background always pure black `#000000`; prefer transparent cards and controls |
@@ -77,7 +77,7 @@ These tokens and defaults do not automatically correct all custom content. Check
 | `--card-focus-border-color` | White at alpha 100% |
 | `--card-divider-width` / `--card-divider-color` | `1px` / white at alpha 40% |
 
-The maximum height of 170 is a content design constraint, not automatic clipping applied by the theme. Budget for margins, borders, padding, titles, and actions together. Split, paginate, or scroll overflow content instead of simply hiding it with `overflow: hidden`.
+The maximum height of 352 is a content design constraint, not automatic clipping applied by the theme. Budget for margins, borders, padding, titles, and actions together. Split, paginate, or scroll overflow content instead of simply hiding it with `overflow: hidden`.
 
 Built-in `card` uses `:focus` and `:host-focus` to strengthen its border. Custom interactive containers also need visible focus. Maintain business selection state separately, and do not rely only on hover or color changes. See the [Focus System](/AIUI/framework/open-agent-format-page-focus).
 

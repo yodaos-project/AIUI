@@ -1,6 +1,6 @@
 # Full-Color Optimization Guide
 
-Full-color optimization makes results easier to read and actions easier to complete within a content area of width 448 and maximum height 170, while keeping the agent responsive. First establish compatibility with the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color), then refine the experience using the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color).
+Full-color optimization makes results easier to read and actions easier to complete within a content area of width 448 and maximum height 352, while keeping the agent responsive. First establish compatibility with the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color), then refine the experience using the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color).
 
 ## Reduce Information Before Adjusting Typography
 
@@ -11,7 +11,7 @@ Let each view answer one main question, such as the current status, the next dir
 - Show key metrics or a small number of chart series, with labels and units.
 - Make empty, loading, and error states understandable and actionable within the same area.
 
-Do not scale a complete monochrome 480 × 352 page down to the full-color area. Keep text at 14–24 dp, icons at least 12 × 12, and reserve space for card margins, padding, and strokes.
+Monochrome and full-color content share a maximum height of 352. Reflow a 480-wide monochrome layout for the full-color width of 448. Keep text at 14–24 dp, icons at least 12 × 12, and reserve space for card margins, padding, and strokes.
 
 ## Use Bright Colors for Emphasis
 
@@ -33,7 +33,7 @@ Theme tokens cannot directly replace image pixels or hardcoded Canvas drawing co
 | Canvas | Reflow for available space; explicitly set readable fonts, line widths, and bright colors, and inspect clipping and labels |
 | Maps | Retain essential routes, positions, and labels while reducing filled surfaces and unrelated details |
 
-Avoid stacking a cover, long title, several text lines, a chart, and a footer within a height of 170. Split summary and detail, or choose the presentation that best supports the current task.
+Arrange covers, titles, body content, charts, and footers within the available inner space. A standard card has an inner height of 280, shared by headings, charts, actions, and their spacing. Split summary and detail when needed, or choose the presentation that best supports the current task.
 
 ## Keep Actions and Focus Visible
 
@@ -54,7 +54,7 @@ Record the target model, system and runtime versions, agent package version, inp
 | Scenario | What to Check |
 | --- | --- |
 | Bright and complex real backgrounds | Readability of primary and secondary text, lines, and focus |
-| Long titles, long text, and multiple results | Fit within 448 × 170 and access to essential content and actions |
+| Long titles, long text, and multiple results | Fit within 448 × 352 and access to essential content and actions |
 | Empty, loading, failure, and retry states | Clear explanations and next actions, with more than color alone |
 | Repeated scrolling, navigation, and back actions | Stable focus, smooth interaction, and no unnecessary background work |
 | Monochrome, full color, and unknown-capability fallback | Consistent shared flows, readable assets, and essential actions |

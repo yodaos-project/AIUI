@@ -7,7 +7,7 @@ AIUI 按显示类型提供视觉规范。先根据目标设备选择规范，再
 | 类型 | 适用设备 | 核心约束 |
 | --- | --- | --- |
 | [Monochrome](/AIUI/design/visual-monochrome) | RokidGlasses1 / RokidGlasses2 的单绿色显示 | 单一绿色通道，参考画布 480 × 352，使用单色透明度与描边建立层级 |
-| [Full Color](/AIUI/design/visual-full-color) | 乐奇全彩眼镜 | 宽 448、最高 170，白色文字与彩色强调，透明容器与清晰描边 |
+| [Full Color](/AIUI/design/visual-full-color) | 乐奇全彩眼镜 | 宽 448、最高 352，白色文字与彩色强调，透明容器与清晰描边 |
 
 两类显示都使用纯黑页面背景，黑色在眼镜上呈透明效果。全彩增加了色相表达能力，仍需限制大面积填充、保持可读字号，并在真实背景下验证。
 

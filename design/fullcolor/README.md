@@ -9,13 +9,13 @@ used by the neighboring monochrome design source.
 | File | Purpose |
 | --- | --- |
 | [design.md](./design.md) | Full-color design tokens, layout constraints, palettes, typography, component patterns, interaction states, theme mapping, and acceptance checklist. |
-| [preview-color.html](./preview-color.html) | Self-contained browser preview of the palette, typography, 448 × 170 layouts, cards, focus, controls, and outline chart. Open directly in a browser; no build step or network dependency. |
+| [preview-color.html](./preview-color.html) | Self-contained browser preview of the palette, typography, 448 × 352 layouts, cards, focus, controls, and outline chart. Open directly in a browser; no build step or network dependency. |
 
 ## Preview
 
 Open [preview-color.html](./preview-color.html) directly in a browser. Switch
 between route, task, and error examples, compare default and selected outlines,
-and try the controls with a keyboard. Each glasses frame remains 448 × 170
+and try the controls with a keyboard. Each glasses frame remains 448 × 352
 logical pixels; narrow windows scroll the examples horizontally.
 
 The optional scene background approximates black-as-transparent through screen
@@ -24,7 +24,7 @@ target glasses.
 
 ## Core Requirements
 
-- Content and outer clearance fit within a width of 448 and maximum height of 170.
+- Content and outer clearance fit within a width of 448 and maximum height of 352.
 - Text uses 14–24 dp; icons are at least 12 × 12.
 - Keep the theme background pure black and containers transparent. Black emits no light and cannot hide the physical environment.
 - Avoid large filled backgrounds and low-brightness critical foreground colors.
