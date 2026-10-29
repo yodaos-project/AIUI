@@ -33,9 +33,9 @@
 
 仅做全彩适配无需单独创建智能体。建议在同一个项目、同一个 AIX 中复用业务逻辑、Page、Widget 和数据服务，按显示能力切换配色与资源，按可用空间调整布局。只有产品定位或核心功能需要独立时，再考虑拆分。具体步骤见[全彩眼镜适配指南](/AIUI/guide/full-color)。
 
-## 全彩规范适用于哪些设备？
+## 全彩规范适用于哪款设备？
 
-当前全彩规范面向 Rokid Color、乐奇全彩眼镜，内容区域宽 448、最高 170。RokidGlasses1 / RokidGlasses2 的单绿色显示继续参考 [Monochrome](/AIUI/design/visual-monochrome)。设备相关 API 与交互仍需分别验证，不要因为支持全彩就假定其他硬件能力一致。
+当前全彩规范面向乐奇全彩眼镜，英文名为 Rokid Color，二者是同一设备的中英文名称。内容区域宽 448、最高 170。RokidGlasses1 / RokidGlasses2 的单绿色显示继续参考 [Monochrome](/AIUI/design/visual-monochrome)。设备相关 API 与交互仍需分别验证，不要因为支持全彩就假定其他硬件能力一致。
 
 ## 适配全彩只需要换颜色吗？
 

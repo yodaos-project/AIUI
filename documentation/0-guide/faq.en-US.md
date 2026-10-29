@@ -33,9 +33,9 @@ Start with the [AIX format](/AIUI/guide/bundle-aix), then follow [Submit for Rev
 
 Full-color adaptation alone does not require a separate agent. Prefer shared business logic, Pages, Widgets, and data services in one project and one AIX. Adapt palettes and assets to display capabilities, and layouts to available space. Consider splitting agents when product positioning or core functionality needs to be independent. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color).
 
-## Which Devices Do the Full-Color Guidelines Cover?
+## Which Device Do the Full-Color Guidelines Cover?
 
-The current guidelines cover Rokid Color and 乐奇全彩眼镜, with a content area of width 448 and maximum height 170. Continue using [Monochrome](/AIUI/design/visual-monochrome) for the single-green displays of RokidGlasses1 / RokidGlasses2. Verify device APIs and interactions separately; full-color support does not imply identical hardware capabilities.
+The current guidelines cover Rokid Color, whose Chinese name is 乐奇全彩眼镜. Both names refer to the same device, with a content area of width 448 and maximum height 170. Continue using [Monochrome](/AIUI/design/visual-monochrome) for the single-green displays of RokidGlasses1 / RokidGlasses2. Verify device APIs and interactions separately; full-color support does not imply identical hardware capabilities.
 
 ## Is Changing Colors Enough for Full-Color Adaptation?
 

@@ -2,7 +2,10 @@
 version: alpha
 name: Rokid AIUI Full-Color Glasses Interface
 target:
-  devices: ["Rokid Color", "乐奇全彩眼镜"]
+  devices: ["Rokid Color"]
+  device-names:
+    en-US: "Rokid Color"
+    zh-CN: "乐奇全彩眼镜"
   display: "full-color transparent display"
   reference-canvas: "448x170"
   units: "logical px in WXSS; text sizes correspond to design dp"
@@ -218,7 +221,7 @@ components:
 
 ## Overview
 
-This specification defines the full-color AIUI design language for **Rokid Color** and **乐奇全彩眼镜**. Content fits within a logical width of **448** and maximum height of **170**, including its outer clearance.
+This specification defines the full-color AIUI design language for **Rokid Color** (Chinese name: **乐奇全彩眼镜**). These are the English and Chinese names of the same device. Content fits within a logical width of **448** and maximum height of **170**, including its outer clearance.
 
 The document follows the same YAML token and Markdown structure as the [monochrome specification](../monochrome/design-system-green.md). Its values are specific to full-color glasses: do not import monochrome dimensions, small text, low-alpha treatments, or border rules into this system.
 

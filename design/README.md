@@ -18,7 +18,7 @@ design/
 ```
 
 Both display types have design sources here. Full-color tokens and guidelines
-for Rokid Color and 乐奇全彩眼镜 live in [fullcolor/design.md](./fullcolor/design.md),
+for Rokid Color (Chinese name: 乐奇全彩眼镜) live in [fullcolor/design.md](./fullcolor/design.md),
 using YAML front matter and Markdown specification sections.
 
 | Source | Display type | Status |

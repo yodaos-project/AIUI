@@ -1,6 +1,6 @@
 # Full Color
 
-`Full Color` is the AIUI visual specification for Rokid Color and 乐奇全彩眼镜. It combines white text, color accents, and clear outlines on a see-through display so users can read results quickly within a limited field of view.
+`Full Color` is the AIUI visual specification for Rokid Color (Chinese name: 乐奇全彩眼镜). It combines white text, color accents, and clear outlines on a see-through display so users can read results quickly within a limited field of view.
 
 Before adapting an existing agent, read the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color). Continue using [Monochrome](/AIUI/design/visual-monochrome) for monochrome devices; keep the dimensions, type scales, and fill rules of each specification separate.
 

@@ -1,8 +1,8 @@
 # AIUI Full-Color Display Design Language
 
 This directory holds AIUI's full-color design specification for **Rokid Color**
-and **乐奇全彩眼镜**. It follows the YAML token and Markdown format used by
-the neighboring monochrome design source.
+(Chinese name: **乐奇全彩眼镜**). It follows the YAML token and Markdown format
+used by the neighboring monochrome design source.
 
 ## Files
 

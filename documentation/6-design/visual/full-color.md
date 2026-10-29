@@ -1,6 +1,6 @@
 # Full Color
 
-`Full Color` 是面向 Rokid Color、乐奇全彩眼镜的 AIUI 视觉规范。它在透明显示中使用白色文字、彩色强调与清晰描边，让用户在有限视野中快速读取结果。
+`Full Color` 是面向乐奇全彩眼镜（英文名：Rokid Color）的 AIUI 视觉规范。它在透明显示中使用白色文字、彩色强调与清晰描边，让用户在有限视野中快速读取结果。
 
 开始迁移现有智能体前，请先阅读[全彩眼镜适配指南](/AIUI/guide/full-color)。单色设备继续使用 [Monochrome](/AIUI/design/visual-monochrome)，不要将两套尺寸、字号与填充规则混用。
 

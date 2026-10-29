@@ -2,7 +2,7 @@
 
 同一个 AIUI 智能体可以面向单色和全彩眼镜开发。适配全彩时，优先复用智能体定义、业务逻辑、Page、Widget 和数据服务，再按显示能力与可用空间调整样式、资源和信息密度。
 
-本文面向 Rokid Color、乐奇全彩眼镜。先完成本页的适配流程，再参阅[全彩视觉规范](/AIUI/design/visual-full-color)和[全彩优化指南](/AIUI/guide/performance-full-color)。
+本文面向乐奇全彩眼镜（英文名：Rokid Color）。先完成本页的适配流程，再参阅[全彩视觉规范](/AIUI/design/visual-full-color)和[全彩优化指南](/AIUI/guide/performance-full-color)。
 
 ## 全彩带来了什么
 
@@ -12,7 +12,7 @@
 
 | 适配项 | 单色 Green | 全彩眼镜 |
 | --- | --- | --- |
-| 目标设备 | RokidGlasses1 / RokidGlasses2 | Rokid Color、乐奇全彩眼镜 |
+| 目标设备 | RokidGlasses1 / RokidGlasses2 | 乐奇全彩眼镜 |
 | 内容区域 | 参考画布宽 480、最高 352 | 宽 448、最高 170 |
 | 颜色 | 单一绿色通道，通过透明度、描边与排版区分层级 | 白色正文与彩色强调，保留文字和形状提示 |
 | 文字 | 使用单色规范的字号层级 | 14～24 dp，不直接照搬单色的小字号 |

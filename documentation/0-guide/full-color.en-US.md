@@ -2,7 +2,7 @@
 
 One AIUI agent can serve both monochrome and full-color glasses. Reuse the agent definition, business logic, Pages, Widgets, and data services, then adapt styles, assets, and information density to the display capability and available space.
 
-This guide covers Rokid Color and 乐奇全彩眼镜. Follow the workflow here, then see the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) and [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
+This guide covers Rokid Color (Chinese name: 乐奇全彩眼镜). Follow the workflow here, then see the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) and [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
 
 ## What Full Color Enables
 
@@ -12,7 +12,7 @@ Full-color glasses still use a see-through display: pure black emits no light an
 
 | Adaptation Area | Monochrome Green | Full-Color Glasses |
 | --- | --- | --- |
-| Target devices | RokidGlasses1 / RokidGlasses2 | Rokid Color, 乐奇全彩眼镜 |
+| Target devices | RokidGlasses1 / RokidGlasses2 | Rokid Color |
 | Content area | Reference canvas width 480, maximum height 352 | Width 448, maximum height 170 |
 | Color | One green channel; hierarchy through opacity, outlines, and typography | White body text with color accents; retain text and shape cues |
 | Text | Follow the monochrome type scale | 14–24 dp; do not carry over smaller monochrome text sizes |

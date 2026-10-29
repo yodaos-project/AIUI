@@ -7,7 +7,7 @@ AIUI provides visual guidelines by display type. Choose the specification for yo
 | Type | Target Devices | Core Constraints |
 | --- | --- | --- |
 | [Monochrome](/AIUI/design/visual-monochrome) | Single-green displays on RokidGlasses1 / RokidGlasses2 | One green channel, reference canvas 480 × 352, hierarchy through monochrome opacity and outlines |
-| [Full Color](/AIUI/design/visual-full-color) | Rokid Color, 乐奇全彩眼镜 | Width 448, maximum height 170, white text with color accents, transparent containers and clear outlines |
+| [Full Color](/AIUI/design/visual-full-color) | Rokid Color | Width 448, maximum height 170, white text with color accents, transparent containers and clear outlines |
 
 Both display types use a pure black page background, which appears transparent on the glasses. Full color adds hue distinctions while retaining the need to limit large fills, preserve readable text sizes, and verify against real backgrounds.
 
