@@ -52,16 +52,18 @@ const conversation = getApp().getAgent().conversation;
 const card = await conversation.sendCard({
   title: '商品 DEMO',
   description: '库存 100 件',
+  href: 'https://example.com/products/DEMO',
   data: { sku: 'DEMO', available: 100 },
 });
 await card.update({
   title: '商品 DEMO',
   description: '库存 99 件',
+  href: 'https://example.com/products/DEMO',
   data: { sku: 'DEMO', available: 99 },
 });
 ```
 
-更新会替换整张卡片，省略 `description` 或 `data` 会清除对应字段。每次 `sendCard()` 新建一张卡片，目前没有删除接口。卡片不会自动成为模型输入；需要模型使用同一数据时另行 `provideContext()`。
+`href` 用于指定卡片跳转地址，目前尚待运行时支持；当前传入该字段会返回 `DataError`。更新会替换整张卡片，省略可选字段会清除对应字段。每次 `sendCard()` 新建一张卡片，目前没有删除接口。卡片不会自动成为模型输入；需要模型使用同一数据时另行 `provideContext()`。
 
 ## 使用远端工具和资源
 
@@ -192,7 +194,8 @@ if (resource) console.log(await agent.readResource(resource.uri));
 | --- | --- | --- | --- |
 | `title` | `string` | 是 | 必须包含非空白文本。 |
 | `description` | `string` | 否 | 展示说明；更新时省略会清空。 |
-| `data` | JSON 对象 | 否 | 展示数据；更新时省略会清空。 |
+| `href` | `string` | 否 | 卡片跳转地址；尚待运行时支持，当前传入会返回 `DataError`。 |
+| `data` | JSON 对象 | 否 | 可选的展示数据；更新时省略会清空。 |
 
 ### `ContextEntry`
 
