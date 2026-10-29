@@ -1,69 +1,10 @@
 # v0.20.0
 
-AIUI 0.20.0 让眼镜上的智能体可以与当前对话协作。例如，用户在眼镜上选中一件商品后，智能体可以把商品信息提供给对话，再发送一条“介绍这件商品”的消息；还可以在 Rokid AI App 中发送卡片，让用户稍后打开商品页面。本次更新也让权限提示、眼镜界面和计算模块更容易使用。
-
-## 让对话了解眼镜上正在做的事
-
-用户在眼镜上浏览商品时，对话不会自动知道用户选中了哪一件。**Agent 会话**是智能体与当前对话沟通的入口；新的会话 API 可以把选中商品作为**上下文**（即回答问题时可参考的背景信息）提供给当前对话。然后，智能体可以发送一条用户消息，请对话介绍这件商品。
-
-例如，在 App 或 Page 的业务方法中：
-
-```javascript
-const agent = getApp().getAgent();
-const selection = await agent.provideContext({
-  key: 'selection',
-  description: 'The product selected by the user',
-  value: { selectedSku: 'DEMO' },
-});
-await agent.conversation.sendMessage({
-  role: 'user',
-  content: [{ type: 'text', text: '请介绍当前选中的商品。' }],
-});
-```
-
-`provideContext()` 负责提供背景信息，`sendMessage()` 负责发送消息；前者不会自动发消息或开始回答。示例只提供了商品编号，如果需要介绍名称、价格等信息，还应提供相关数据或让对话查询可用服务。用户更换商品时，可调用 `selection.update({ selectedSku: 'SKU-002' })` 更新背景；不再需要时调用 `selection.dispose()` 移除。提供成功表示会话已确认接收，不保证模型已经读取。应用状态不会自动成为上下文。
-
-会话还可以调用可用的远端工具或读取资源，例如查询服务提供的商品库存。具体能力取决于当前会话；完整用法见 [Agent 会话](/AIUI/api/ai-agent-session)。
-
-### 让对话调用智能体提供的操作
-
-智能体也可以把自己的方法提供为工具，让模型在需要时调用。例如，用户通过眼镜询问“我选中了什么？”，智能体可以提供一个读取当前选择的方法。用 `ModelContext.defineAction()` 定义工具及其名称、用途和执行方法；模型是否能调用它取决于当前会话是否支持工具调用。
-
-例如，在 `app.js` 中定义一个返回当前商品编号的工具：
-
-```javascript
-export default {
-  selectedSku: 'DEMO',
-  getSelection: ModelContext.defineAction({
-    name: 'get_selection',
-    description: 'Read the selected product',
-    execute() {
-      return { selectedSku: this.selectedSku };
-    },
-  }),
-};
-```
-
-这里的 `selectedSku` 是示例初始值；实际应用应在用户更换商品时更新它。
-
-## 把结果发送到 Rokid AI App
-
-眼镜上的智能体可以通过 `sendCard()` 在 Rokid AI App 的会话中发送卡片。例如，用户在眼镜上找到商品后，可以在手机上查看卡片并打开商品页面。当前卡片支持标题和跳转链接；描述和 `data` 的展示将在后续支持。
-
-```javascript
-const conversation = getApp().getAgent().conversation;
-const card = await conversation.sendCard({
-  title: '查看商品 DEMO',
-});
-```
-
-在支持链接的运行时中，可在卡片定义里增加 `href: 'https://example.com/products/DEMO'`，用户点击卡片即可打开该地址；部分运行时版本传入 `href` 会返回 `DataError`。上面的 `card` 是返回的卡片句柄，可用 `card.update({ title: '商品已更新' })` 更新同一张卡片。更新会完整替换卡片内容，需要保留的链接等字段应再次提供。
-
-卡片展示给用户，不会自动提供给模型；模型需要的信息应另行通过 `provideContext()` 提供。每次 `sendCard()` 都会新建一张卡片，目前没有删除接口。使用前可检查 `agent.capabilities.operations`，详见 [Agent 会话](/AIUI/api/ai-agent-session)。
+AIUI 0.20.0 让智能体更方便地查询权限状态、复用计算模块和调整界面。此次更新也改善了网络连接、动画播放和页面交互的稳定性。
 
 ## 感知权限状态，给用户明确反馈
 
-例如，用户准备在眼镜上使用语音功能时，智能体可以先检查麦克风权限；如果已被拒绝，就在界面上给出提示。也可以查询相机或定位权限，并在权限变化时更新界面。查询不会弹出授权界面，也不会开始录音、拍照或定位。
+例如，用户准备使用语音功能时，智能体可以先检查麦克风权限；如果已被拒绝，就在界面上给出提示。也可以查询相机或定位权限，并在权限变化时更新界面。查询不会弹出授权界面，也不会开始录音、拍照或定位。
 
 ```javascript
 const microphone = await navigator.permissions.query({ name: 'microphone' });
@@ -77,7 +18,7 @@ microphone.addEventListener('change', () => {
 
 ## 在应用中复用 WebAssembly 计算模块
 
-WebAssembly（简称 Wasm）是一种可供应用加载的计算模块格式。眼镜智能体可以把已有的计算逻辑放进 Wasm 模块，再从 JavaScript 调用，例如处理传感器数据。本次更新支持更完整的模块复用、JavaScript 函数导入，以及 Memory、Table、Global 资源；原生和 Web 环境使用相同的受支持 API 子集。
+WebAssembly（简称 Wasm）是一种可供应用加载的计算模块格式。智能体可以把已有的计算逻辑放进 Wasm 模块，再从 JavaScript 调用，例如处理传感器数据。本次更新支持更完整的模块复用、JavaScript 函数导入，以及 Memory、Table、Global 资源；原生和 Web 环境使用相同的受支持 API 子集。
 
 将导出 `add` 函数的 `math.wasm` 放入 `assets/` 后，可在 `app.js` 中加载并复用：
 
@@ -97,7 +38,7 @@ console.log(another.exports.add(1, 2)); // 3
 
 ### 为图片统一着色
 
-眼镜页面上的导航图标、提示图标可以使用相同的颜色。新增的 `tint-color` 可为 SVG 和栅格图片着色，并保留原图的透明区域。
+页面上的导航图标、提示图标可以使用相同的颜色。新增的 `tint-color` 可为 SVG 和栅格图片着色，并保留原图的透明区域。
 
 ```xml
 <image
@@ -111,7 +52,7 @@ A2UI 图片也支持 `tintColor`，以及 `contain`、`cover`、`fill` 三种 `f
 
 ### 按页面任务调整状态栏
 
-在眼镜上阅读长文本时，可以请求隐藏状态栏，为内容留出更多空间；结束阅读后再恢复默认偏好。返回状态区分请求的偏好与实际可见性，便于应用在无法控制时继续正常显示。
+阅读长文本时，可以请求隐藏状态栏，为内容留出更多空间；结束阅读后再恢复默认偏好。返回状态区分请求的偏好与实际可见性，便于应用在无法控制时继续正常显示。
 
 ```javascript
 export default {
@@ -129,8 +70,8 @@ export default {
 
 ## 日常体验改进
 
-- **网络与长连接更稳定**：眼镜上连续查询或接收实时消息时，取消请求会及时释放资源；修复请求名额耗尽、排队超时和 WebSocket 读写相互阻塞的问题。
-- **动画在内容更新后继续播放**：眼镜页面更新文字时，GIF 可以保留播放位置和循环次数；有限循环结束后保留末帧。A2UI 更新复用相同类型的图片，减少重复加载。
+- **网络与长连接更稳定**：连续查询或接收实时消息时，取消请求会及时释放资源；修复请求名额耗尽、排队超时和 WebSocket 读写相互阻塞的问题。
+- **动画在内容更新后继续播放**：页面更新文字时，GIF 可以保留播放位置和循环次数；有限循环结束后保留末帧。A2UI 更新复用相同类型的图片，减少重复加载。
 - **资源和请求处理更方便**：GET/HEAD Fetch 可读取包根路径及包内 `file:///` URL；`Request` 新增 `text()`、`json()`、`arrayBuffer()` 和 `blob()`，方便检查和转换请求体。详见 [HTTPS](/AIUI/api/network-https)。
 - **复杂界面显示更一致**：修复纯色背景、渐变、文本裁切、A2UI 文字和按钮字号，以及自定义组件属性初始化等问题。
 - **点击反馈更准确**：指针和导航使用一致的完整 `tap` 行为，拖动、滚动、取消和非主键手势不会激活控件；窗口尺寸保持实时、只读。
