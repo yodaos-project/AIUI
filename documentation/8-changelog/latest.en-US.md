@@ -1,47 +1,10 @@
 # v0.20.0
 
-AIUI 0.20.0 brings applications into the current conversation: share what the user is viewing with an Agent, present business results as cards, and update those cards as their status changes. This release also adds permission-state queries, broader WebAssembly support, image tinting, and status bar preferences to help developers build connected conversation and interface experiences.
-
-## Bring Page Content into the Conversation
-
-The new Agent session API lets an application explicitly share background information, such as a selected product or the content being viewed, then send a user message to continue the conversation around that task.
-
-```javascript
-const agent = getApp().getAgent();
-const selection = await agent.provideContext({
-  key: 'selection',
-  description: 'The product selected by the user',
-  value: { selectedSku: 'DEMO' },
-});
-await agent.conversation.sendMessage({
-  role: 'user',
-  content: [{ type: 'text', text: 'Describe the currently selected product.' }],
-});
-```
-
-Call `selection.update(value)` when the selection changes and `selection.dispose()` when the workflow ends. Application state is not published automatically. Successful publication acknowledges receipt without guaranteeing that a model has read the data. Sessions also support remote tool calls and resource access; see [Agent Sessions](/AIUI/api/ai-agent-session).
-
-## Present Results in Updatable Cards
-
-Show order progress, stock levels, or query results in a conversation card. Use its returned handle to update the same card so users can keep following the latest result.
-
-```javascript
-const conversation = getApp().getAgent().conversation;
-const card = await conversation.sendCard({
-  title: 'Product DEMO',
-  data: { sku: 'DEMO', available: 100 },
-});
-await card.update({
-  title: 'Product DEMO',
-  data: { sku: 'DEMO', available: 99 },
-});
-```
-
-Updates replace the complete card; omitted optional fields are cleared. Cards are presentation data, not automatic model input. Publish context separately when a model needs the same data. Check `agent.capabilities.operations` for available session operations before use; see [Agent Sessions](/AIUI/api/ai-agent-session).
+AIUI 0.20.0 makes it easier for agents to check permission states, reuse computation modules, and adapt their interfaces. This release also improves the reliability of networking, animations, and page interactions.
 
 ## Give Clear Feedback About Permissions
 
-Read microphone, camera, or geolocation permission state before use, and update the interface when it changes. A query neither shows an authorization dialog nor starts capture.
+For example, before a user starts a voice feature, an agent can check microphone permission and show a message if access was denied. It can also check camera or location permission and update the interface when permission changes. A query does not open an authorization dialog or start recording, capture, or location access.
 
 ```javascript
 const microphone = await navigator.permissions.query({ name: 'microphone' });
@@ -51,11 +14,11 @@ microphone.addEventListener('change', () => {
 });
 ```
 
-To request access, call the relevant capture or geolocation API and handle authorization failure. Manifest declarations and system authorization requirements still apply. See [Permission State](/AIUI/api/permissions).
+`granted` means allowed, `denied` means refused, and `prompt` means the user has not decided. To use the microphone, call `getUserMedia()`, handle authorization failure, and declare `RECORD_AUDIO` in `app.json`. Camera and location access also require their own declarations and API calls. See [Permission State](/AIUI/api/permissions).
 
 ## Reuse WebAssembly Computational Modules
 
-Expanded WebAssembly support includes module reuse, JavaScript function imports, and Memory, Table, and Global resources. Package computational logic as a module and use the same supported API subset in native and Web environments.
+WebAssembly, or Wasm, is a format for computation modules that an application can load. An agent can put existing computation logic in a Wasm module and call it from JavaScript, for example to process sensor data. This release expands module reuse, JavaScript function imports, and Memory, Table, and Global resources. Native and Web environments use the same supported API subset.
 
 Place a `math.wasm` module exporting `add` in `assets/`, then load and reuse it from `app.js`:
 
@@ -75,7 +38,7 @@ This release also supports synchronous Module/Instance construction, `i64` BigIn
 
 ### Give Images a Consistent Color
 
-The new `tint-color` attribute colors SVG and raster images while preserving transparent regions. Use it to give icons or status markers a consistent appearance.
+Navigation and status icons on a page can share a consistent color. The new `tint-color` attribute colors SVG and raster images while preserving transparent regions.
 
 ```xml
 <image
@@ -89,7 +52,7 @@ A2UI images also support `tintColor` and `contain`, `cover`, or `fill` for `fit`
 
 ### Adjust the Status Bar for a Page Task
 
-Reading and presentation flows can request a hidden status bar, then restore the default preference when finished. Returned state distinguishes the request from actual visibility so the interface can adapt when control is unavailable.
+When displaying a long text, request a hidden status bar to leave more room for the content, then restore the default preference when reading ends. Returned state distinguishes the request from actual visibility so the interface can adapt when control is unavailable.
 
 ```javascript
 export default {
@@ -107,8 +70,8 @@ Only the focused foreground `_blank` page can use this capability. A successfull
 
 ## Everyday Improvements
 
-- **More Reliable Networking**: Requests release resources after cancellation. Fixed exhausted slots during repeated requests, timeout accounting that excluded queue time, and WebSocket reads blocked by writes.
-- **Animation Continues Across Content Updates**: GIFs retain playback position and loop count, holding their final frame after finite loops. A2UI updates reuse same-type images to reduce reloads.
+- **More Reliable Networking**: During repeated requests or live messages, canceled requests release their resources. Fixed exhausted request slots, queue timeout accounting, and WebSocket reads blocked by writes.
+- **Animation Continues Across Content Updates**: When page text changes, GIFs retain playback position and loop count and hold their final frame after finite loops. A2UI updates reuse same-type images to reduce reloads.
 - **Easier Resource and Request Handling**: GET/HEAD Fetch requests can read package-root paths and package-scoped `file:///` URLs. New `Request.text()`, `json()`, `arrayBuffer()`, and `blob()` readers help inspect and convert request bodies. See [HTTPS](/AIUI/api/network-https).
 - **More Consistent Complex Interfaces**: Fixed solid backgrounds, gradients, text clipping, A2UI Text/Button font sizes, and custom-component property initialization.
 - **More Accurate Activation**: Pointer and navigation input share completed `tap` behavior. Drags, scrolling, cancellations, and non-primary gestures do not activate controls. Window dimensions remain live and read-only.
