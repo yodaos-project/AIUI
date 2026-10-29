@@ -52,16 +52,18 @@ const conversation = getApp().getAgent().conversation;
 const card = await conversation.sendCard({
   title: 'Product DEMO',
   description: '100 items available',
+  href: 'https://example.com/products/DEMO',
   data: { sku: 'DEMO', available: 100 },
 });
 await card.update({
   title: 'Product DEMO',
   description: '99 items available',
+  href: 'https://example.com/products/DEMO',
   data: { sku: 'DEMO', available: 99 },
 });
 ```
 
-Updates replace the entire card; omitting `description` or `data` clears that field. Each `sendCard()` creates a new card, and there is no removal API. Cards do not automatically become model input. Publish the data separately with `provideContext()` if the model needs it.
+`href` specifies the card's destination, but runtime support is pending; passing it currently returns a `DataError`. Updates replace the entire card, clearing omitted optional fields. Each `sendCard()` creates a new card, and there is no removal API. Cards do not automatically become model input. Publish the data separately with `provideContext()` if the model needs it.
 
 ## Use Remote Tools and Resources
 
@@ -192,7 +194,8 @@ Returns `Promise<CardHandle>` and requires `conversation.sendCard`. Creation and
 | --- | --- | --- | --- |
 | `title` | `string` | Yes | Must contain non-whitespace text. |
 | `description` | `string` | No | Display description; cleared when omitted from an update. |
-| `data` | JSON object | No | Presentation data; cleared when omitted from an update. |
+| `href` | `string` | No | Card destination; runtime support is pending, and passing it currently returns a `DataError`. |
+| `data` | JSON object | No | Optional presentation data; cleared when omitted from an update. |
 
 ### `ContextEntry`
 
