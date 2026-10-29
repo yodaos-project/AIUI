@@ -8,26 +8,24 @@ different color reproduction capabilities.
 
 ```text
 design/
-└── monochrome/          # single-color display specs (one channel on pure black)
-    ├── design-system-green.md
-    └── preview-green.html
+├── monochrome/          # single-color display specs (one channel on pure black)
+│   ├── design-system-green.md
+│   └── preview-green.html
+└── fullcolor/           # full-color transparent glasses
+    ├── README.md
+    └── design.md
 ```
 
-Full-color guidelines are maintained in the public documentation:
-
-```text
-documentation/6-design/visual/full-color.md
-```
-
-The **monochrome-green** design sources live here. Full-color guidance for
-Rokid Color and 乐奇全彩眼镜 lives in the documentation linked below.
+Both display types have design sources here. Full-color tokens and guidelines
+for Rokid Color and 乐奇全彩眼镜 live in [fullcolor/design.md](./fullcolor/design.md),
+using YAML front matter and Markdown specification sections.
 
 | Source | Display type | Status |
 |--------|--------------|--------|
 | [`monochrome/`](./monochrome/) | Single-color display (one channel on pure black) | Active — `green` hue variant available |
-| [`Full Color`](../documentation/6-design/visual/full-color.en-US.md) | Full-color glasses | Guidelines available |
+| [`fullcolor/`](./fullcolor/) | Full-color transparent glasses | Active — design.md specification available |
 
-## Active spec
+## Active Specs
 
 The monochrome-green system — for RokidGlasses1 / RokidGlasses2, whose
 hardware can only reproduce one luminous green channel over pure black —
@@ -37,6 +35,15 @@ lives at:
 - [`monochrome/preview-green.html`](./monochrome/preview-green.html) — browsable visual showcase
 
 See [`monochrome/README.md`](./monochrome/README.md) for details.
+
+The full-color system lives at:
+
+- [`fullcolor/design.md`](./fullcolor/design.md) — tokens, component patterns, states, and acceptance requirements
+- [`fullcolor/README.md`](./fullcolor/README.md) — scope and documentation links
+
+Keep the full-color source aligned with the public visual guidelines in
+[Chinese](../documentation/6-design/visual/full-color.md) and
+[English](../documentation/6-design/visual/full-color.en-US.md).
 
 ## How it fits into the repository
 

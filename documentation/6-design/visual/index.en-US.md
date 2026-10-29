@@ -19,7 +19,7 @@ Prefer theme tokens, and inspect custom styles, images, and Canvas content separ
 
 ## Guidelines and Design Sources
 
-This directory provides visual specifications for developers. The repository-level `design/monochrome/` folder retains monochrome design sources and previews. See [Full Color](/AIUI/design/visual-full-color) for full-color dimensions, palettes, typography, and component baselines.
+This directory provides visual specifications for developers. The repository-level `design/monochrome/` folder retains monochrome design sources and previews, while `design/fullcolor/design.md` provides full-color YAML tokens and Markdown guidance. See [Full Color](/AIUI/design/visual-full-color) for full-color dimensions, palettes, typography, and component baselines.
 
 ## Read Next
 

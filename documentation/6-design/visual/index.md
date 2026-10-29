@@ -19,7 +19,7 @@ AIUI 按显示类型提供视觉规范。先根据目标设备选择规范，再
 
 ## 规范与设计源
 
-本目录提供开发者使用的视觉规范；仓库根目录 `design/monochrome/` 保留单色设计源文件与预览。全彩的尺寸、颜色、排版与组件基线见 [Full Color](/AIUI/design/visual-full-color)。
+本目录提供开发者使用的视觉规范；仓库根目录 `design/monochrome/` 保留单色设计源文件与预览，`design/fullcolor/design.md` 提供 YAML Token 与 Markdown 说明组成的全彩设计源。全彩的尺寸、颜色、排版与组件基线见 [Full Color](/AIUI/design/visual-full-color)。
 
 ## 下一步阅读
 

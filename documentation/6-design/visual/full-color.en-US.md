@@ -94,3 +94,7 @@ Built-in `card` uses `:focus` and `:host-focus` to strengthen its border. Custom
 Check the content area, text, icons, padding, margins, and focus against the values above. Inspect black and dark details, compounded opacity, and large fills. Finally, verify reading, confirmation, back navigation, and scrolling on the target glasses under different lighting conditions and real backgrounds.
 
 For implementation, see the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color). For troubleshooting and refinement, see the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
+
+## Design Source
+
+The complete design.md-format source is [design/fullcolor/design.md](https://github.com/yodaos-project/AIUI/blob/main/design/fullcolor/design.md). It includes YAML token definitions, component patterns, states, theme mapping, and acceptance requirements. Keep the source and both language versions of this page aligned when changing the specification.

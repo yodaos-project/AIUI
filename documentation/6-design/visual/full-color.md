@@ -94,3 +94,7 @@
 交付前确认内容区域、文字、图标、内外边距和焦点态符合本页数值；检查纯黑、暗色细节、透明度叠加与大面积填充。最后在目标眼镜上验证不同光照与真实背景下的阅读、确认、返回与滚动。
 
 实现步骤见[全彩眼镜适配指南](/AIUI/guide/full-color)，体验排查与优化见[全彩优化指南](/AIUI/guide/performance-full-color)。
+
+## 设计源
+
+完整的 design.md 格式设计源见 [design/fullcolor/design.md](https://github.com/yodaos-project/AIUI/blob/main/design/fullcolor/design.md)，包含 YAML Token 定义、组件模式、状态、主题映射与验收要求。修改规范时，请同步更新设计源与本页的中英文版本。
