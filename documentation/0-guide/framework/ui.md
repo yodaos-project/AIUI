@@ -80,3 +80,7 @@ WXSS 是一套样式语言，用于描述 WXML 的组件样式。它扩展了 CS
 2. **共享开发方式**: Page 和 Widget 使用相同的数据绑定、组件、事件和样式能力，但拥有各自的入口与生命周期。
 
 Widget 的完整文件示例请参阅 [Widget 开发](/AIUI/framework/open-agent-format-widget)。
+
+## 适配单色与全彩眼镜
+
+完成基础界面后，可按[全彩眼镜适配指南](/AIUI/guide/framework/full-color)复用同一个智能体，并根据显示能力调整主题、资源和布局。具体设计数值见[全彩视觉规范](/AIUI/design/visual-full-color)，阅读与交互体验的进一步调整见[全彩优化指南](/AIUI/guide/performance-full-color)。

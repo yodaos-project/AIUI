@@ -80,3 +80,7 @@ WXSS is a style language used to describe component styles in WXML. It extends C
 2. **Shared development model**: Pages and Widgets use the same data binding, components, events, and styles, but have separate entries and lifecycle callbacks.
 
 For a complete Widget file, see [Widget Development](/AIUI/framework/open-agent-format-widget).
+
+## Adapt to Monochrome and Full-Color Glasses
+
+After building the basic interface, follow the [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color) to reuse the same agent and adjust themes, assets, and layout to display capabilities. See the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) for design values and the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color) to refine reading and interaction.

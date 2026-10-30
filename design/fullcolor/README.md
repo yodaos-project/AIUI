@@ -40,7 +40,7 @@ These values belong to full-color glasses. Use the separate
 Keep [design.md](./design.md) aligned with the public visual guidelines in
 [Chinese](../../documentation/6-design/visual/full-color.md) and
 [English](../../documentation/6-design/visual/full-color.en-US.md).
-Implementation workflows live in the [Adaptation Guide](../../documentation/0-guide/full-color.en-US.md)
+Implementation workflows live in the [Adaptation Guide](../../documentation/0-guide/framework/full-color.en-US.md)
 and [Optimization Guide](../../documentation/0-guide/performance/full-color.en-US.md).
 
 ## License

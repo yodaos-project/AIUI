@@ -400,6 +400,6 @@ The theme supplies defaults; its current 2px / 60% card outline needs explicit o
 - [Interactive HTML Preview](./preview-color.html)
 - [Full-Color Visual Guidelines — English](../../documentation/6-design/visual/full-color.en-US.md)
 - [Full-Color Visual Guidelines — Chinese](../../documentation/6-design/visual/full-color.md)
-- [Adaptation Guide](../../documentation/0-guide/full-color.en-US.md)
+- [Adaptation Guide](../../documentation/0-guide/framework/full-color.en-US.md)
 - [Optimization Guide](../../documentation/0-guide/performance/full-color.en-US.md)
 - [Monochrome Design Source](../monochrome/design-system-green.md)

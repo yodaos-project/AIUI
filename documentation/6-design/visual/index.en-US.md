@@ -15,7 +15,7 @@ Both display types use a pure black page background, which appears transparent o
 
 One agent can share business logic, Pages, and Widgets, while adapting colors to display capabilities and layouts to available space. Do not scale a monochrome type scale and complete page directly into the full-color area, or carry multi-hue states directly onto monochrome devices.
 
-Prefer theme tokens, and inspect custom styles, images, and Canvas content separately. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color) for the complete workflow.
+Prefer theme tokens, and inspect custom styles, images, and Canvas content separately. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color) for the complete workflow.
 
 ## Guidelines and Design Sources
 
@@ -25,6 +25,6 @@ This directory provides visual specifications for developers. The repository-lev
 
 - [Monochrome](/AIUI/design/visual-monochrome)
 - [Full Color](/AIUI/design/visual-full-color)
-- [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color)
+- [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color)
 - [Full-Color Optimization Guide](/AIUI/guide/performance-full-color)
 - [Interaction Design](/AIUI/design/interaction)

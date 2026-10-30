@@ -63,6 +63,10 @@
           {
             "id": "ui",
             "label": "User Interface (UI) Development"
+          },
+          {
+            "id": "full-color",
+            "label": "Full-Color Glasses Adaptation"
           }
         ],
         "hasIndex": true
@@ -223,10 +227,6 @@
           }
         ],
         "hasIndex": true
-      },
-      {
-        "id": "full-color",
-        "label": "Full-Color Glasses Adaptation"
       },
       {
         "id": "performance",

@@ -1,6 +1,6 @@
 # Full-Color Optimization Guide
 
-Full-color optimization makes results easier to read and actions easier to complete within a content area of width 448 and maximum height 352, while keeping the agent responsive. First establish compatibility with the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color), then refine the experience using the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color).
+Full-color optimization makes results easier to read and actions easier to complete within a content area of width 448 and maximum height 352, while keeping the agent responsive. First establish compatibility with the [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color), then refine the experience using the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color).
 
 ## Reduce Information Before Adjusting Typography
 
