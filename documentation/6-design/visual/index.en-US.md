@@ -1,50 +1,30 @@
 # Visual Design
 
-This directory brings the visual design language from the repository-level `design/` folder into the documentation system and organizes AIUI visual guidance by display type.
-
-AIUI runs on hardware with very different display capabilities, so visual guidance is not a single page. It is a set of design-language documents grouped by display type.
-
-## Structure
-
-```text
-visual/
-├── index.en-US.md
-└── monochrome.en-US.md
-```
-
-The current documentation structure mirrors the repository-level `design/` sources:
-
-- `design/README.md` -> this page
-- `design/monochrome/README.md` + `design/monochrome/design-system-green.md` -> `Monochrome`
+AIUI provides visual guidelines by display type. Choose the specification for your target device, then adapt theme tokens, layouts, and assets to deliver a consistent task experience.
 
 ## Display Types
 
-| Type | Description | Status |
+| Type | Target Devices | Core Constraints |
 | --- | --- | --- |
-| `Monochrome` | Single-color display rendered as one luminous channel over pure black | Active |
-| `Full Color` | Full-RGB display capability | Planned |
+| [Monochrome](/AIUI/design/visual-monochrome) | Single-green displays on RokidGlasses1 / RokidGlasses2 | One green channel, reference canvas 480 × 352, hierarchy through monochrome opacity and outlines |
+| [Full Color](/AIUI/design/visual-full-color) | Rokid Color | Width 448, maximum height 352, white text with color accents, transparent containers and clear outlines |
 
-Today only the `Monochrome` branch is active, targeting the single-green hardware used by Rokid Glasses.
+Both display types use a pure black page background, which appears transparent on the glasses. Full color adds hue distinctions while retaining the need to limit large fills, preserve readable text sizes, and verify against real backgrounds.
 
-## Active Spec
+## Choose and Reuse Specifications
 
-The current primary spec is `Monochrome`, which includes the active `Green` variant for RokidGlasses1 and RokidGlasses2:
+One agent can share business logic, Pages, and Widgets, while adapting colors to display capabilities and layouts to available space. Do not scale a monochrome type scale and complete page directly into the full-color area, or carry multi-hue states directly onto monochrome devices.
 
-- a single luminous green channel
-- a pure black background
-- a HUD-style interface built from outlines, translucent fills, and stable whitespace
-- a Design Token layer used as the shared contract for host injection and app overrides
+Prefer theme tokens, and inspect custom styles, images, and Canvas content separately. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color) for the complete workflow.
 
-## How It Fits Into The Repository
+## Guidelines and Design Sources
 
-| Audience | Entry Point |
-| --- | --- |
-| Human developers | This documentation directory |
-| Source-of-truth maintainers | The repository-level `design/` folder |
-| AI generation and assistant workflows | The synchronized design-spec copy used in docs and tooling |
-
-The purpose of this directory is not to replace `design/`, but to expose the same design language through the public documentation structure so it is easier to navigate, reference, and expand later.
+This directory provides visual specifications for developers. The repository-level `design/monochrome/` folder retains monochrome design sources and previews, while `design/fullcolor/design.md` provides full-color YAML tokens and Markdown guidance. See [Full Color](/AIUI/design/visual-full-color) for full-color dimensions, palettes, typography, and component baselines.
 
 ## Read Next
 
 - [Monochrome](/AIUI/design/visual-monochrome)
+- [Full Color](/AIUI/design/visual-full-color)
+- [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color)
+- [Full-Color Optimization Guide](/AIUI/guide/performance-full-color)
+- [Interaction Design](/AIUI/design/interaction)

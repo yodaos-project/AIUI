@@ -11,18 +11,22 @@ design/
 ├── monochrome/          # single-color display specs (one channel on pure black)
 │   ├── design-system-green.md
 │   └── preview-green.html
-└── fullcolor/           # planned — full-RGB display specs (not yet authored)
+└── fullcolor/           # full-color transparent glasses
+    ├── README.md
+    ├── design.md
+    └── preview-color.html
 ```
 
-Today only the **monochrome-green** variant exists; the full-color area is
-reserved for future hardware.
+Both display types have design sources here. Full-color tokens and guidelines
+for Rokid Color (Chinese name: 乐奇全彩眼镜) live in [fullcolor/design.md](./fullcolor/design.md),
+using YAML front matter and Markdown specification sections.
 
-| Subdir | Display type | Status |
+| Source | Display type | Status |
 |--------|--------------|--------|
 | [`monochrome/`](./monochrome/) | Single-color display (one channel on pure black) | Active — `green` hue variant available |
-| `fullcolor/` | Full-RGB color display | Planned — not yet authored |
+| [`fullcolor/`](./fullcolor/) | Full-color transparent glasses | Active — design.md specification available |
 
-## Active spec
+## Active Specs
 
 The monochrome-green system — for RokidGlasses1 / RokidGlasses2, whose
 hardware can only reproduce one luminous green channel over pure black —
@@ -32,6 +36,16 @@ lives at:
 - [`monochrome/preview-green.html`](./monochrome/preview-green.html) — browsable visual showcase
 
 See [`monochrome/README.md`](./monochrome/README.md) for details.
+
+The full-color system lives at:
+
+- [`fullcolor/design.md`](./fullcolor/design.md) — tokens, component patterns, states, and acceptance requirements
+- [`fullcolor/preview-color.html`](./fullcolor/preview-color.html) — self-contained, interactive visual showcase
+- [`fullcolor/README.md`](./fullcolor/README.md) — scope and documentation links
+
+Keep the full-color source aligned with the public visual guidelines in
+[Chinese](../documentation/6-design/visual/full-color.md) and
+[English](../documentation/6-design/visual/full-color.en-US.md).
 
 ## How it fits into the repository
 

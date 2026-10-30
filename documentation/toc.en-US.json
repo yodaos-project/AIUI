@@ -225,6 +225,10 @@
         "hasIndex": true
       },
       {
+        "id": "full-color",
+        "label": "Full-Color Glasses Adaptation"
+      },
+      {
         "id": "performance",
         "label": "Performance & Experience",
         "expanded": false,
@@ -248,6 +252,10 @@
           {
             "id": "network",
             "label": "Poor Network Experience"
+          },
+          {
+            "id": "full-color",
+            "label": "Full-Color Optimization"
           }
         ],
         "hasIndex": true
@@ -997,6 +1005,10 @@
           {
             "id": "monochrome",
             "label": "Monochrome"
+          },
+          {
+            "id": "full-color",
+            "label": "Full Color"
           }
         ],
         "hasIndex": true

@@ -12,6 +12,8 @@
 
 目前 `Green` 是唯一公开的单色显示规范。
 
+乐奇全彩眼镜请使用 [Full Color](/AIUI/design/visual-full-color)。两类设备可以复用同一个智能体，但应分别遵守各自的尺寸、字号与配色要求，具体见[全彩眼镜适配指南](/AIUI/guide/full-color)。
+
 ## 为什么需要独立的 Monochrome 体系
 
 单色显示设备和全彩设备在视觉表达上有明显差异：

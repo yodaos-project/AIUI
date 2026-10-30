@@ -13,7 +13,7 @@ identified by their color (e.g. `green`, `amber`).
 
 > The `green` variant is currently the only monochrome spec. Files use a
 > `-green` suffix so the current spec stays stable as the monochrome line
-> evolves alongside the planned full-color variant.
+> evolves alongside the [full-color design language](../fullcolor/).
 
 ## Files
 
