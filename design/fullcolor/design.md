@@ -21,12 +21,12 @@ constraints:
   - "Keep text between 14dp and 24dp; do not shrink text to fit more content."
   - "Icons must be at least 12x12px."
   - "Do not use large filled backgrounds. Prefer transparent containers and outlines."
-  - "Visible foreground alpha should be at least 0.4; transparent surfaces and the black background are exempt."
-  - "Cards use a 12px radius and a 2px inside stroke at 0.6 alpha by default."
-  - "Selected or focused card strokes use 1.0 alpha while retaining the same 2px width."
+  - "Visible foreground alpha should be at least 0.4; internal card borders at 0.3 alpha, transparent surfaces, and the black background are exempt."
+  - "The outermost card has no border. Internal cards use a 12px radius and a 1px white inside stroke at 0.3 alpha by default."
+  - "Selected or focused internal card strokes use 1.0 alpha while retaining the same 1px width; the outermost card remains borderless."
   - "Card content padding is 10px horizontally and 24px vertically."
   - "Keep 10px between cards and the FOV edges, included in the overall content area."
-  - "Dividers use a 1px stroke at 0.4 alpha, matching muted outer borders."
+  - "Dividers use a 1px stroke at 0.4 alpha."
   - "The theme background always remains pure black. Black cannot obscure the physical environment."
   - "Avoid low-brightness foreground colors; critical states also need text, icons, or shape cues."
 
@@ -41,6 +41,7 @@ colors:
   text-primary: "#ffffff"
   text-secondary: "rgba(255,255,255,0.6)"
   line-default: "rgba(255,255,255,0.6)"
+  card-outline: "rgba(255,255,255,0.3)"
   line-muted: "rgba(255,255,255,0.4)"
   line-strong: "#ffffff"
   success: "#80e6b0"
@@ -52,6 +53,7 @@ opacity:
   foreground-min: 0.4
   secondary: 0.6
   default-stroke: 0.6
+  card-stroke: 0.3
   selected-stroke: 1.0
   divider: 0.4
 
@@ -96,6 +98,7 @@ spacing:
 
 border-width:
   thin: 1px
+  card: 1px
   default: 2px
   strong: 2px
 
@@ -112,15 +115,24 @@ components:
     safeInsetY: "{spacing.fov-inset}"
     backgroundColor: "{colors.background}"
 
-  card:
-    description: "Outer border box fits inside the FOV clearance; children share its inner space."
+  card-outer:
+    description: "Borderless outermost layout card; children share its 408x284 inner space."
     maxWidth: 428px
     maxHeight: 332px
     boxSizing: border-box
     margin: "{spacing.fov-inset}"
     backgroundColor: "{colors.surface}"
-    borderColor: "{colors.line-default}"
-    borderWidth: "{border-width.default}"
+    borderWidth: 0px
+    rounded: "{rounded.md}"
+    paddingX: "{spacing.card-padding-x}"
+    paddingY: "{spacing.card-padding-y}"
+
+  card:
+    description: "Internal card within the outermost card; include its border and padding in the shared content budget."
+    boxSizing: border-box
+    backgroundColor: "{colors.surface}"
+    borderColor: "{colors.card-outline}"
+    borderWidth: "{border-width.card}"
     borderAlignment: inside
     rounded: "{rounded.md}"
     paddingX: "{spacing.card-padding-x}"
@@ -131,10 +143,10 @@ components:
     footerTypography: "{typography.caption}"
 
   card-selected:
-    description: "Keep geometry stable when business selection or focus is shown."
+    description: "Keep internal card geometry stable when business selection or focus is shown; the outermost card stays borderless."
     backgroundColor: "{colors.surface}"
     borderColor: "{colors.line-strong}"
-    borderWidth: "{border-width.default}"
+    borderWidth: "{border-width.card}"
     borderAlignment: inside
     rounded: "{rounded.md}"
 
@@ -241,14 +253,14 @@ The front matter describes design tokens and component patterns. Curly-brace ref
 | --- | --- |
 | Overall content area | Width 448; maximum height 352 |
 | Clearance to FOV edges | 10 on every side |
-| Maximum card outer border box | 428 × 332 after the outer clearance |
+| Maximum outermost card box | 428 × 332 after the outer clearance; no border |
 | Card padding | 10 horizontally, 24 vertically |
 | Card radius | 12 |
-| Inside stroke | 2 |
+| Internal card inside stroke | 1px white at alpha 30%; 100% when selected or focused |
 
 Use logical `px` in WXSS consistently with the theme; text sizes correspond to design dp. Hardware physical pixel dimensions are not layout dimensions.
 
-Include margins, borders, padding, headings, body content, and actions in the same height budget. In a standard card that fills the available area, a 332-high border box with 24 padding and a 2 border on each vertical side leaves **280** for all inner content. A 98-high chart leaves **182** to share between headings, captions, actions, and spacing.
+Include margins, borders, padding, headings, body content, and actions in the same height budget. The borderless outermost card is 428 × 332; after 10 horizontal and 24 vertical padding, it leaves **408 × 284** for all inner content. A 98-high chart leaves **186** to share between headings, captions, actions, and spacing. Deduct any internal card's own 1px border and padding from that shared budget.
 
 The canvas safe insets and card outer margins describe the same 10-unit clearance. Apply that clearance once; do not add another canvas padding layer around an already-margined card.
 
@@ -267,13 +279,14 @@ The 352 maximum is a design constraint. Theme defaults do not automatically cap 
 | `{colors.danger}` | `#ff8080` | Error accent |
 | `{colors.warning}` | `#ffd966` | Warning accent |
 | `{colors.highlight}` | `#c4a6ff` | Category emphasis |
-| `{colors.line-default}` | White at alpha 60% | Default card and control outline |
+| `{colors.line-default}` | White at alpha 60% | Default control outline |
+| `{colors.card-outline}` | White at alpha 30% | Default internal card outline |
 | `{colors.line-muted}` | White at alpha 40% | Muted outline and divider |
 | `{colors.line-strong}` | White at alpha 100% | Selected and focused outline |
 
 Pure black emits no light and appears transparent on the glasses. It cannot form an opaque panel that hides the physical environment. Do not use black or low-brightness colors for essential foreground content.
 
-An alpha of 40% means `0.4` opacity. Keep visible foreground at or above this recommended baseline. Default card strokes remain at 60%, selected strokes at 100%, and dividers and muted outlines at 40%. Transparent containers and the black display floor are intentional exceptions.
+An alpha of 30% means `0.3` opacity. The outermost card has no border; internal card borders use white at 30% alpha by default and 100% when selected or focused. Dividers and muted control outlines remain at 40%. Keep text, icons, and other visible foreground at or above the recommended 40% baseline. Internal card borders, transparent containers, and the black display floor are intentional exceptions.
 
 Set alpha on individual colors instead of dimming an entire parent container. Parent opacity can weaken text, icons, and already-translucent borders together. Do not add large colored surfaces to compensate for poor foreground readability.
 
@@ -296,13 +309,13 @@ Icons default to **16 × 16** and must be at least **12 × 12**. Prefer clear si
 
 ### Card and Selection
 
-Use a transparent card with a 12 radius and 2 inside stroke at 60% alpha. Keep the specified horizontal and vertical padding. Selected or focused cards raise stroke alpha to 100% while keeping geometry stable.
+Keep the outermost card borderless in every state. Internal cards use a transparent surface, a 12 radius, and a 1px white inside stroke at 30% alpha. Keep the specified horizontal and vertical padding. Selected or focused internal cards raise stroke alpha to 100% while retaining the same 1px width.
 
-Focus represents the current interaction target; selection represents business state. Maintain them separately when the task needs both. Built-in cards provide focus styling through `:focus` and `:host-focus`; custom controls need equivalent visible feedback. Hover must not be the only way to discover an action or its state.
+Focus represents the current interaction target; selection represents business state. Maintain them separately when the task needs both. Apply `:focus` and `:host-focus` styling to interactive internal cards; keep the outermost layout card borderless. Hover must not be the only way to discover an action or its state.
 
 ### Divider
 
-Use a 1 stroke at 40% alpha, matching the muted outer-border tier. The default card border remains at 60%; a divider does not inherit the stronger selected-border alpha.
+Use a 1 stroke at 40% alpha. A divider does not inherit the internal card's default 30% or selected 100% border alpha.
 
 ### Button and Input
 
@@ -337,7 +350,8 @@ Verify confirmation, back navigation, scrolling, and voice interaction on each t
 | `{colors.secondary}` | `--color-secondary` |
 | `{colors.success}` / `{colors.danger}` / `{colors.warning}` / `{colors.highlight}` | `--border-color-success` / `--border-color-danger` / `--border-color-warning` / `--border-color-highlight` |
 | `{colors.line-default}` / `{colors.line-muted}` / `{colors.line-strong}` | `--border-color-default` / `--border-color-muted` / `--border-color-strong` |
-| `{components.card.borderColor}` / `{components.card-selected.borderColor}` | `--card-border-color` / `--card-focus-border-color` |
+| `{components.card.borderColor}` / `{components.card-selected.borderColor}` | `--card-border-color` / `--card-focus-border-color`; override the default card color to white at alpha 30% |
+| `{border-width.card}` | `--card-border-width`; override to `1px` for internal cards and `0px` for the outermost card |
 | `{spacing.fov-inset}` | `--card-margin` |
 | `{spacing.card-padding-x}` / `{spacing.card-padding-y}` | `--card-padding` / `--card-padding-y` |
 | `{rounded.md}` | `--card-radius` |
@@ -346,7 +360,7 @@ Verify confirmation, back navigation, scrolling, and voice interaction on each t
 | `{typography.heading.fontSize}` | `--card-title-font-size` |
 | `{icons.size-min}` | `--icon-size-min` |
 
-The theme supplies defaults. Custom typography, asset pixels, Canvas labels, maximum content height, and the meaning of selection still require explicit design and implementation checks.
+The theme supplies defaults; its current 2px / 60% card outline needs explicit overrides for this specification. Keep the outermost card border width at zero, including focus states, and use 1px / 30% white for internal cards. Custom typography, asset pixels, Canvas labels, maximum content height, and the meaning of selection still require explicit design and implementation checks.
 
 ## 8. Do's and Don'ts
 
@@ -355,7 +369,7 @@ The theme supplies defaults. Custom typography, asset pixels, Canvas labels, max
 - Keep content, card clearance, and actions inside the 448 × 352 budget.
 - Use white readable text, a few bright accents, transparent containers, and clear outlines.
 - Preserve 14–24 dp text, minimum 12 × 12 icons, and the specified card padding.
-- Keep focus and selection visible through 100% stroke alpha.
+- Keep internal card focus and selection visible through 100% stroke alpha; keep the outermost card borderless.
 - Split complex results into an actionable summary and accessible detail.
 - Validate with long content, error states, bright backgrounds, and real device interaction.
 
@@ -372,11 +386,11 @@ The theme supplies defaults. Custom typography, asset pixels, Canvas labels, max
 
 - [ ] Content and margins fit a width of 448 and a maximum height of 352.
 - [ ] Cards retain 10 FOV clearance, 10 horizontal padding, and 24 vertical padding.
-- [ ] Cards use a 12 radius and 2 inside stroke: 60% alpha by default, 100% when selected or focused.
+- [ ] The outermost card has no border in any state. Internal cards use a 12 radius and 1px white inside stroke: 30% alpha by default, 100% when selected or focused.
 - [ ] Dividers use 1 at 40% alpha, matching muted outlines.
 - [ ] Text stays within 14–24 dp and icons are at least 12 × 12.
 - [ ] Background is pure black, containers are transparent, and no large filled surface dominates the view.
-- [ ] Essential foreground is bright enough, with at least the recommended 40% alpha and no unintended parent-opacity reduction.
+- [ ] Text, icons, and other essential foreground retain the recommended 40% alpha and have no unintended parent-opacity reduction; internal card borders are an exception at 30% alpha.
 - [ ] Critical states include text, icons, or shape cues alongside color.
 - [ ] Long, empty, loading, failure, and retry states preserve readable content and reachable actions.
 - [ ] Target-device checks cover real backgrounds, lighting, confirmation, back navigation, scrolling, and voice interaction.

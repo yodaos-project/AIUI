@@ -25,7 +25,8 @@
       --card-padding: 10px;
       --card-padding-y: 24px;
       --card-radius: 12px;
-      --card-border-width: 2px;
+      --card-border-width: 1px;
+      --card-border-color: rgba(255, 255, 255, 0.3);
       --card-title-font-size: 20px;
       --font-size-min: 14px;
       --font-size-max: 24px;
@@ -63,9 +64,9 @@
     .display-plane { position: absolute; inset: 0; background: var(--color-background); color: var(--color-text-primary); }
     .fov[data-background="scene"] { background: linear-gradient(125deg, transparent 45%, #3f5141 45% 51%, transparent 51%), linear-gradient(23deg, #8f9982 0 32%, #67756d 32% 56%, #9caeb8 56%); }
     .fov[data-background="scene"] .display-plane { mix-blend-mode: screen; }
-    .glass-card { position: absolute; inset: var(--card-margin); display: flex; flex-direction: column; gap: 12px; padding: var(--card-padding-y) var(--card-padding); border: var(--card-border-width) solid var(--border-color-default); border-radius: var(--card-radius); background: var(--color-surface); color: var(--color-text-primary); font-size: 16px; line-height: 22px; }
-    .glass-card[data-selected="true"], .glass-card:focus { border-color: var(--border-color-strong); outline: none; }
-    .glass-card.is-error { border-color: var(--border-color-muted); }
+    .glass-card { position: absolute; inset: var(--card-margin); display: flex; flex-direction: column; gap: 12px; padding: var(--card-padding-y) var(--card-padding); border: 0; border-radius: var(--card-radius); background: var(--color-surface); color: var(--color-text-primary); font-size: 16px; line-height: 22px; }
+    .inner-card { display: flex; flex-direction: column; gap: 12px; padding: var(--card-padding-y) var(--card-padding); border: var(--card-border-width) solid var(--card-border-color); border-radius: var(--card-radius); background: var(--color-surface); }
+    .inner-card[data-selected="true"], .inner-card:focus { border-color: var(--border-color-strong); outline: none; }
     .glass-title { margin: 0; font-size: var(--card-title-font-size); line-height: 24px; font-weight: 600; }
     .glass-copy { margin: 0; font-size: 16px; line-height: 22px; }
     .glass-caption { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-min); line-height: 20px; }
@@ -93,7 +94,7 @@
     .swatch h3 { margin: 0 0 4px; font-size: 16px; font-weight: 500; }
     .swatch code { color: #b9c2cd; font: 14px var(--mono); }
     .stroke-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
-    .stroke-example { height: 48px; margin-bottom: 10px; border: 2px solid var(--stroke); border-radius: 12px; background: #000; }
+    .stroke-example { height: 48px; margin-bottom: 10px; border: 1px solid var(--stroke); border-radius: 12px; background: #000; }
     .stroke-example.divider { position: relative; border: 0; }
     .stroke-example.divider::after { content: ""; position: absolute; inset: 24px 12px auto; border-top: 1px solid var(--border-color-muted); }
     .stroke-label { margin: 0; font-size: 14px; color: #b9c2cd; }
@@ -101,7 +102,7 @@
     .type-meta { color: #b9c2cd; font: 14px/1.6 var(--mono); }
     .type-meta strong { color: #fff; font-weight: 500; }
     .type-sample { margin: 0; }
-    .content-guide { height: 280px; flex: none; display: grid; place-content: center; border: 1px dashed var(--border-color-muted); color: #fff; text-align: center; font-size: 14px; line-height: 20px; }
+    .content-guide { height: 284px; flex: none; display: grid; place-content: center; border: 1px dashed var(--border-color-muted); color: #fff; text-align: center; font-size: 14px; line-height: 20px; }
     .diagram-card { gap: 0; }
     .budget { margin-top: 20px; }
     .budget strong { font-weight: 500; color: #fff; }
@@ -166,7 +167,7 @@
     <section id="canvas" aria-labelledby="canvas-heading">
       <span class="section-label">01 / LIVE PREVIEW</span>
       <h2 id="canvas-heading">One result. A clear next step.</h2>
-      <p class="description">Every glasses example below renders at 1:1 logical pixels in a 448 × 352 frame. On narrow windows, scroll the example horizontally to retain its original text and layout sizes.</p>
+      <p class="description">Every glasses example below renders at 1:1 logical pixels in a 448 × 352 frame. Frame outlines are preview guides, not part of the glasses UI. On narrow windows, scroll the example horizontally to retain its original text and layout sizes.</p>
       <div class="workspace">
         <div>
           <div class="controls" aria-label="Example scenario">
@@ -177,21 +178,23 @@
           <div class="frame-scroll" tabindex="0" role="region" aria-label="Full-color example, scroll horizontally on narrow screens">
             <div class="fov" id="live-fov" data-background="black">
               <div class="display-plane">
-                <article class="glass-card" id="live-card" tabindex="0" data-selected="false" aria-label="Example card; focus to inspect the focus stroke">
-                  <div class="glass-row start"><svg class="icon accent" aria-hidden="true"><use id="live-icon" href="#icon-turn"/></svg><h3 class="glass-title" id="live-title" lang="zh-CN">前方路口右转</h3></div>
-                  <div class="glass-row"><p class="glass-copy muted" id="live-detail" lang="zh-CN">步行 8 分钟</p><span class="glass-value accent" id="live-value">1.2 km</span></div>
-                </article>
+                <div class="glass-card">
+                  <article class="inner-card" id="live-card" tabindex="0" data-selected="false" aria-label="Internal card; focus to inspect the focus stroke">
+                    <div class="glass-row start"><svg class="icon accent" aria-hidden="true"><use id="live-icon" href="#icon-turn"/></svg><h3 class="glass-title" id="live-title" lang="zh-CN">前方路口右转</h3></div>
+                    <div class="glass-row"><p class="glass-copy muted" id="live-detail" lang="zh-CN">步行 8 分钟</p><span class="glass-value accent" id="live-value">1.2 km</span></div>
+                  </article>
+                </div>
               </div>
             </div>
           </div>
-          <p class="caption">448 × 352 FOV · 10 outer clearance · 428 × 332 card · 2 inside stroke</p>
+          <p class="caption">448 × 352 FOV · 10 outer clearance · 428 × 332 borderless outer card · 1px internal card stroke</p>
           <p class="sr-only" id="preview-status" aria-live="polite"></p>
         </div>
         <div>
           <p class="controls-label">Background comparison</p>
           <div class="controls" aria-label="Background comparison"><button class="tool-button" type="button" data-background="black" aria-pressed="true">Black floor</button><button class="tool-button" type="button" data-background="scene" aria-pressed="false">Scene approximation</button></div>
           <div class="controls"><button class="tool-button" id="selection-toggle" type="button" aria-pressed="false" aria-controls="live-card">Selected: off</button></div>
-          <dl class="spec-list"><dt>Default outline</dt><dd>White / 60% alpha</dd><dt>Selected or focused</dt><dd>White / 100% alpha</dd><dt>Card surface</dt><dd>Transparent / radius 12</dd><dt>Content padding</dt><dd>10 horizontal / 24 vertical</dd></dl>
+          <dl class="spec-list"><dt>Outermost card</dt><dd>No border in any state</dd><dt>Internal card outline</dt><dd>1px white / 30% alpha</dd><dt>Selected or focused</dt><dd>1px white / 100% alpha</dd><dt>Card surface</dt><dd>Transparent / radius 12</dd><dt>Content padding</dt><dd>10 horizontal / 24 vertical</dd></dl>
           <p class="caption">The scene comparison uses screen blending to approximate black-as-transparent. It illustrates the layering; optical readability and color still need checking on the glasses.</p>
         </div>
       </div>
@@ -212,11 +215,11 @@
         <div class="swatch" style="--swatch:var(--border-color-muted)"><div class="swatch-dot"></div><h3>Muted outline</h3><code>white / 40%</code></div>
       </div>
       <div class="stroke-list">
-        <div><div class="stroke-example" style="--stroke:var(--border-color-default)"></div><p class="stroke-label">Default card · 2 / 60%</p></div>
-        <div><div class="stroke-example" style="--stroke:var(--border-color-strong)"></div><p class="stroke-label">Selected card · 2 / 100%</p></div>
+        <div><div class="stroke-example" style="--stroke:var(--card-border-color)"></div><p class="stroke-label">Internal card · 1px / 30%</p></div>
+        <div><div class="stroke-example" style="--stroke:var(--border-color-strong)"></div><p class="stroke-label">Selected internal card · 1px / 100%</p></div>
         <div><div class="stroke-example divider"></div><p class="stroke-label">Divider · 1 / 40%</p></div>
       </div>
-      <p class="caption">40% means alpha 0.4. Apply alpha to individual foreground colors; keep the card itself at full opacity so its children are not dimmed together.</p>
+      <p class="caption">30% means alpha 0.3. Internal card borders are an exception to the recommended 40% foreground minimum. Apply alpha to individual colors; keep the card itself at full opacity so its children are not dimmed together.</p>
     </section>
 
     <section id="typography" aria-labelledby="type-heading">
@@ -236,10 +239,10 @@
       <h2 id="layout-heading">Count the whole card.</h2>
       <p class="description">The 10-unit FOV clearance is included in the 448 × 352 area. Card margins and canvas safe insets describe the same clearance; apply it once.</p>
       <div class="workspace">
-        <div class="frame-scroll" tabindex="0" role="region" aria-label="Full-color layout diagram"><div class="fov"><div class="display-plane"><div class="glass-card diagram-card"><div class="content-guide">404 × 280 inner area<br><span class="muted">Titles, content, and actions share this space.</span></div></div></div></div></div>
-        <dl class="spec-list budget"><dt>Overall area</dt><dd><strong>448 × 352</strong></dd><dt>Minus outer clearance</dt><dd>10 on each side → 428 × 332</dd><dt>Minus border</dt><dd>2 on each side → 424 × 328</dd><dt>Minus padding</dt><dd>10 horizontal, 24 vertical</dd><dt>Inner content budget</dt><dd><strong>404 × 280</strong></dd></dl>
+        <div class="frame-scroll" tabindex="0" role="region" aria-label="Full-color layout diagram"><div class="fov"><div class="display-plane"><div class="glass-card diagram-card"><div class="content-guide">408 × 284 inner area<br><span class="muted">Titles, content, and actions share this space.</span></div></div></div></div></div>
+        <dl class="spec-list budget"><dt>Overall area</dt><dd><strong>448 × 352</strong></dd><dt>Minus outer clearance</dt><dd>10 on each side → 428 × 332</dd><dt>Outermost card border</dt><dd>None</dd><dt>Minus padding</dt><dd>10 horizontal, 24 vertical</dd><dt>Inner content budget</dt><dd><strong>408 × 284</strong></dd></dl>
       </div>
-      <p class="caption">A 98-high chart leaves 182 of the standard card's 280 inner height for headings, captions, actions, and spacing. Keep all content inside that shared budget.</p>
+      <p class="caption">A 98-high chart leaves 186 of the outer card's 284 inner height for headings, captions, actions, and spacing. Internal card borders and padding also consume that shared budget. The dashed line marks the content budget only; it is not a card border.</p>
     </section>
 
     <section id="components" aria-labelledby="components-heading">
@@ -247,11 +250,11 @@
       <h2 id="components-heading">Small surfaces, complete states.</h2>
       <p class="description">Each example keeps the same 448 × 352 frame and card spacing. The input and controls are interactive; keyboard focus uses a white 100% outline.</p>
       <div class="specimen-grid">
-        <figure class="specimen"><h3>Default card</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Default card example"><div class="fov"><div class="display-plane"><article class="glass-card" tabindex="0"><h4 class="glass-title" lang="zh-CN">下一场会议</h4><div class="glass-row"><p class="glass-copy muted" lang="zh-CN">产品设计评审</p><span class="glass-value accent">14:30</span></div></article></div></div></div><figcaption class="caption">2 inside stroke / 60% alpha · transparent surface</figcaption></figure>
-        <figure class="specimen"><h3>Selected card</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Selected card example"><div class="fov"><div class="display-plane"><article class="glass-card" data-selected="true" tabindex="0"><div class="glass-row start"><svg class="icon success" aria-hidden="true"><use href="#icon-check"/></svg><h4 class="glass-title" lang="zh-CN">已选择步行路线</h4></div><p class="glass-copy muted" lang="zh-CN">途经公园 · 预计 8 分钟</p></article></div></div></div><figcaption class="caption">2 inside stroke / 100% alpha · stable card geometry</figcaption></figure>
+        <figure class="specimen"><h3>Default internal card</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Default card example"><div class="fov"><div class="display-plane"><div class="glass-card"><article class="inner-card" tabindex="0"><h4 class="glass-title" lang="zh-CN">下一场会议</h4><div class="glass-row"><p class="glass-copy muted" lang="zh-CN">产品设计评审</p><span class="glass-value accent">14:30</span></div></article></div></div></div></div><figcaption class="caption">Borderless outer card · internal 1px white stroke / 30% alpha</figcaption></figure>
+        <figure class="specimen"><h3>Selected internal card</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Selected card example"><div class="fov"><div class="display-plane"><div class="glass-card"><article class="inner-card" data-selected="true" tabindex="0"><div class="glass-row start"><svg class="icon success" aria-hidden="true"><use href="#icon-check"/></svg><h4 class="glass-title" lang="zh-CN">已选择步行路线</h4></div><p class="glass-copy muted" lang="zh-CN">途经公园 · 预计 8 分钟</p></article></div></div></div></div><figcaption class="caption">Borderless outer card · internal 1px white stroke / 100% alpha</figcaption></figure>
         <figure class="specimen"><h3>Action and divider</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Button and divider example"><div class="fov"><div class="display-plane"><article class="glass-card"><div class="glass-row"><h4 class="glass-title" lang="zh-CN">准备出发</h4><span class="glass-caption" id="action-state">Not selected</span></div><div class="glass-row" style="border-top:1px solid var(--border-color-muted);padding-top:8px"><span class="glass-copy muted" lang="zh-CN">确认当前路线</span><button class="glass-button" id="action-example" type="button" aria-pressed="false">选择</button></div></article></div></div></div><figcaption class="caption">16 text · transparent button · 1 / 40% divider</figcaption></figure>
         <figure class="specimen"><h3>Text input</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Text input example"><div class="fov"><div class="display-plane"><article class="glass-card"><label class="glass-title" for="destination" lang="zh-CN">目的地</label><input class="glass-input" id="destination" type="text" placeholder="输入地点 / Enter a place" autocomplete="off"></article></div></div></div><figcaption class="caption">16 text · 60% placeholder · visible keyboard focus</figcaption></figure>
-        <figure class="specimen"><h3>Error and recovery guidance</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Error state example"><div class="fov"><div class="display-plane"><article class="glass-card is-error"><div class="error-content"><svg class="icon danger" aria-hidden="true"><use href="#icon-error"/></svg><div><h4 class="glass-title" lang="zh-CN">暂时无法连接</h4><p class="glass-copy" lang="zh-CN">请检查网络后重试</p></div></div></article></div></div></div><figcaption class="caption">Explicit label + icon · 40% frame · no error fill</figcaption></figure>
+        <figure class="specimen"><h3>Error and recovery guidance</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Error state example"><div class="fov"><div class="display-plane"><article class="glass-card"><div class="error-content"><svg class="icon danger" aria-hidden="true"><use href="#icon-error"/></svg><div><h4 class="glass-title" lang="zh-CN">暂时无法连接</h4><p class="glass-copy" lang="zh-CN">请检查网络后重试</p></div></div></article></div></div></div><figcaption class="caption">Explicit label + icon · borderless outer card · no error fill</figcaption></figure>
         <figure class="specimen"><h3>Outline chart</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Outline chart example"><div class="fov"><div class="display-plane"><div class="glass-card"><svg class="chart" viewBox="0 0 404 98" role="img" aria-label="Weekly activity trend: 4,200 steps Monday, 7,600 steps Friday"><path d="M0 24H404M0 58H404" fill="none" stroke="var(--border-color-muted)" stroke-width="1"/><polyline points="2,66 80,50 158,56 236,26 314,35 402,8" fill="none" stroke="var(--color-primary)" stroke-width="2"/><text x="0" y="94">Mon · 4,200</text><text x="404" y="94" text-anchor="end">Fri · 7,600 steps</text></svg></div></div></div></div><figcaption class="caption">98 plot height · 14 labels · 2 outline / 1 grid · no fill</figcaption></figure>
       </div>
     </section>
@@ -260,7 +263,7 @@
       <span class="section-label">06 / GUIDELINES</span>
       <h2 id="rules-heading">Leave room for the world.</h2>
       <div class="rules">
-        <div><h3><svg class="icon success" aria-hidden="true"><use href="#icon-check"/></svg>Do</h3><ul><li>Show one clear result and keep essential actions reachable.</li><li>Use white text, bright accents, and transparent containers.</li><li>Keep text at 14–24 dp and icons at least 12 × 12.</li><li>Keep visible foreground alpha at or above 40%.</li><li>Pair color with text, icons, or shapes.</li><li>Check real backgrounds and interactions on the target glasses.</li></ul></div>
+        <div><h3><svg class="icon success" aria-hidden="true"><use href="#icon-check"/></svg>Do</h3><ul><li>Show one clear result and keep essential actions reachable.</li><li>Use white text, bright accents, and transparent containers.</li><li>Keep text at 14–24 dp and icons at least 12 × 12.</li><li>Keep the outermost card borderless; use 1px / 30% white internal borders.</li><li>Keep text, icons, and other foreground alpha at or above 40%.</li><li>Pair color with text, icons, or shapes.</li><li>Check real backgrounds and interactions on the target glasses.</li></ul></div>
         <div><h3><svg class="icon danger" aria-hidden="true"><use href="#icon-close"/></svg>Don't</h3><ul><li>Shrink monochrome typography to fit the narrower full-color layout.</li><li>Add large solid backgrounds or use dark critical details.</li><li>Expect black to hide the physical environment.</li><li>Dim a parent card and weaken all its children together.</li><li>Clip essential content or reduce required spacing to fit.</li><li>Treat a desktop preview as proof of optical readability.</li></ul></div>
       </div>
     </section>

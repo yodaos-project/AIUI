@@ -28,9 +28,9 @@ target glasses.
 - Text uses 14–24 dp; icons are at least 12 × 12.
 - Keep the theme background pure black and containers transparent. Black emits no light and cannot hide the physical environment.
 - Avoid large filled backgrounds and low-brightness critical foreground colors.
-- Cards use radius 12, inside stroke 2, default stroke alpha 60%, and selected/focused stroke alpha 100%.
+- The outermost card has no border. Internal cards use radius 12 and a 1px white inside stroke at 30% alpha; selected/focused strokes remain 1px at 100% alpha.
 - Card padding is 10 horizontally and 24 vertically; FOV clearance is 10.
-- Dividers use width 1 and alpha 40%; visible foreground alpha should remain at least 40%.
+- Dividers use width 1 and alpha 40%; text, icons, and other visible foreground should remain at least 40%. Internal card borders are an exception at 30% alpha.
 
 These values belong to full-color glasses. Use the separate
 [monochrome source](../monochrome/design-system-green.md) for single-green devices.

@@ -47,7 +47,7 @@ On supported runtimes, use `@media (color)` / `@media (monochrome)` in styles an
 
 ## Why Are Black Backgrounds, Dark Text, or Translucent Content Hard to See?
 
-Pure black appears transparent on the glasses and cannot block the real world. Dark colors are also unsuitable for essential content. Prefer white body text and clear bright colors, keep visible content at the recommended minimum alpha of 40%, and avoid compounding whole-card opacity. Default card outlines use 60%, selected outlines 100%, and dividers 40%. Verify against different real backgrounds and lighting conditions. See the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
+Pure black appears transparent on the glasses and cannot block the real world. Dark colors are also unsuitable for essential content. Prefer white body text and clear bright colors, keep visible content at the recommended minimum alpha of 40%, and avoid compounding whole-card opacity. The outermost card has no border. Internal cards use a 1px white outline at 30% alpha by default and 100% when selected or focused. These 30% card borders are exempt from the recommended 40% foreground minimum; dividers remain 1px at 40% alpha. Verify against different real backgrounds and lighting conditions. See the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
 
 ## What If Content Exceeds a Height of 352 or Switches to an Immersive Container?
 

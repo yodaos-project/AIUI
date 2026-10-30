@@ -16,13 +16,14 @@ Dimensions below use logical design units; text sizes use dp. In WXSS, use logic
 | Background | Theme background always pure black `#000000`; prefer transparent cards and controls |
 | Large fills | Avoid large filled backgrounds; build structure with whitespace and outlines |
 | Visible content alpha | At least 40% recommended |
-| Cards | Radius 12, inside stroke 2, default stroke alpha 60% |
-| Selected cards | Stroke alpha 100%, with width remaining 2 |
+| Outermost card | No border in any state; retain radius 12 and existing spacing |
+| Internal cards | Radius 12, 1px white inside stroke at alpha 30% |
+| Selected or focused internal cards | White stroke at alpha 100%, with width remaining 1px |
 | Card padding | 10 horizontally and 24 vertically between content and border |
 | FOV clearance | 10 between cards and FOV edges |
-| Dividers | Width 1, alpha 40%, matching the muted outer-border tier |
+| Dividers | Width 1, alpha 40% |
 
-“40% opacity” here means a color alpha of `0.4`. Default card borders remain at 60%, selected borders at 100%, and dividers and muted outlines at 40%. Transparent containers and black backgrounds are exempt from the visible-foreground alpha recommendation.
+“30% opacity” here means a color alpha of `0.3`, or `rgba(255,255,255,0.3)` for the default internal card border. Internal card borders are exempt from the recommended 40% foreground minimum, as are transparent containers and black backgrounds. Text and icons retain the recommended minimum; dividers remain at 40% alpha.
 
 ## Black and See-Through Rendering
 
@@ -45,7 +46,7 @@ The following values are key defaults in the built-in full-color theme. Semantic
 | `--border-color-danger` | Error indication | `#ff8080` |
 | `--border-color-warning` | Warning indication | `#ffd966` |
 | `--border-color-highlight` | Category accent | `#c4a6ff` |
-| `--border-color-default` | Default borders | `rgba(255,255,255,0.6)` |
+| `--border-color-default` | Default control borders | `rgba(255,255,255,0.6)` |
 | `--border-color-muted` | Muted borders and dividers | `rgba(255,255,255,0.4)` |
 | `--border-color-strong` | Selected and focused borders | `#ffffff` |
 
@@ -65,7 +66,7 @@ These tokens and defaults do not automatically correct all custom content. Check
 
 ## Cards, Spacing, and Focus
 
-| Token | Default |
+| Token | Current Theme Default (Override Card Borders Below) |
 | --- | --- |
 | `--app-width` | `448px` |
 | `--card-margin` | `10px` |
@@ -77,13 +78,34 @@ These tokens and defaults do not automatically correct all custom content. Check
 | `--card-focus-border-color` | White at alpha 100% |
 | `--card-divider-width` / `--card-divider-color` | `1px` / white at alpha 40% |
 
+These are the current theme defaults. Override card borders to meet this specification: the outermost layout card has no border, and internal cards use a 1px white border at 30% alpha. Keep internal card focus and selection at 100% alpha. For example, apply these classes to the corresponding `card` elements in the full-color layout:
+
+```css
+@media (color) {
+  .outer-card {
+    border: 0;
+  }
+  .inner-card {
+    margin: 0;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .inner-card:focus,
+  .inner-card:host-focus,
+  .inner-card.is-selected {
+    border-color: #ffffff;
+  }
+}
+```
+
+After the 10-unit FOV clearance, the borderless outermost card is at most 428 × 332. Its 10 horizontal and 24 vertical padding leave 408 × 284 for content. Internal card borders and padding also consume that shared space.
+
 The maximum height of 352 is a content design constraint, not automatic clipping applied by the theme. Budget for margins, borders, padding, titles, and actions together. Split, paginate, or scroll overflow content instead of simply hiding it with `overflow: hidden`.
 
-Built-in `card` uses `:focus` and `:host-focus` to strengthen its border. Custom interactive containers also need visible focus. Maintain business selection state separately, and do not rely only on hover or color changes. See the [Focus System](/AIUI/framework/open-agent-format-page-focus).
+Apply visible `:focus` and `:host-focus` styling to interactive internal cards; keep the outermost layout card borderless. Maintain business selection state separately, and do not rely only on hover or color changes. See the [Focus System](/AIUI/framework/open-agent-format-page-focus).
 
 ## Component and Asset Baselines
 
-- **Cards, buttons, and inputs**: Prefer transparent backgrounds, clear outlines, and white text. Use the selected outline treatment for focus.
+- **Cards, buttons, and inputs**: Prefer transparent backgrounds and white text. Keep the outermost card borderless, use the internal card outline above, and retain existing button and input outlines. Make interactive focus visible.
 - **Images and icons**: Prefer clear silhouettes and recognizable subjects. Use transparent backgrounds for decorative assets, and avoid large background blocks or dark details.
 - **Charts**: Prefer lines and outline shapes. Support colors with labels, units, and legends; avoid large solid areas.
 - **Maps**: Prioritize routes, positions, and essential labels instead of filling the field of view with colored surfaces.

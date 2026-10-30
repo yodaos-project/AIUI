@@ -16,7 +16,7 @@ Full-color glasses still use a see-through display: pure black emits no light an
 | Content area | Reference canvas width 480, maximum height 352 | Width 448, maximum height 352 |
 | Color | One green channel; hierarchy through opacity, outlines, and typography | White body text with color accents; retain text and shape cues |
 | Text | Follow the monochrome type scale | 14–24 dp; do not carry over smaller monochrome text sizes |
-| Cards | Monochrome outlines and light fills | Transparent containers, radius 12, inside stroke 2; default alpha 60%, selected 100% |
+| Cards | Monochrome outlines and light fills | Transparent containers, radius 12; borderless outermost card, internal cards with a 1px white inside stroke at 30% alpha, selected 100% |
 
 Dimensions in the table are logical design units. WXSS examples use `px`; do not use the hardware's physical resolution directly as layout dimensions. Device names describe the scope; code should adapt to display capabilities. Full color does not imply identical cameras, sensors, or input methods, so verify those features on each target device.
 
@@ -108,7 +108,7 @@ Keep `unknown` when neither query matches. A failure to match color must not aut
 
 Arrange content within an overall area of width 448 and maximum height 352, including the 10-unit clearance between cards and the FOV edges. Do not treat 448 as the card's inner content width and then add margins outside it.
 
-For a card filling the area, margins of 10 on every side leave a maximum outer border box of 428 × 332. Subtract horizontal padding of 10, vertical padding of 24, and a stroke of 2 on every side to leave an inner content area of 404 × 280. Titles, body content, charts, and actions must share this space.
+For an outermost card filling the area, margins of 10 on every side leave a maximum box of 428 × 332 with no border. Subtract horizontal padding of 10 and vertical padding of 24 to leave an inner content area of 408 × 284. Titles, body content, charts, and actions must share this space. Deduct any internal card's own 1px border and padding from that shared budget.
 
 Show a clear result and essential actions first. Use summaries with details, pagination, or an operable scroll region for longer text. Do not fit an entire page by shrinking text below 14 dp, clipping actions, or reducing the specified padding.
 

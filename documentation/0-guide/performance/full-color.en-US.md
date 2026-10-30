@@ -19,7 +19,7 @@ Prefer `--color-text-primary` for body text, `--color-text-secondary` for suppor
 
 Avoid coloring everything with an accent or adding large fills to improve contrast. Pure black is transparent, and dark details can disappear. If content is difficult to read, reduce clutter and increase foreground brightness and alpha, then verify on the glasses.
 
-Set alpha separately for borders, dividers, and text to avoid compounding whole-card opacity. Use 60% for default outlines, 100% for selection, and 40% for dividers. Keep muted content at or above the recommended 40% alpha.
+Set alpha separately for borders, dividers, and text to avoid compounding whole-card opacity. Keep the outermost card borderless. Internal cards use a 1px white border at 30% alpha by default and 100% when selected or focused, without changing its width. Dividers remain 1px at 40% alpha. Keep muted text, icons, and other content at or above the recommended 40% alpha.
 
 ## Inspect Images, Charts, and Canvas Separately
 
@@ -33,11 +33,11 @@ Theme tokens cannot directly replace image pixels or hardcoded Canvas drawing co
 | Canvas | Reflow for available space; explicitly set readable fonts, line widths, and bright colors, and inspect clipping and labels |
 | Maps | Retain essential routes, positions, and labels while reducing filled surfaces and unrelated details |
 
-Arrange covers, titles, body content, charts, and footers within the available inner space. A standard card has an inner height of 280, shared by headings, charts, actions, and their spacing. Split summary and detail when needed, or choose the presentation that best supports the current task.
+Arrange covers, titles, body content, charts, and footers within the available inner space. The borderless outermost card has an inner height of 284, shared by headings, charts, actions, and their spacing. Deduct internal card borders and padding from this space as well. Split summary and detail when needed, or choose the presentation that best supports the current task.
 
 ## Keep Actions and Focus Visible
 
-Make focus visible with a clear outline at 100% alpha, with more than a color change alone. Verify confirmation, back navigation, and scrolling through the core task, including access to actions in long content.
+Make internal card focus visible with a clear white outline at 100% alpha, with more than a color change alone; the outermost layout card stays borderless. Verify confirmation, back navigation, and scrolling through the core task, including access to actions in long content.
 
 Do not assume that temple input mappings match another model. Verify interaction on the target device. Understand default actions before handling custom keys to avoid duplicate confirmation or lost back navigation. See the [Focus System](/AIUI/framework/open-agent-format-page-focus) and [Page Events](/AIUI/framework/open-agent-format-page-events).
 
