@@ -31,7 +31,7 @@ Start with the [AIX format](/AIUI/guide/bundle-aix), then follow [Submit for Rev
 
 ## Do Full-Color Glasses Require a Separate Agent?
 
-Full-color adaptation alone does not require a separate agent. Prefer shared business logic, Pages, Widgets, and data services in one project and one AIX. Adapt palettes and assets to display capabilities, and layouts to available space. Consider splitting agents when product positioning or core functionality needs to be independent. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color).
+Full-color adaptation alone does not require a separate agent. Prefer shared business logic, Pages, Widgets, and data services in one project and one AIX. Adapt palettes and assets to display capabilities, and layouts to available space. Consider splitting agents when product positioning or core functionality needs to be independent. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color).
 
 ## Which Device Do the Full-Color Guidelines Cover?
 
@@ -43,7 +43,7 @@ Also check content space, text and icon sizes, padding, margins, focus states, a
 
 ## How Do I Detect Color or Monochrome Output?
 
-On supported runtimes, use `@media (color)` / `@media (monochrome)` in styles and `window.matchMedia()` in page logic. Do not substitute device names, screen width, or `target` for capability detection. Keep an unknown state when neither query matches instead of assuming monochrome. Retain a base presentation for older runtimes. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color) for examples.
+On supported runtimes, use `@media (color)` / `@media (monochrome)` in styles and `window.matchMedia()` in page logic. Do not substitute device names, screen width, or `target` for capability detection. Keep an unknown state when neither query matches instead of assuming monochrome. Retain a base presentation for older runtimes. See the [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color) for examples.
 
 ## Why Are Black Backgrounds, Dark Text, or Translucent Content Hard to See?
 

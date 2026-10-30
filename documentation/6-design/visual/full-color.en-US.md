@@ -2,7 +2,7 @@
 
 `Full Color` is the AIUI visual specification for Rokid Color (Chinese name: 乐奇全彩眼镜). It combines white text, color accents, and clear outlines on a see-through display so users can read results quickly within a limited field of view.
 
-Before adapting an existing agent, read the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color). Continue using [Monochrome](/AIUI/design/visual-monochrome) for monochrome devices; keep the dimensions, type scales, and fill rules of each specification separate.
+Before adapting an existing agent, read the [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color). Continue using [Monochrome](/AIUI/design/visual-monochrome) for monochrome devices; keep the dimensions, type scales, and fill rules of each specification separate.
 
 ## Core Design Constraints
 
@@ -115,7 +115,7 @@ Apply visible `:focus` and `:host-focus` styling to interactive internal cards; 
 
 Check the content area, text, icons, padding, margins, and focus against the values above. Inspect black and dark details, compounded opacity, and large fills. Finally, verify reading, confirmation, back navigation, and scrolling on the target glasses under different lighting conditions and real backgrounds.
 
-For implementation, see the [Full-Color Glasses Adaptation Guide](/AIUI/guide/full-color). For troubleshooting and refinement, see the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
+For implementation, see the [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color). For troubleshooting and refinement, see the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
 
 ## Design Source
 

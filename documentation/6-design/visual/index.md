@@ -15,7 +15,7 @@ AIUI 按显示类型提供视觉规范。先根据目标设备选择规范，再
 
 同一个智能体可以复用业务逻辑、Page 与 Widget，再根据显示能力调整配色，根据可用空间调整布局。不应将单色的字号和整页布局直接缩放到全彩，也不应把全彩的多色状态直接搬到单色设备。
 
-优先复用主题 Token，自定义样式、图片和 Canvas 需要单独检查。完整迁移流程见[全彩眼镜适配指南](/AIUI/guide/full-color)。
+优先复用主题 Token，自定义样式、图片和 Canvas 需要单独检查。完整迁移流程见[全彩眼镜适配指南](/AIUI/guide/framework/full-color)。
 
 ## 规范与设计源
 
@@ -25,6 +25,6 @@ AIUI 按显示类型提供视觉规范。先根据目标设备选择规范，再
 
 - [Monochrome](/AIUI/design/visual-monochrome)
 - [Full Color](/AIUI/design/visual-full-color)
-- [全彩眼镜适配指南](/AIUI/guide/full-color)
+- [全彩眼镜适配指南](/AIUI/guide/framework/full-color)
 - [全彩优化指南](/AIUI/guide/performance-full-color)
 - [交互设计](/AIUI/design/interaction)
