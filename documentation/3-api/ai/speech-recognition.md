@@ -44,7 +44,9 @@ console.log('识别会话:', sessionId);
 }
 ```
 
-下面的页面示例会自动选择录音和识别服务都支持的音频格式，同时加入热词和初始 ASR 上下文：
+自行录音并写入 `SpeechRecognitionSession` 时，如果录音和识别服务都支持，推荐使用 Ogg 封装的 Opus（`audio/ogg;codecs=opus`）。Opus 针对语音等音频进行了高效压缩，相比未压缩的 PCM 或 WAV，通常能减少音频数据量，降低传输带宽消耗。Opus 是有损编码，实际音质和识别效果取决于编码设置和录音环境。
+
+下面的页面示例先通过 `MediaRecorder.isTypeSupported()` 和 `SpeechRecognitionSession.getCapabilities()` 确认双方支持的格式，优先选择 Ogg/Opus；不支持时尝试 WAV。传给会话的 `audio.mimeType` 必须与实际录音格式一致。示例还加入了热词和初始 ASR 上下文：
 
 ```javascript
 export default {
