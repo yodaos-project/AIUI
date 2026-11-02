@@ -1,6 +1,6 @@
 # 事件
 
-除了生命周期回调，AIUI 页面还支持页面级事件处理函数，用于响应按键和语音唤醒等输入事件。
+除了生命周期回调，AIUI 页面还支持页面级事件处理函数，用于响应按键、语音唤醒和头部手势等输入事件。
 
 页面级事件通常定义在页面导出的对象上，例如：
 
@@ -27,6 +27,8 @@ export default {
 | `onKeyDown` | 监听页面级按键按下事件 | 用户按下按键时触发 |
 | `onKeyUp` | 监听页面级按键抬起事件 | 用户松开按键时触发 |
 | `onVoiceWakeup` | 监听页面级语音唤醒事件 | 语音唤醒命中时触发 |
+| `onHeadGesture` | 监听页面级头部手势识别结果 | 启用环境感知后，点头或摇头识别成功时触发 |
+| `onHeadGestureStateChange` | 监听头部手势识别状态 | 启用环境感知后，手势跟踪状态变化时触发 |
 
 ## 注册和清理监听器
 
@@ -154,6 +156,51 @@ export default {
   }
 }
 ```
+
+### 头部手势
+
+在页面的 `onLoad` 中调用 `this.enableWorldAwareness()`，然后通过 `onHeadGesture` 处理识别完成的点头和摇头。环境感知仅作用于当前页面，页面卸载时会自动关闭；也可以调用 `this.disableWorldAwareness()` 提前关闭。默认使用 `normal` 模式；`{ mode: 'micro' }` 的识别阈值较低，适合较轻微的动作。
+
+```javascript
+export default {
+  data: { gesture: '', gestureState: '' },
+
+  onLoad() {
+    this.enableWorldAwareness({ mode: 'normal' });
+  },
+
+  onHeadGesture(event) {
+    this.setData({ gesture: event.gesture });
+  },
+
+  onHeadGestureStateChange(event) {
+    this.setData({ gestureState: event.state });
+  }
+}
+```
+
+`onHeadGesture(event)` 对应 `headgesture` 事件，仅在识别成功时触发。`onHeadGestureStateChange(event)` 对应 `headgesturestatechange` 事件，可用于显示跟踪进度或在取消时清除临时反馈。不要在两个回调中重复执行同一个操作。
+
+两个事件共有以下字段：
+
+| 字段 | 说明 |
+| --- | --- |
+| `gesture` | `nod` 表示点头，`shake` 表示摇头；状态事件中尚未确定时可为 `null`。 |
+| `confidence` | 识别置信度，范围为 `0` 到 `1`。 |
+| `sessionId` | 跟踪会话标识，可用于关联同一次手势的事件；结果事件中可能为 `null`。 |
+| `duration` | 已跟踪的动作时长，单位为毫秒。 |
+| `dominantAxis` | 主要动作轴：`pitch` 对应点头，`yaw` 对应摇头；状态事件中尚未确定时可为 `null`。 |
+
+状态事件还包含：
+
+| 字段 | 说明 |
+| --- | --- |
+| `state` | `start` 开始跟踪、`update` 跟踪中、`end` 识别成功，或 `cancel` 未识别而结束。 |
+| `displacement` | 主轴上的峰峰角位移，单位为弧度。 |
+| `peakVelocity` | 主轴上的最大绝对角速度，单位为弧度每秒。 |
+| `stable` | 最新方向样本的稳定状态。 |
+
+更多页面环境感知方法见 [Page API](/AIUI/api/framework-page)；交互建议见[交互设计](/AIUI/design/interaction)。
 
 ## Rokid Glasses
 

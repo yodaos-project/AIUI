@@ -1,6 +1,6 @@
 # Events
 
-In addition to lifecycle callbacks, AIUI pages also support page-level event handlers for responding to input events such as key presses and voice wakeup.
+In addition to lifecycle callbacks, AIUI pages also support page-level event handlers for input such as key presses, voice wakeup, and head gestures.
 
 Page-level events are usually defined on the object exported by the page, for example:
 
@@ -27,6 +27,8 @@ export default {
 | `onKeyDown` | Listens for page-level key-down events | Triggered when the user presses a key |
 | `onKeyUp` | Listens for page-level key-up events | Triggered when the user releases a key |
 | `onVoiceWakeup` | Listens for page-level voice wakeup events | Triggered when voice wakeup is matched |
+| `onHeadGesture` | Listens for recognized page-level head gestures | Triggered when a nod or shake is recognized after enabling world awareness |
+| `onHeadGestureStateChange` | Listens for head-gesture recognition state | Triggered when tracking state changes after enabling world awareness |
 
 ## Register and Clean Up Listeners
 
@@ -154,6 +156,51 @@ export default {
   }
 }
 ```
+
+### Head Gestures
+
+Call `this.enableWorldAwareness()` in the page's `onLoad`, then handle recognized nods and shakes with `onHeadGesture`. World awareness applies to the current page and is disabled automatically when it unloads; call `this.disableWorldAwareness()` to stop it earlier. The default is `normal` mode; `{ mode: 'micro' }` uses lower recognition thresholds for smaller movements.
+
+```javascript
+export default {
+  data: { gesture: '', gestureState: '' },
+
+  onLoad() {
+    this.enableWorldAwareness({ mode: 'normal' });
+  },
+
+  onHeadGesture(event) {
+    this.setData({ gesture: event.gesture });
+  },
+
+  onHeadGestureStateChange(event) {
+    this.setData({ gestureState: event.state });
+  }
+}
+```
+
+`onHeadGesture(event)` corresponds to `headgesture` and fires only on successful recognition. `onHeadGestureStateChange(event)` corresponds to `headgesturestatechange` and can show tracking progress or clear temporary feedback when tracking is cancelled. Avoid performing the same action in both callbacks.
+
+Both events contain these fields:
+
+| Field | Description |
+| --- | --- |
+| `gesture` | `nod` or `shake`; may be `null` in a state event before it is determined. |
+| `confidence` | Recognition confidence from `0` to `1`. |
+| `sessionId` | Tracking session identifier for correlating events from the same gesture; may be `null` in a result event. |
+| `duration` | Tracked motion duration in milliseconds. |
+| `dominantAxis` | Dominant motion axis: `pitch` for a nod or `yaw` for a shake; may be `null` in a state event before it is determined. |
+
+State events also contain:
+
+| Field | Description |
+| --- | --- |
+| `state` | `start` when tracking begins, `update` while tracking, `end` on successful recognition, or `cancel` when tracking ends without recognition. |
+| `displacement` | Peak-to-peak angular displacement on the dominant axis, in radians. |
+| `peakVelocity` | Maximum absolute angular velocity on the dominant axis, in radians per second. |
+| `stable` | Stability of the latest orientation sample. |
+
+See the [Page API](/AIUI/api/framework-page) for more world-awareness methods and [Interaction Design](/AIUI/design/interaction) for design guidance.
 
 ## Rokid Glasses
 
