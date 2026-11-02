@@ -35,7 +35,7 @@ Full-color adaptation alone does not require a separate agent. Prefer shared bus
 
 ## Which Device Do the Full-Color Guidelines Cover?
 
-The current guidelines cover Rokid Color, whose Chinese name is 乐奇全彩眼镜. Both names refer to the same device. Its full-color content area has a width of 448 and maximum height of 352; monochrome content also has a maximum height of 352. Continue using [Monochrome](/AIUI/design/visual-monochrome) for the single-green displays of RokidGlasses1 / RokidGlasses2. Verify device APIs and interactions separately; full-color support does not imply identical hardware capabilities.
+The current guidelines cover Rokid Color, whose Chinese name is 乐奇全彩眼镜. Both names refer to the same device. The full-screen reference is 480 × 352; the card container reference is 480 wide with content-adaptive height. Adapt layouts to the actual available space. Continue using [Monochrome](/AIUI/design/visual-monochrome) for the single-green displays of RokidGlasses1 / RokidGlasses2. Verify device APIs and interactions separately; full-color support does not imply identical hardware capabilities.
 
 ## Is Changing Colors Enough for Full-Color Adaptation?
 
@@ -49,6 +49,6 @@ On supported runtimes, use `@media (color)` / `@media (monochrome)` in styles an
 
 Pure black appears transparent on the glasses and cannot block the real world. Dark colors are also unsuitable for essential content. Prefer white body text and clear bright colors, keep visible content at the recommended minimum alpha of 40%, and avoid compounding whole-card opacity. The outermost card has no border. Internal cards use a 1px white outline at 30% alpha by default and 100% when selected or focused. These 30% card borders are exempt from the recommended 40% foreground minimum; dividers remain 1px at 40% alpha. Verify against different real backgrounds and lighting conditions. See the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
 
-## What If Content Exceeds a Height of 352 or Switches to an Immersive Container?
+## What If Content Exceeds the Available Space or Switches to an Immersive Container?
 
-Prefer summaries with details, pagination, or an operable scroll region, keeping essential actions accessible. `_blank` changes the presentation container; it does not remove the full-color content constraints of width 448 and maximum height 352. Do not solve overflow by shrinking text, reducing required spacing, or clipping content. Verify reading, scrolling, focus, and the back path on the glasses.
+Prefer summaries with details, pagination, or an operable scroll region, keeping essential actions accessible. `_blank` changes the presentation container. Use the 480 × 352 full-screen reference or the 480-wide, adaptive-height card reference, and adapt both to the actual container. Do not solve overflow by shrinking text, reducing required spacing, or clipping content. Verify reading, scrolling, focus, and the back path on the glasses.

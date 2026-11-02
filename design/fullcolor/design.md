@@ -7,7 +7,7 @@ target:
     en-US: "Rokid Color"
     zh-CN: "乐奇全彩眼镜"
   display: "full-color transparent display"
-  reference-canvas: "448x352"
+  reference-canvas: "480x352"
   units: "logical px in WXSS; text sizes correspond to design dp"
 
 description: >
@@ -17,7 +17,7 @@ description: >
   emits no light and remains transparent to the physical environment.
 
 constraints:
-  - "Fit content and outer margins within a width of 448px and a maximum height of 352px."
+  - "Use a 480x352px full-screen reference and a 480px-wide card reference with content-adaptive height; adapt layouts to the available container."
   - "Keep text between 14dp and 24dp; do not shrink text to fit more content."
   - "Icons must be at least 12x12px."
   - "Do not use large filled backgrounds. Prefer transparent containers and outlines."
@@ -108,17 +108,17 @@ icons:
 
 components:
   app-canvas:
-    description: "Content area including card margins; safeInsets describe those same margins, not additional padding."
-    width: 448px
-    maxHeight: 352px
+    description: "Full-screen reference; adapt to the available viewport."
+    width: 480px
+    height: 352px
     safeInsetX: "{spacing.fov-inset}"
     safeInsetY: "{spacing.fov-inset}"
     backgroundColor: "{colors.background}"
 
   card-outer:
-    description: "Borderless outermost layout card; children share its 408x284 inner space."
-    maxWidth: 428px
-    maxHeight: 332px
+    description: "Borderless card within a 480px-wide reference container; height follows content."
+    referenceWidth: 480px
+    height: auto
     boxSizing: border-box
     margin: "{spacing.fov-inset}"
     backgroundColor: "{colors.surface}"
@@ -233,9 +233,9 @@ components:
 
 ## Overview
 
-This specification defines the full-color AIUI design language for **Rokid Color** (Chinese name: **乐奇全彩眼镜**). These are the English and Chinese names of the same device. Content fits within a logical width of **448** and maximum height of **352**, including its outer clearance.
+This specification defines the full-color AIUI design language for **Rokid Color** (Chinese name: **乐奇全彩眼镜**). These are the English and Chinese names of the same device. The full-screen reference is **480 × 352** logical units. Card containers use a reference width of **480** and a height that adapts to their content.
 
-The document follows the same YAML token and Markdown structure as the [monochrome specification](../monochrome/design-system-green.md). Both display types share a maximum content height of 352; full color uses a width of 448. Apply the full-color typography, opacity, and border rules rather than importing the monochrome treatments.
+The document follows the same YAML token and Markdown structure as the [monochrome specification](../monochrome/design-system-green.md). Both display types use a 480 × 352 full-screen reference. Apply the full-color typography, opacity, and border rules rather than importing the monochrome treatments.
 
 The front matter describes design tokens and component patterns. Curly-brace references resolve within this document; they are not WXSS syntax or runtime configuration. The token mapping below identifies the corresponding theme variables. Typography weights are design recommendations rather than automatic runtime defaults.
 
@@ -251,20 +251,21 @@ The front matter describes design tokens and component patterns. Curly-brace ref
 
 | Item | Requirement |
 | --- | --- |
-| Overall content area | Width 448; maximum height 352 |
+| Full-screen reference | 480 × 352 |
+| Card container reference | Width 480; height adapts to content |
 | Clearance to FOV edges | 10 on every side |
-| Maximum outermost card box | 428 × 332 after the outer clearance; no border |
+| Outermost card | Borderless; adapt width and height to the available container |
 | Card padding | 10 horizontally, 24 vertically |
 | Card radius | 12 |
 | Internal card inside stroke | 1px white at alpha 30%; 100% when selected or focused |
 
 Use logical `px` in WXSS consistently with the theme; text sizes correspond to design dp. Hardware physical pixel dimensions are not layout dimensions.
 
-Include margins, borders, padding, headings, body content, and actions in the same height budget. The borderless outermost card is 428 × 332; after 10 horizontal and 24 vertical padding, it leaves **408 × 284** for all inner content. A 98-high chart leaves **186** to share between headings, captions, actions, and spacing. Deduct any internal card's own 1px border and padding from that shared budget.
+Adapt both full-screen pages and cards to their actual available width and height. A 480-wide card reference describes its container, not an inner content width: account for clearance, padding, and borders inside that space. Card height follows its content and the available container; do not fix it to the full-screen height.
 
 The canvas safe insets and card outer margins describe the same 10-unit clearance. Apply that clearance once; do not add another canvas padding layer around an already-margined card.
 
-The 352 maximum is a design constraint. Theme defaults do not automatically cap or paginate arbitrary content. Use a summary and details, pagination, or an operable scroll region when content exceeds the budget. Preserve essential actions and the minimum type size; do not solve overflow by clipping required content.
+The full-screen reference height is 352, but the card reference does not prescribe a fixed height. Theme defaults do not automatically paginate arbitrary content. Use a summary and details, pagination, or an operable scroll region when content exceeds the available space. Preserve essential actions and the minimum type size; do not solve overflow by clipping required content.
 
 ## 3. Color and Opacity
 
@@ -342,7 +343,7 @@ Verify confirmation, back navigation, scrolling, and voice interaction on each t
 
 | Design Token | Theme Variable |
 | --- | --- |
-| `{components.app-canvas.width}` | `--app-width` |
+| `{components.app-canvas.width}` | `--app-width`; the current full-color theme defaults to `448px`, so override it as needed and adapt to the container |
 | `{colors.background}` | `--color-background` |
 | `{colors.surface}` / `{colors.surface-highlight}` | `--color-surface` / `--color-surface-highlight` |
 | `{colors.text-primary}` / `{colors.text-secondary}` | `--color-text-primary` / `--color-text-secondary` |
@@ -366,7 +367,7 @@ The theme supplies defaults; its current 2px / 60% card outline needs explicit o
 
 ### Do
 
-- Keep content, card clearance, and actions inside the 448 × 352 budget.
+- Use the 480 × 352 full-screen reference and adapt cards and pages to the available space.
 - Use white readable text, a few bright accents, transparent containers, and clear outlines.
 - Preserve 14–24 dp text, minimum 12 × 12 icons, and the specified card padding.
 - Keep internal card focus and selection visible through 100% stroke alpha; keep the outermost card borderless.
@@ -375,7 +376,7 @@ The theme supplies defaults; its current 2px / 60% card outline needs explicit o
 
 ### Don't
 
-- Copy the monochrome canvas, smaller type scale, low-alpha fills, or border rules into full color.
+- Copy the monochrome type scale, low-alpha fills, or border rules into full color.
 - Use pure black as foreground content or rely on a black panel to block the real world.
 - Use large solid backgrounds, dark critical details, or color-only status signals.
 - Fade an entire card or hide overflow to make a dense page appear to fit.
@@ -384,7 +385,7 @@ The theme supplies defaults; its current 2px / 60% card outline needs explicit o
 
 ## 9. Acceptance Checklist
 
-- [ ] Content and margins fit a width of 448 and a maximum height of 352.
+- [ ] Full-screen layouts adapt from the 480 × 352 reference; cards adapt from width 480 with content-driven height.
 - [ ] Cards retain 10 FOV clearance, 10 horizontal padding, and 24 vertical padding.
 - [ ] The outermost card has no border in any state. Internal cards use a 12 radius and 1px white inside stroke: 30% alpha by default, 100% when selected or focused.
 - [ ] Dividers use 1 at 40% alpha, matching muted outlines.
