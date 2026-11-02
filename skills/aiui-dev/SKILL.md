@@ -15,6 +15,7 @@ Build AIUI agents from the current contracts in this skill. Do not assume an API
 - Read [wxss.md](./references/wxss.md) before writing styles, layout, selectors, animation, or custom fonts.
 - For keyframes, animation events, text-triggered decorations, or 2D transforms, also read [animation.md](./references/animation.md).
 - Read [monochrome-green.md](./references/design/monochrome-green.md) only for the monochrome-green Rokid Glasses visual language.
+- Read [full-color.md](./references/design/full-color.md) for the Rokid Color full-color visual language and adaptive layouts.
 - Read [APIs index](./references/apis/index.md), then its matching domain file, before using runtime APIs.
 - For recording source selection or microphone modes, read [media APIs](./references/apis/media.md#recording-source-and-microphone-mode).
 - For Widget or Agent Worker instance methods, read [Widget API](./references/apis/widget.md) or [Agent Worker API](./references/apis/agent-worker.md).
@@ -45,6 +46,7 @@ Before styling, determine the intended surface:
 - Full-screen Page: interactive agent UI.
 - Widget: compact `1x1` or `1x2` surface with Widget lifecycle.
 - Monochrome-green Rokid Glasses: apply `design/monochrome-green.md` after the general WXSS rules.
+- Rokid Color: apply `design/full-color.md` after the general WXSS rules.
 - Other displays: use theme tokens and task requirements; do not automatically apply the monochrome-green visual language.
 
 ## Runtime API Workflow

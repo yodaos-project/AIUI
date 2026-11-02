@@ -20,7 +20,7 @@
       --border-color-danger: #ff8080;
       --border-color-warning: #ffd966;
       --border-color-highlight: #c4a6ff;
-      --app-width: 448px;
+      --app-width: 480px;
       --card-margin: 10px;
       --card-padding: 10px;
       --card-padding-y: 24px;
@@ -102,8 +102,8 @@
     .type-meta { color: #b9c2cd; font: 14px/1.6 var(--mono); }
     .type-meta strong { color: #fff; font-weight: 500; }
     .type-sample { margin: 0; }
-    .content-guide { height: 284px; flex: none; display: grid; place-content: center; border: 1px dashed var(--border-color-muted); color: #fff; text-align: center; font-size: 14px; line-height: 20px; }
-    .diagram-card { gap: 0; }
+    .card-container { width: var(--app-width); background: #000; outline: 1px solid #46515f; padding: var(--card-margin); margin-bottom: 12px; }
+    .adaptive-card { position: static; padding: var(--card-padding-y) var(--card-padding); display: flex; flex-direction: column; gap: 12px; }
     .budget { margin-top: 20px; }
     .budget strong { font-weight: 500; color: #fff; }
     .specimen-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
@@ -161,13 +161,13 @@
       <p class="eyebrow">Rokid Color（乐奇全彩眼镜） · v alpha</p>
       <h1>Color with clarity.<br>Space for the real world.</h1>
       <p class="lead">White text, bright accents, and transparent cards. A full-color reference for the small moments that matter in your field of view.</p>
-      <div class="summary"><span><strong>448 × 352</strong> content area</span><span><strong>14–24 dp</strong> text</span><span><strong>12 × 12</strong> minimum icon</span><span><strong>Black</strong> is transparent</span></div>
+      <div class="summary"><span><strong>480 × 352</strong> content area</span><span><strong>14–24 dp</strong> text</span><span><strong>12 × 12</strong> minimum icon</span><span><strong>Black</strong> is transparent</span></div>
     </header>
 
     <section id="canvas" aria-labelledby="canvas-heading">
       <span class="section-label">01 / LIVE PREVIEW</span>
       <h2 id="canvas-heading">One result. A clear next step.</h2>
-      <p class="description">Every glasses example below renders at 1:1 logical pixels in a 448 × 352 frame. Frame outlines are preview guides, not part of the glasses UI. On narrow windows, scroll the example horizontally to retain its original text and layout sizes.</p>
+      <p class="description">The full-screen examples render at 1:1 logical pixels in a 480 × 352 frame; the card examples show content-adaptive heights. Frame outlines are preview guides, not part of the glasses UI. On narrow windows, scroll the example horizontally to retain its original text and layout sizes.</p>
       <div class="workspace">
         <div>
           <div class="controls" aria-label="Example scenario">
@@ -187,7 +187,7 @@
               </div>
             </div>
           </div>
-          <p class="caption">448 × 352 FOV · 10 outer clearance · 428 × 332 borderless outer card · 1px internal card stroke</p>
+          <p class="caption">480 × 352 full-screen reference · 10 outer clearance · 1px internal card stroke</p>
           <p class="sr-only" id="preview-status" aria-live="polite"></p>
         </div>
         <div>
@@ -237,18 +237,18 @@
     <section id="layout" aria-labelledby="layout-heading">
       <span class="section-label">04 / LAYOUT BUDGET</span>
       <h2 id="layout-heading">Count the whole card.</h2>
-      <p class="description">The 10-unit FOV clearance is included in the 448 × 352 area. Card margins and canvas safe insets describe the same clearance; apply it once.</p>
+      <p class="description">Use a 480 × 352 full-screen reference. Cards use a 480-wide reference container and adapt their height to content. Both should respond to their actual available space.</p>
       <div class="workspace">
-        <div class="frame-scroll" tabindex="0" role="region" aria-label="Full-color layout diagram"><div class="fov"><div class="display-plane"><div class="glass-card diagram-card"><div class="content-guide">408 × 284 inner area<br><span class="muted">Titles, content, and actions share this space.</span></div></div></div></div></div>
-        <dl class="spec-list budget"><dt>Overall area</dt><dd><strong>448 × 352</strong></dd><dt>Minus outer clearance</dt><dd>10 on each side → 428 × 332</dd><dt>Outermost card border</dt><dd>None</dd><dt>Minus padding</dt><dd>10 horizontal, 24 vertical</dd><dt>Inner content budget</dt><dd><strong>408 × 284</strong></dd></dl>
+        <div class="frame-scroll" tabindex="0" role="region" aria-label="Adaptive card height examples"><div class="card-container"><div class="adaptive-card"><p class="glass-copy">Short card content</p></div></div><div class="card-container"><div class="adaptive-card"><p class="glass-copy">A taller card follows its content.</p><p class="glass-copy muted">Keep margins, padding, and actions within the available container.</p></div></div></div>
+        <dl class="spec-list budget"><dt>Full-screen reference</dt><dd><strong>480 × 352</strong></dd><dt>Card container reference</dt><dd><strong>480 wide; height adapts to content</strong></dd><dt>Outer clearance</dt><dd>10 on each side</dd><dt>Outermost card border</dt><dd>None</dd><dt>Card padding</dt><dd>10 horizontal, 24 vertical</dd></dl>
       </div>
-      <p class="caption">A 98-high chart leaves 186 of the outer card's 284 inner height for headings, captions, actions, and spacing. Internal card borders and padding also consume that shared budget. The dashed line marks the content budget only; it is not a card border.</p>
+      <p class="caption">The 480 width describes the card container, not its inner content. Deduct clearance, borders, and padding from the available space; use pagination or scrolling when necessary.</p>
     </section>
 
     <section id="components" aria-labelledby="components-heading">
       <span class="section-label">05 / COMPONENTS &amp; STATES</span>
       <h2 id="components-heading">Small surfaces, complete states.</h2>
-      <p class="description">Each example keeps the same 448 × 352 frame and card spacing. The input and controls are interactive; keyboard focus uses a white 100% outline.</p>
+      <p class="description">Each example keeps the same 480 × 352 frame and card spacing. The input and controls are interactive; keyboard focus uses a white 100% outline.</p>
       <div class="specimen-grid">
         <figure class="specimen"><h3>Default internal card</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Default card example"><div class="fov"><div class="display-plane"><div class="glass-card"><article class="inner-card" tabindex="0"><h4 class="glass-title" lang="zh-CN">下一场会议</h4><div class="glass-row"><p class="glass-copy muted" lang="zh-CN">产品设计评审</p><span class="glass-value accent">14:30</span></div></article></div></div></div></div><figcaption class="caption">Borderless outer card · internal 1px white stroke / 30% alpha</figcaption></figure>
         <figure class="specimen"><h3>Selected internal card</h3><div class="frame-scroll" tabindex="0" role="region" aria-label="Selected card example"><div class="fov"><div class="display-plane"><div class="glass-card"><article class="inner-card" data-selected="true" tabindex="0"><div class="glass-row start"><svg class="icon success" aria-hidden="true"><use href="#icon-check"/></svg><h4 class="glass-title" lang="zh-CN">已选择步行路线</h4></div><p class="glass-copy muted" lang="zh-CN">途经公园 · 预计 8 分钟</p></article></div></div></div></div><figcaption class="caption">Borderless outer card · internal 1px white stroke / 100% alpha</figcaption></figure>
@@ -264,7 +264,7 @@
       <h2 id="rules-heading">Leave room for the world.</h2>
       <div class="rules">
         <div><h3><svg class="icon success" aria-hidden="true"><use href="#icon-check"/></svg>Do</h3><ul><li>Show one clear result and keep essential actions reachable.</li><li>Use white text, bright accents, and transparent containers.</li><li>Keep text at 14–24 dp and icons at least 12 × 12.</li><li>Keep the outermost card borderless; use 1px / 30% white internal borders.</li><li>Keep text, icons, and other foreground alpha at or above 40%.</li><li>Pair color with text, icons, or shapes.</li><li>Check real backgrounds and interactions on the target glasses.</li></ul></div>
-        <div><h3><svg class="icon danger" aria-hidden="true"><use href="#icon-close"/></svg>Don't</h3><ul><li>Shrink monochrome typography to fit the narrower full-color layout.</li><li>Add large solid backgrounds or use dark critical details.</li><li>Expect black to hide the physical environment.</li><li>Dim a parent card and weaken all its children together.</li><li>Clip essential content or reduce required spacing to fit.</li><li>Treat a desktop preview as proof of optical readability.</li></ul></div>
+        <div><h3><svg class="icon danger" aria-hidden="true"><use href="#icon-close"/></svg>Don't</h3><ul><li>Shrink typography to fit more content.</li><li>Add large solid backgrounds or use dark critical details.</li><li>Expect black to hide the physical environment.</li><li>Dim a parent card and weaken all its children together.</li><li>Clip essential content or reduce required spacing to fit.</li><li>Treat a desktop preview as proof of optical readability.</li></ul></div>
       </div>
     </section>
   </main>

@@ -10,7 +10,8 @@ Dimensions below use logical design units; text sizes use dp. In WXSS, use logic
 
 | Item | Requirement |
 | --- | --- |
-| Content area | Width 448, maximum height 352; content and outer margins fit within this area |
+| Full-screen reference | 480 × 352 |
+| Card container reference | Width 480; height adapts to content |
 | Text | 14–24 dp |
 | Icons | At least 12 × 12 |
 | Background | Theme background always pure black `#000000`; prefer transparent cards and controls |
@@ -78,10 +79,13 @@ These tokens and defaults do not automatically correct all custom content. Check
 | `--card-focus-border-color` | White at alpha 100% |
 | `--card-divider-width` / `--card-divider-color` | `1px` / white at alpha 40% |
 
-These are the current theme defaults. Override card borders to meet this specification: the outermost layout card has no border, and internal cards use a 1px white border at 30% alpha. Keep internal card focus and selection at 100% alpha. For example, apply these classes to the corresponding `card` elements in the full-color layout:
+These are the current theme defaults; `--app-width` remains 448px. The new design reference is 480, so override it as needed and adapt to the available container. Override card borders to meet this specification: the outermost layout card has no border, and internal cards use a 1px white border at 30% alpha. Keep internal card focus and selection at 100% alpha. For example, apply these classes to the corresponding `card` elements in the full-color layout:
 
 ```css
 @media (color) {
+  :root {
+    --app-width: 480px;
+  }
   .outer-card {
     border: 0;
   }
@@ -97,9 +101,9 @@ These are the current theme defaults. Override card borders to meet this specifi
 }
 ```
 
-After the 10-unit FOV clearance, the borderless outermost card is at most 428 × 332. Its 10 horizontal and 24 vertical padding leave 408 × 284 for content. Internal card borders and padding also consume that shared space.
+Use 480 × 352 as the full-screen reference. The card container reference width is 480; its height adapts to content and available space. The width describes the container, not its inner content: include FOV clearance, padding, and borders in the available space.
 
-The maximum height of 352 is a content design constraint, not automatic clipping applied by the theme. Budget for margins, borders, padding, titles, and actions together. Split, paginate, or scroll overflow content instead of simply hiding it with `overflow: hidden`.
+Adapt layouts to the actual container width and height; do not fix card height to 352. Budget for margins, borders, padding, titles, and actions together. Split, paginate, or scroll overflow content instead of simply hiding it with `overflow: hidden`.
 
 Apply visible `:focus` and `:host-focus` styling to interactive internal cards; keep the outermost layout card borderless. Maintain business selection state separately, and do not rely only on hover or color changes. See the [Focus System](/AIUI/framework/open-agent-format-page-focus).
 
