@@ -41,6 +41,7 @@ recognition.start();
 
 - 开始识别前，确保界面处于可交互状态。
 - 把"正在聆听""识别中""识别完成"等状态明确展示给用户。
+- 如果自行录音并通过 `SpeechRecognitionSession` 识别，在录音和识别服务都支持时优先使用 Opus，以减少音频数据量和传输带宽。格式选择和完整示例参见[语音识别 API 参考](/AIUI/api/ai-speech-recognition)。
 
 ## 继续阅读
 

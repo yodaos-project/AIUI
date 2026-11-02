@@ -41,6 +41,7 @@ recognition.start();
 
 - Before starting recognition, make sure the UI is in an interactive state.
 - Clearly show states such as "listening", "recognizing", and "completed" to the user.
+- When recording audio for `SpeechRecognitionSession`, prefer Opus if both recording and recognition support it to reduce audio data size and transmission bandwidth. See the [Speech Recognition API reference](/AIUI/api/ai-speech-recognition) for format selection and a complete example.
 
 ## Continue Reading
 

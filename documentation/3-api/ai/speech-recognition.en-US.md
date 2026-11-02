@@ -44,7 +44,9 @@ console.log('Recognition session:', sessionId);
 }
 ```
 
-The following page example selects an audio format supported by both recording and recognition, and also adds custom phrases and initial ASR context:
+When recording audio to write into a `SpeechRecognitionSession`, prefer Opus in an Ogg container (`audio/ogg;codecs=opus`) if both recording and recognition support it. Opus efficiently compresses speech and other audio, so it typically produces less data than uncompressed PCM or WAV and reduces the bandwidth needed for transmission. Opus is lossy; actual audio quality and recognition results depend on the encoding settings and recording environment.
+
+The following page example checks formats supported by both sides using `MediaRecorder.isTypeSupported()` and `SpeechRecognitionSession.getCapabilities()`. It prefers Ogg/Opus and falls back to WAV when necessary. The session's `audio.mimeType` must match the recorded audio format. The example also adds custom phrases and initial ASR context:
 
 ```javascript
 export default {
