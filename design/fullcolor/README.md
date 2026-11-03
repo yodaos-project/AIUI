@@ -8,7 +8,7 @@ used by the neighboring monochrome design source.
 
 | File | Purpose |
 | --- | --- |
-| [design.md](./design.md) | Full-color design tokens, layout constraints, palettes, typography, component patterns, interaction states, theme mapping, and acceptance checklist. |
+| [design.md](./design.md) | Full-color design tokens, recommended color scales and semantic roles, layout constraints, typography, component patterns, interaction states, theme mapping, and acceptance checklist. |
 | [preview-color.html](./preview-color.html) | Self-contained browser preview of the palette, typography, 480 × 352 layouts, cards, focus, controls, and outline chart. Open directly in a browser; no build step or network dependency. |
 
 ## Preview

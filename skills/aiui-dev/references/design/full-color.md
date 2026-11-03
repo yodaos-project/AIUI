@@ -16,3 +16,9 @@ Use this reference for Rokid Color (乐奇全彩眼镜). The complete [design sp
 - Keep 10 units of clearance to FOV edges and card padding of 10 horizontally and 24 vertically. Apply the clearance once.
 - The outermost card is borderless. Internal cards use a 12-unit radius and a 1px white inside border at 30% alpha, changing to 100% on focus or selection.
 - Check readability and interactions on the target device against real backgrounds and lighting.
+
+## Recommended palette
+
+- The design specification includes ten-step cyan, green, violet, red, gray, and yellow scales and a transparent white alpha scale. These are recommendations, not built-in theme defaults; select or override colors explicitly.
+- Reference semantic bases: `cyan5` `#39D6E0`, `red5` `#FF5855`, `green5` `#4ED149`, and `yellow5` `#FFCC66`. Neutral hierarchy: `gray10`, `gray7`, `gray5`, `gray3`.
+- Darker and low-alpha variants can be hard to see on transparent glasses. Keep essential foreground readable, use the 40% minimum alpha recommendation, and validate against real backgrounds. Internal card borders remain the 30% exception.

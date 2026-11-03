@@ -49,6 +49,88 @@ colors:
   warning: "#ffd966"
   highlight: "#c4a6ff"
 
+recommended-palette:
+  cyan:
+    cyan1: "#10434B"
+    cyan2: "#196670"
+    cyan3: "#238B95"
+    cyan4: "#2EB0BB"
+    cyan5: "#39D6E0"
+    cyan6: "#5DE0E6"
+    cyan7: "#83EAEC"
+    cyan8: "#AAF2F3"
+    cyan9: "#D4F9F9"
+    cyan10: "#EEFCFC"
+  green:
+    green1: "#164617"
+    green2: "#216822"
+    green3: "#2E8B2E"
+    green4: "#3DAE3B"
+    green5: "#4ED149"
+    green6: "#6FDA69"
+    green7: "#91E38B"
+    green8: "#B4EDAF"
+    green9: "#D9F6D6"
+    green10: "#F0FAEF"
+  violet:
+    violet1: "#2F1866"
+    violet2: "#41248A"
+    violet3: "#5333AE"
+    violet4: "#6743D1"
+    violet5: "#7B56F5"
+    violet6: "#9277F7"
+    violet7: "#AB98F9"
+    violet8: "#C6BAFB"
+    violet9: "#E2DCFD"
+    violet10: "#F4F3FE"
+  red:
+    red1: "#701822"
+    red2: "#94242D"
+    red3: "#B83239"
+    red4: "#DB4345"
+    red5: "#FF5855"
+    red6: "#FF7E77"
+    red7: "#FFA299"
+    red8: "#FFC3BB"
+    red9: "#FFE2DD"
+    red10: "#FFF5F3"
+  gray:
+    gray1: "#222725"
+    gray2: "#343B38"
+    gray3: "#464E4B"
+    gray4: "#58625E"
+    gray5: "#6B7571"
+    gray6: "#88928E"
+    gray7: "#A7B0AC"
+    gray8: "#C6CDCA"
+    gray9: "#E6EAE8"
+    gray10: "#F9F9F9"
+  yellow:
+    yellow1: "#512A09"
+    yellow2: "#7A440F"
+    yellow3: "#A26316"
+    yellow4: "#CB851E"
+    yellow5: "#FFCC66"
+    yellow6: "#F5C150"
+    yellow7: "#F8D47A"
+    yellow8: "#FAE5A6"
+    yellow9: "#FDF3D2"
+    yellow10: "#FEFBED"
+  white:
+    white1a: "rgba(255,255,255,0.04)"
+    white2a: "rgba(255,255,255,0.08)"
+    white3a: "rgba(255,255,255,0.12)"
+    white4a: "rgba(255,255,255,0.16)"
+    white5a: "rgba(255,255,255,0.24)"
+    white6a: "rgba(255,255,255,0.3)"
+    white7a: "rgba(255,255,255,0.4)"
+    white8a: "rgba(255,255,255,0.5)"
+    white9a: "rgba(255,255,255,0.6)"
+    white10a: "rgba(255,255,255,0.7)"
+    white11a: "rgba(255,255,255,0.8)"
+    white12a: "rgba(255,255,255,0.9)"
+    white: "rgba(255,255,255,1)"
+
 opacity:
   foreground-min: 0.4
   secondary: 0.6
@@ -290,6 +372,36 @@ Pure black emits no light and appears transparent on the glasses. It cannot form
 An alpha of 30% means `0.3` opacity. The outermost card has no border; internal card borders use white at 30% alpha by default and 100% when selected or focused. Dividers and muted control outlines remain at 40%. Keep text, icons, and other visible foreground at or above the recommended 40% baseline. Internal card borders, transparent containers, and the black display floor are intentional exceptions.
 
 Set alpha on individual colors instead of dimming an entire parent container. Parent opacity can weaken text, icons, and already-translucent borders together. Do not add large colored surfaces to compensate for poor foreground readability.
+
+### Recommended palette
+
+The following named scales are recommendations from the color reference, not built-in theme tokens. A scale name plus its column number identifies a color, for example `cyan5`. Keep the existing theme defaults listed above distinct; explicitly choose or override colors when using this palette.
+
+| Family | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Cyan | `#10434B` | `#196670` | `#238B95` | `#2EB0BB` | `#39D6E0` | `#5DE0E6` | `#83EAEC` | `#AAF2F3` | `#D4F9F9` | `#EEFCFC` |
+| Green | `#164617` | `#216822` | `#2E8B2E` | `#3DAE3B` | `#4ED149` | `#6FDA69` | `#91E38B` | `#B4EDAF` | `#D9F6D6` | `#F0FAEF` |
+| Violet | `#2F1866` | `#41248A` | `#5333AE` | `#6743D1` | `#7B56F5` | `#9277F7` | `#AB98F9` | `#C6BAFB` | `#E2DCFD` | `#F4F3FE` |
+| Red | `#701822` | `#94242D` | `#B83239` | `#DB4345` | `#FF5855` | `#FF7E77` | `#FFA299` | `#FFC3BB` | `#FFE2DD` | `#FFF5F3` |
+| Gray | `#222725` | `#343B38` | `#464E4B` | `#58625E` | `#6B7571` | `#88928E` | `#A7B0AC` | `#C6CDCA` | `#E6EAE8` | `#F9F9F9` |
+| Yellow | `#512A09` | `#7A440F` | `#A26316` | `#CB851E` | `#FFCC66` | `#F5C150` | `#F8D47A` | `#FAE5A6` | `#FDF3D2` | `#FEFBED` |
+
+The white alpha scale uses white (`#FFFFFF`) with these alpha values:
+
+| Token | white1a | white2a | white3a | white4a | white5a | white6a | white7a | white8a | white9a | white10a | white11a | white12a | white |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Alpha | `0.04` | `0.08` | `0.12` | `0.16` | `0.24` | `0.3` | `0.4` | `0.5` | `0.6` | `0.7` | `0.8` | `0.9` | `1` |
+
+| Role | Reference colors |
+| --- | --- |
+| Primary / secondary / tertiary / quaternary neutral | `gray10` / `gray7` / `gray5` / `gray3` |
+| Primary accent | `cyan5`; weaker variants `cyan3`, `cyan2` |
+| Error | `red5`; weaker variants `red3`, `red2` |
+| Success | `green5`; weaker variants `green3`, `green2` |
+| Warning | `yellow5`; weaker variants `yellow3`, `yellow2` |
+| Violet base | `violet5` |
+
+These are reference hierarchy levels, not a guarantee of readability. The darker grays and weak semantic colors can be difficult to see on transparent glasses: reserve them for nonessential details unless verified on the target device. White alpha values below 0.4 are not suitable for essential visible foreground; the existing internal card border exception remains at 0.3. Keep essential text and icons clear against real backgrounds, and pair semantic color with text, icons, or shape.
 
 ## 4. Typography and Icons
 
