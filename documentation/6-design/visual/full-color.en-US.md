@@ -53,6 +53,36 @@ The following values are key defaults in the built-in full-color theme. Semantic
 
 Set color alpha on individual text or borders instead of applying `opacity: 0.4` to an entire card. Parent opacity also weakens child content and can reduce an already translucent foreground below the readability baseline.
 
+### Recommended Palette
+
+These colors come from the design reference and are optional recommendations, not built-in theme token defaults. A family and column number form the color name, for example `cyan5`. Choose or override colors explicitly; the existing theme defaults remain as listed above.
+
+| Family | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Cyan | `#10434B` | `#196670` | `#238B95` | `#2EB0BB` | `#39D6E0` | `#5DE0E6` | `#83EAEC` | `#AAF2F3` | `#D4F9F9` | `#EEFCFC` |
+| Green | `#164617` | `#216822` | `#2E8B2E` | `#3DAE3B` | `#4ED149` | `#6FDA69` | `#91E38B` | `#B4EDAF` | `#D9F6D6` | `#F0FAEF` |
+| Violet | `#2F1866` | `#41248A` | `#5333AE` | `#6743D1` | `#7B56F5` | `#9277F7` | `#AB98F9` | `#C6BAFB` | `#E2DCFD` | `#F4F3FE` |
+| Red | `#701822` | `#94242D` | `#B83239` | `#DB4345` | `#FF5855` | `#FF7E77` | `#FFA299` | `#FFC3BB` | `#FFE2DD` | `#FFF5F3` |
+| Gray | `#222725` | `#343B38` | `#464E4B` | `#58625E` | `#6B7571` | `#88928E` | `#A7B0AC` | `#C6CDCA` | `#E6EAE8` | `#F9F9F9` |
+| Yellow | `#512A09` | `#7A440F` | `#A26316` | `#CB851E` | `#FFCC66` | `#F5C150` | `#F8D47A` | `#FAE5A6` | `#FDF3D2` | `#FEFBED` |
+
+The transparent white scale uses `#FFFFFF` with the following alpha values:
+
+| Token | white1a | white2a | white3a | white4a | white5a | white6a | white7a | white8a | white9a | white10a | white11a | white12a | white |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Alpha | `0.04` | `0.08` | `0.12` | `0.16` | `0.24` | `0.3` | `0.4` | `0.5` | `0.6` | `0.7` | `0.8` | `0.9` | `1` |
+
+| Role | Reference colors |
+| --- | --- |
+| Primary / secondary / tertiary / quaternary neutral | `gray10` / `gray7` / `gray5` / `gray3` |
+| Primary accent | `cyan5`; weaker variants `cyan3`, `cyan2` |
+| Error | `red5`; weaker variants `red3`, `red2` |
+| Success | `green5`; weaker variants `green3`, `green2` |
+| Warning | `yellow5`; weaker variants `yellow3`, `yellow2` |
+| Violet base | `violet5` |
+
+These hierarchy levels are design references, not a guarantee of readability on a see-through display. Darker grays and weak semantic colors may be hard to see; reserve them for nonessential details unless verified on the target device. White alpha below 0.4 is unsuitable for essential visible foreground; internal card borders remain an exception at 0.3. Keep essential content clear, pair color with text, icons, or shape, and verify against real backgrounds.
+
 ## Typography and Icons
 
 | Level | Suggested Size | Theme Value |

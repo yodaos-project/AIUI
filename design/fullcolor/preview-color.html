@@ -89,6 +89,10 @@
     .spec-list dt { color: #b9c2cd; }
     .spec-list dd { margin: 0; }
     .palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .reference-scale { display: grid; grid-template-columns: repeat(10, minmax(78px, 1fr)); gap: 4px; min-width: 816px; margin-bottom: 16px; }
+    .reference-swatch { min-height: 64px; padding: 8px; background: var(--swatch); color: var(--swatch-text); font: 12px/1.45 var(--mono); overflow-wrap: anywhere; }
+    .reference-swatch strong { display: block; }
+    .reference-scroll { overflow-x: auto; }
     .swatch { padding: 18px; border: 1px solid #3c4653; border-radius: 12px; }
     .swatch-dot { width: 20px; height: 20px; margin-bottom: 16px; border-radius: 50%; background: var(--swatch); }
     .swatch h3 { margin: 0 0 4px; font-size: 16px; font-weight: 500; }
@@ -214,6 +218,98 @@
         <div class="swatch" style="--swatch:var(--border-color-highlight)"><div class="swatch-dot"></div><h3>Category highlight</h3><code>#c4a6ff</code></div>
         <div class="swatch" style="--swatch:var(--border-color-muted)"><div class="swatch-dot"></div><h3>Muted outline</h3><code>white / 40%</code></div>
       </div>
+      <h3>Recommended reference scales</h3>
+      <p class="description">Optional design recommendations; the theme defaults above are unchanged. Darker colors and alpha below 0.4 need special care on see-through displays.</p>
+      <div class="reference-scroll" tabindex="0" role="region" aria-label="Recommended color scales, scroll horizontally on narrow screens">
+        <h4>Cyan</h4><div class="reference-scale">
+          <div class="reference-swatch" style="--swatch:#10434B;--swatch-text:#ffffff"><strong>cyan1</strong>#10434B</div>
+          <div class="reference-swatch" style="--swatch:#196670;--swatch-text:#ffffff"><strong>cyan2</strong>#196670</div>
+          <div class="reference-swatch" style="--swatch:#238B95;--swatch-text:#000000"><strong>cyan3</strong>#238B95</div>
+          <div class="reference-swatch" style="--swatch:#2EB0BB;--swatch-text:#000000"><strong>cyan4</strong>#2EB0BB</div>
+          <div class="reference-swatch" style="--swatch:#39D6E0;--swatch-text:#000000"><strong>cyan5</strong>#39D6E0</div>
+          <div class="reference-swatch" style="--swatch:#5DE0E6;--swatch-text:#000000"><strong>cyan6</strong>#5DE0E6</div>
+          <div class="reference-swatch" style="--swatch:#83EAEC;--swatch-text:#000000"><strong>cyan7</strong>#83EAEC</div>
+          <div class="reference-swatch" style="--swatch:#AAF2F3;--swatch-text:#000000"><strong>cyan8</strong>#AAF2F3</div>
+          <div class="reference-swatch" style="--swatch:#D4F9F9;--swatch-text:#000000"><strong>cyan9</strong>#D4F9F9</div>
+          <div class="reference-swatch" style="--swatch:#EEFCFC;--swatch-text:#000000"><strong>cyan10</strong>#EEFCFC</div>
+        </div>
+        <h4>Green</h4><div class="reference-scale">
+          <div class="reference-swatch" style="--swatch:#164617;--swatch-text:#ffffff"><strong>green1</strong>#164617</div>
+          <div class="reference-swatch" style="--swatch:#216822;--swatch-text:#ffffff"><strong>green2</strong>#216822</div>
+          <div class="reference-swatch" style="--swatch:#2E8B2E;--swatch-text:#000000"><strong>green3</strong>#2E8B2E</div>
+          <div class="reference-swatch" style="--swatch:#3DAE3B;--swatch-text:#000000"><strong>green4</strong>#3DAE3B</div>
+          <div class="reference-swatch" style="--swatch:#4ED149;--swatch-text:#000000"><strong>green5</strong>#4ED149</div>
+          <div class="reference-swatch" style="--swatch:#6FDA69;--swatch-text:#000000"><strong>green6</strong>#6FDA69</div>
+          <div class="reference-swatch" style="--swatch:#91E38B;--swatch-text:#000000"><strong>green7</strong>#91E38B</div>
+          <div class="reference-swatch" style="--swatch:#B4EDAF;--swatch-text:#000000"><strong>green8</strong>#B4EDAF</div>
+          <div class="reference-swatch" style="--swatch:#D9F6D6;--swatch-text:#000000"><strong>green9</strong>#D9F6D6</div>
+          <div class="reference-swatch" style="--swatch:#F0FAEF;--swatch-text:#000000"><strong>green10</strong>#F0FAEF</div>
+        </div>
+        <h4>Violet</h4><div class="reference-scale">
+          <div class="reference-swatch" style="--swatch:#2F1866;--swatch-text:#ffffff"><strong>violet1</strong>#2F1866</div>
+          <div class="reference-swatch" style="--swatch:#41248A;--swatch-text:#ffffff"><strong>violet2</strong>#41248A</div>
+          <div class="reference-swatch" style="--swatch:#5333AE;--swatch-text:#ffffff"><strong>violet3</strong>#5333AE</div>
+          <div class="reference-swatch" style="--swatch:#6743D1;--swatch-text:#ffffff"><strong>violet4</strong>#6743D1</div>
+          <div class="reference-swatch" style="--swatch:#7B56F5;--swatch-text:#ffffff"><strong>violet5</strong>#7B56F5</div>
+          <div class="reference-swatch" style="--swatch:#9277F7;--swatch-text:#000000"><strong>violet6</strong>#9277F7</div>
+          <div class="reference-swatch" style="--swatch:#AB98F9;--swatch-text:#000000"><strong>violet7</strong>#AB98F9</div>
+          <div class="reference-swatch" style="--swatch:#C6BAFB;--swatch-text:#000000"><strong>violet8</strong>#C6BAFB</div>
+          <div class="reference-swatch" style="--swatch:#E2DCFD;--swatch-text:#000000"><strong>violet9</strong>#E2DCFD</div>
+          <div class="reference-swatch" style="--swatch:#F4F3FE;--swatch-text:#000000"><strong>violet10</strong>#F4F3FE</div>
+        </div>
+        <h4>Red</h4><div class="reference-scale">
+          <div class="reference-swatch" style="--swatch:#701822;--swatch-text:#ffffff"><strong>red1</strong>#701822</div>
+          <div class="reference-swatch" style="--swatch:#94242D;--swatch-text:#ffffff"><strong>red2</strong>#94242D</div>
+          <div class="reference-swatch" style="--swatch:#B83239;--swatch-text:#ffffff"><strong>red3</strong>#B83239</div>
+          <div class="reference-swatch" style="--swatch:#DB4345;--swatch-text:#000000"><strong>red4</strong>#DB4345</div>
+          <div class="reference-swatch" style="--swatch:#FF5855;--swatch-text:#000000"><strong>red5</strong>#FF5855</div>
+          <div class="reference-swatch" style="--swatch:#FF7E77;--swatch-text:#000000"><strong>red6</strong>#FF7E77</div>
+          <div class="reference-swatch" style="--swatch:#FFA299;--swatch-text:#000000"><strong>red7</strong>#FFA299</div>
+          <div class="reference-swatch" style="--swatch:#FFC3BB;--swatch-text:#000000"><strong>red8</strong>#FFC3BB</div>
+          <div class="reference-swatch" style="--swatch:#FFE2DD;--swatch-text:#000000"><strong>red9</strong>#FFE2DD</div>
+          <div class="reference-swatch" style="--swatch:#FFF5F3;--swatch-text:#000000"><strong>red10</strong>#FFF5F3</div>
+        </div>
+        <h4>Gray</h4><div class="reference-scale">
+          <div class="reference-swatch" style="--swatch:#222725;--swatch-text:#ffffff"><strong>gray1</strong>#222725</div>
+          <div class="reference-swatch" style="--swatch:#343B38;--swatch-text:#ffffff"><strong>gray2</strong>#343B38</div>
+          <div class="reference-swatch" style="--swatch:#464E4B;--swatch-text:#ffffff"><strong>gray3</strong>#464E4B</div>
+          <div class="reference-swatch" style="--swatch:#58625E;--swatch-text:#ffffff"><strong>gray4</strong>#58625E</div>
+          <div class="reference-swatch" style="--swatch:#6B7571;--swatch-text:#ffffff"><strong>gray5</strong>#6B7571</div>
+          <div class="reference-swatch" style="--swatch:#88928E;--swatch-text:#000000"><strong>gray6</strong>#88928E</div>
+          <div class="reference-swatch" style="--swatch:#A7B0AC;--swatch-text:#000000"><strong>gray7</strong>#A7B0AC</div>
+          <div class="reference-swatch" style="--swatch:#C6CDCA;--swatch-text:#000000"><strong>gray8</strong>#C6CDCA</div>
+          <div class="reference-swatch" style="--swatch:#E6EAE8;--swatch-text:#000000"><strong>gray9</strong>#E6EAE8</div>
+          <div class="reference-swatch" style="--swatch:#F9F9F9;--swatch-text:#000000"><strong>gray10</strong>#F9F9F9</div>
+        </div>
+        <h4>Yellow</h4><div class="reference-scale">
+          <div class="reference-swatch" style="--swatch:#512A09;--swatch-text:#ffffff"><strong>yellow1</strong>#512A09</div>
+          <div class="reference-swatch" style="--swatch:#7A440F;--swatch-text:#ffffff"><strong>yellow2</strong>#7A440F</div>
+          <div class="reference-swatch" style="--swatch:#A26316;--swatch-text:#ffffff"><strong>yellow3</strong>#A26316</div>
+          <div class="reference-swatch" style="--swatch:#CB851E;--swatch-text:#000000"><strong>yellow4</strong>#CB851E</div>
+          <div class="reference-swatch" style="--swatch:#FFCC66;--swatch-text:#000000"><strong>yellow5</strong>#FFCC66</div>
+          <div class="reference-swatch" style="--swatch:#F5C150;--swatch-text:#000000"><strong>yellow6</strong>#F5C150</div>
+          <div class="reference-swatch" style="--swatch:#F8D47A;--swatch-text:#000000"><strong>yellow7</strong>#F8D47A</div>
+          <div class="reference-swatch" style="--swatch:#FAE5A6;--swatch-text:#000000"><strong>yellow8</strong>#FAE5A6</div>
+          <div class="reference-swatch" style="--swatch:#FDF3D2;--swatch-text:#000000"><strong>yellow9</strong>#FDF3D2</div>
+          <div class="reference-swatch" style="--swatch:#FEFBED;--swatch-text:#000000"><strong>yellow10</strong>#FEFBED</div>
+        </div>
+        <h4>White alpha</h4><div class="reference-scale">
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.04);--swatch-text:#ffffff"><strong>white1a</strong>alpha 0.04</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.08);--swatch-text:#ffffff"><strong>white2a</strong>alpha 0.08</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.12);--swatch-text:#ffffff"><strong>white3a</strong>alpha 0.12</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.16);--swatch-text:#ffffff"><strong>white4a</strong>alpha 0.16</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.24);--swatch-text:#ffffff"><strong>white5a</strong>alpha 0.24</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.3);--swatch-text:#ffffff"><strong>white6a</strong>alpha 0.3</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.4);--swatch-text:#ffffff"><strong>white7a</strong>alpha 0.4</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.5);--swatch-text:#000000"><strong>white8a</strong>alpha 0.5</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.6);--swatch-text:#000000"><strong>white9a</strong>alpha 0.6</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.7);--swatch-text:#000000"><strong>white10a</strong>alpha 0.7</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.8);--swatch-text:#000000"><strong>white11a</strong>alpha 0.8</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,0.9);--swatch-text:#000000"><strong>white12a</strong>alpha 0.9</div>
+          <div class="reference-swatch" style="--swatch:rgba(255,255,255,1);--swatch-text:#000000"><strong>white</strong>alpha 1</div>
+        </div>
+      </div>
+      <p class="caption">Reference roles: gray10 / gray7 / gray5 / gray3 for neutral hierarchy; cyan5 for primary, red5 for error, green5 for success, yellow5 for warning, and violet5 as a violet base. Verify darker variants on the target device.</p>
       <div class="stroke-list">
         <div><div class="stroke-example" style="--stroke:var(--card-border-color)"></div><p class="stroke-label">Internal card · 1px / 30%</p></div>
         <div><div class="stroke-example" style="--stroke:var(--border-color-strong)"></div><p class="stroke-label">Selected internal card · 1px / 100%</p></div>
