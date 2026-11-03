@@ -389,7 +389,7 @@ The following named scales are recommendations from the color reference, not bui
 The white alpha scale uses white (`#FFFFFF`) with these alpha values:
 
 | Token | white1a | white2a | white3a | white4a | white5a | white6a | white7a | white8a | white9a | white10a | white11a | white12a | white |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Alpha | `0.04` | `0.08` | `0.12` | `0.16` | `0.24` | `0.3` | `0.4` | `0.5` | `0.6` | `0.7` | `0.8` | `0.9` | `1` |
 
 | Role | Reference colors |

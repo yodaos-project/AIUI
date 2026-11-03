@@ -55,31 +55,43 @@
 
 ### 推荐调色板
 
-下表来自设计参考图，是可选的设计推荐，并非内置主题 Token 的默认值。色系加列号表示色名，例如 `cyan5`；使用时需显式选择或覆盖颜色，内置主题默认值仍以上表为准。
+下表来自设计参考图，是可选的设计推荐，并非内置主题 Token 的默认值。色系加列号表示色名，例如 <span data-color-swatch="#39D6E0">cyan5</span>；使用时需显式选择或覆盖颜色，内置主题默认值仍以上表为准。
 
 | 色系 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Cyan | `#10434B` | `#196670` | `#238B95` | `#2EB0BB` | `#39D6E0` | `#5DE0E6` | `#83EAEC` | `#AAF2F3` | `#D4F9F9` | `#EEFCFC` |
-| Green | `#164617` | `#216822` | `#2E8B2E` | `#3DAE3B` | `#4ED149` | `#6FDA69` | `#91E38B` | `#B4EDAF` | `#D9F6D6` | `#F0FAEF` |
-| Violet | `#2F1866` | `#41248A` | `#5333AE` | `#6743D1` | `#7B56F5` | `#9277F7` | `#AB98F9` | `#C6BAFB` | `#E2DCFD` | `#F4F3FE` |
-| Red | `#701822` | `#94242D` | `#B83239` | `#DB4345` | `#FF5855` | `#FF7E77` | `#FFA299` | `#FFC3BB` | `#FFE2DD` | `#FFF5F3` |
-| Gray | `#222725` | `#343B38` | `#464E4B` | `#58625E` | `#6B7571` | `#88928E` | `#A7B0AC` | `#C6CDCA` | `#E6EAE8` | `#F9F9F9` |
-| Yellow | `#512A09` | `#7A440F` | `#A26316` | `#CB851E` | `#FFCC66` | `#F5C150` | `#F8D47A` | `#FAE5A6` | `#FDF3D2` | `#FEFBED` |
+| Cyan | <span data-color-swatch="#10434B">cyan1</span> | <span data-color-swatch="#196670">cyan2</span> | <span data-color-swatch="#238B95">cyan3</span> | <span data-color-swatch="#2EB0BB">cyan4</span> | <span data-color-swatch="#39D6E0">cyan5</span> | <span data-color-swatch="#5DE0E6">cyan6</span> | <span data-color-swatch="#83EAEC">cyan7</span> | <span data-color-swatch="#AAF2F3">cyan8</span> | <span data-color-swatch="#D4F9F9">cyan9</span> | <span data-color-swatch="#EEFCFC">cyan10</span> |
+| Green | <span data-color-swatch="#164617">green1</span> | <span data-color-swatch="#216822">green2</span> | <span data-color-swatch="#2E8B2E">green3</span> | <span data-color-swatch="#3DAE3B">green4</span> | <span data-color-swatch="#4ED149">green5</span> | <span data-color-swatch="#6FDA69">green6</span> | <span data-color-swatch="#91E38B">green7</span> | <span data-color-swatch="#B4EDAF">green8</span> | <span data-color-swatch="#D9F6D6">green9</span> | <span data-color-swatch="#F0FAEF">green10</span> |
+| Violet | <span data-color-swatch="#2F1866">violet1</span> | <span data-color-swatch="#41248A">violet2</span> | <span data-color-swatch="#5333AE">violet3</span> | <span data-color-swatch="#6743D1">violet4</span> | <span data-color-swatch="#7B56F5">violet5</span> | <span data-color-swatch="#9277F7">violet6</span> | <span data-color-swatch="#AB98F9">violet7</span> | <span data-color-swatch="#C6BAFB">violet8</span> | <span data-color-swatch="#E2DCFD">violet9</span> | <span data-color-swatch="#F4F3FE">violet10</span> |
+| Red | <span data-color-swatch="#701822">red1</span> | <span data-color-swatch="#94242D">red2</span> | <span data-color-swatch="#B83239">red3</span> | <span data-color-swatch="#DB4345">red4</span> | <span data-color-swatch="#FF5855">red5</span> | <span data-color-swatch="#FF7E77">red6</span> | <span data-color-swatch="#FFA299">red7</span> | <span data-color-swatch="#FFC3BB">red8</span> | <span data-color-swatch="#FFE2DD">red9</span> | <span data-color-swatch="#FFF5F3">red10</span> |
+| Gray | <span data-color-swatch="#222725">gray1</span> | <span data-color-swatch="#343B38">gray2</span> | <span data-color-swatch="#464E4B">gray3</span> | <span data-color-swatch="#58625E">gray4</span> | <span data-color-swatch="#6B7571">gray5</span> | <span data-color-swatch="#88928E">gray6</span> | <span data-color-swatch="#A7B0AC">gray7</span> | <span data-color-swatch="#C6CDCA">gray8</span> | <span data-color-swatch="#E6EAE8">gray9</span> | <span data-color-swatch="#F9F9F9">gray10</span> |
+| Yellow | <span data-color-swatch="#512A09">yellow1</span> | <span data-color-swatch="#7A440F">yellow2</span> | <span data-color-swatch="#A26316">yellow3</span> | <span data-color-swatch="#CB851E">yellow4</span> | <span data-color-swatch="#FFCC66">yellow5</span> | <span data-color-swatch="#F5C150">yellow6</span> | <span data-color-swatch="#F8D47A">yellow7</span> | <span data-color-swatch="#FAE5A6">yellow8</span> | <span data-color-swatch="#FDF3D2">yellow9</span> | <span data-color-swatch="#FEFBED">yellow10</span> |
 
-透明白以 `#FFFFFF` 为基色，alpha 如下：
+透明白以白色为基色，alpha 如下：
 
-| Token | white1a | white2a | white3a | white4a | white5a | white6a | white7a | white8a | white9a | white10a | white11a | white12a | white |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Alpha | `0.04` | `0.08` | `0.12` | `0.16` | `0.24` | `0.3` | `0.4` | `0.5` | `0.6` | `0.7` | `0.8` | `0.9` | `1` |
+| Token | 透明度 | 颜色 |
+| --- | --- | --- |
+| `white1a` | 0.04 | <span data-color-swatch="rgba(255,255,255,0.04)">white1a</span> |
+| `white2a` | 0.08 | <span data-color-swatch="rgba(255,255,255,0.08)">white2a</span> |
+| `white3a` | 0.12 | <span data-color-swatch="rgba(255,255,255,0.12)">white3a</span> |
+| `white4a` | 0.16 | <span data-color-swatch="rgba(255,255,255,0.16)">white4a</span> |
+| `white5a` | 0.24 | <span data-color-swatch="rgba(255,255,255,0.24)">white5a</span> |
+| `white6a` | 0.3 | <span data-color-swatch="rgba(255,255,255,0.3)">white6a</span> |
+| `white7a` | 0.4 | <span data-color-swatch="rgba(255,255,255,0.4)">white7a</span> |
+| `white8a` | 0.5 | <span data-color-swatch="rgba(255,255,255,0.5)">white8a</span> |
+| `white9a` | 0.6 | <span data-color-swatch="rgba(255,255,255,0.6)">white9a</span> |
+| `white10a` | 0.7 | <span data-color-swatch="rgba(255,255,255,0.7)">white10a</span> |
+| `white11a` | 0.8 | <span data-color-swatch="rgba(255,255,255,0.8)">white11a</span> |
+| `white12a` | 0.9 | <span data-color-swatch="rgba(255,255,255,0.9)">white12a</span> |
+| `white` | 1 | <span data-color-swatch="rgba(255,255,255,1)">white</span> |
 
 | 用途 | 参考颜色 |
 | --- | --- |
-| 一级 / 二级 / 三级 / 四级中性色 | `gray10` / `gray7` / `gray5` / `gray3` |
-| 主题色 | `cyan5`；弱化色 `cyan3`、`cyan2` |
-| 错误色 | `red5`；弱化色 `red3`、`red2` |
-| 成功色 | `green5`；弱化色 `green3`、`green2` |
-| 提示色 | `yellow5`；弱化色 `yellow3`、`yellow2` |
-| 紫色基础色 | `violet5` |
+| 一级 / 二级 / 三级 / 四级中性色 | <span data-color-swatch="#F9F9F9">gray10</span> / <span data-color-swatch="#A7B0AC">gray7</span> / <span data-color-swatch="#6B7571">gray5</span> / <span data-color-swatch="#464E4B">gray3</span> |
+| 主题色 | <span data-color-swatch="#39D6E0">cyan5</span>；弱化色 <span data-color-swatch="#238B95">cyan3</span>、<span data-color-swatch="#196670">cyan2</span> |
+| 错误色 | <span data-color-swatch="#FF5855">red5</span>；弱化色 <span data-color-swatch="#B83239">red3</span>、<span data-color-swatch="#94242D">red2</span> |
+| 成功色 | <span data-color-swatch="#4ED149">green5</span>；弱化色 <span data-color-swatch="#2E8B2E">green3</span>、<span data-color-swatch="#216822">green2</span> |
+| 提示色 | <span data-color-swatch="#FFCC66">yellow5</span>；弱化色 <span data-color-swatch="#A26316">yellow3</span>、<span data-color-swatch="#7A440F">yellow2</span> |
+| 紫色基础色 | <span data-color-swatch="#7B56F5">violet5</span> |
 
 上述层级是设计参考，不保证在透视显示中都清晰可读。较深的灰色和弱化语义色可能难以辨认，未经目标设备验证时仅用于非关键信息。透明白 alpha 低于 0.4 不适合作为关键可见前景；内部卡片边框仍可按规范使用 0.3。关键内容保持清晰，并结合文字、图标或形状表达状态，在真实背景下验证。
 
