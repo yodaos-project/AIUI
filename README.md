@@ -47,9 +47,10 @@ Start with the [capabilities showcase](./samples/capabilities/), or explore focu
 
 ```bash
 npx skills add https://github.com/yodaos-project/AIUI/tree/main/skills/aiui-dev
+npx skills add https://github.com/yodaos-project/AIUI/tree/main/skills/aiui-optimize
 ```
 
-The [cloud integration skill](./skills/aiui-cloud-integration/SKILL.md) covers notification workflows; the [cloud APIs skill](./skills/aiui-cloud-apis/SKILL.md) covers cloud API usage.
+The [optimization skill](./skills/aiui-optimize/SKILL.md) audits and reduces AIUI package size; the [cloud integration skill](./skills/aiui-cloud-integration/SKILL.md) covers notification workflows; the [cloud APIs skill](./skills/aiui-cloud-apis/SKILL.md) covers cloud API usage.
 
 ## Repository map
 
