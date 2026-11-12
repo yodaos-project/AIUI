@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "id": "080-media-library",
+  "category": "modify",
+  "difficulty": "medium",
+  "description": "Complete the Photos Page. When Load Photos is pressed, request image read authorization and display the first image filename with status Ready when access is granted or limited. If access is denied, show status Denied without listing. If the library operation fails, show status Error. Declare the required capability and preserve the Photos title and existing bindings.",
+  "aiuiVersion": "current",
+  "workspace": "./workspace",
+  "grading": {
+    "required": [
+      {
+        "id": "permission",
+        "type": "permission",
+        "value": "READ_MEDIA_IMAGES"
+      },
+      {
+        "id": "granted",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "mediaLibrary": {
+          "status": "granted",
+          "listError": false
+        },
+        "steps": [
+          {
+            "action": "call",
+            "button": "Load Photos"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "filename": "sunrise.jpg",
+              "status": "Ready"
+            },
+            "effects": {
+              "mediaAuthorization": [
+                [
+                  "read",
+                  "image"
+                ]
+              ],
+              "mediaLists": [
+                "image"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "limited",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "mediaLibrary": {
+          "status": "limited",
+          "listError": false,
+          "filename": "lake.jpg"
+        },
+        "steps": [
+          {
+            "action": "call",
+            "button": "Load Photos"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "filename": "lake.jpg",
+              "status": "Ready"
+            },
+            "effects": {
+              "mediaAuthorization": [
+                [
+                  "read",
+                  "image"
+                ]
+              ],
+              "mediaLists": [
+                "image"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "denied",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "mediaLibrary": {
+          "status": "denied",
+          "listError": false
+        },
+        "steps": [
+          {
+            "action": "call",
+            "button": "Load Photos"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "status": "Denied"
+            },
+            "effects": {
+              "mediaAuthorization": [
+                [
+                  "read",
+                  "image"
+                ]
+              ],
+              "mediaLists": []
+            }
+          }
+        ]
+      },
+      {
+        "id": "error",
+        "type": "scenario",
+        "path": "pages/index/index.ink",
+        "mediaLibrary": {
+          "status": "granted",
+          "listError": true
+        },
+        "steps": [
+          {
+            "action": "call",
+            "button": "Load Photos"
+          },
+          {
+            "action": "expect",
+            "data": {
+              "status": "Error"
+            },
+            "effects": {
+              "mediaAuthorization": [
+                [
+                  "read",
+                  "image"
+                ]
+              ],
+              "mediaLists": [
+                "image"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "filename-binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "filename"
+      },
+      {
+        "id": "status-binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "status"
+      }
+    ],
+    "regression": [
+      {
+        "id": "title",
+        "type": "behavior",
+        "path": "pages/index/index.ink",
+        "expect": {
+          "title": "Photos"
+        }
+      },
+      {
+        "id": "title-binding",
+        "type": "template",
+        "path": "pages/index/index.ink",
+        "binding": "title"
+      }
+    ],
+    "constraints": [
+      {
+        "id": "no-dom",
+        "type": "noDom"
+      }
+    ]
+  }
+}

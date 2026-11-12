@@ -16,7 +16,7 @@ The starter contains `app.js`, `app.json`, `AGENTS.md`, and an Ink page at `page
 
 ## AIUI Coding Benchmark
 
-The [AIUI Coding Benchmark](./bench/README.md) measures how well an AI coding agent can **create, modify, fix, and migrate AIUI projects and align them with design specifications**. Its 79 tasks cover page state and events, Widgets, Workers, geolocation, storage, overlays, voice events, migration, platform boundaries, design selection, multi-stage user flows, asynchronous races, lifecycle cleanup, recovery paths, and multi-file regressions. It also works as a regression suite for the [`aiui-dev` skill](./skills/aiui-dev/SKILL.md).
+The [AIUI Coding Benchmark](./bench/README.md) measures how well an AI coding agent can **create, modify, fix, and migrate AIUI projects and align them with design specifications**. Its 80 tasks cover page state and events, Widgets, Workers, geolocation, media library, storage, overlays, voice events, migration, platform boundaries, design selection, multi-stage user flows, asynchronous races, lifecycle cleanup, recovery paths, and multi-file regressions. It also works as a regression suite for the [`aiui-dev` skill](./skills/aiui-dev/SKILL.md).
 
 Each task provides a description and a starting workspace. The grader checks the resulting source, manifest, and selected handler behavior: a task counts as **resolved** only when all required and regression checks pass with no constraint violations. The headline score is resolved tasks divided by graded tasks. The benchmark does not verify rendering or behavior on real glasses.
 
@@ -39,7 +39,7 @@ See the [benchmark guide](./bench/README.md) to prepare a workspace, grade an ag
 | [Design system](./design/) | Monochrome display guidance and a [green display preview](./design/monochrome/preview-green.html). |
 | [Developer skill](./skills/aiui-dev/SKILL.md) | AI coding guidance for Ink, components, APIs, and project structure. |
 | [Cloud integration](./packages/cloud-integration/) | A Node.js package for third-party agents and Rokid Glasses notifications. |
-| [Coding benchmark](./bench/README.md) | 79 tasks, grading tools, and workflows for evaluating AIUI coding agents. |
+| [Coding benchmark](./bench/README.md) | 80 tasks, grading tools, and workflows for evaluating AIUI coding agents. |
 
 Start with the [capabilities showcase](./samples/capabilities/), or explore focused [gyroscope](./samples/gyroscope-test/), [device info](./samples/navigator-info/), [scanner](./samples/scanner/), [text-to-speech](./samples/tts/), and [realtime voice intelligence](./samples/realtime-voice-intelligence/) examples.
 
