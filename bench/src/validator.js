@@ -18,7 +18,7 @@ const tags = new Set(`
 // Keep these allowlists aligned with the supported AIUI runtime surface. An
 // unknown event/property is not automatically rejected unless a rule below
 // can verify that the platform does not support it.
-const permissions = new Set(['GEOLOCATION', 'CAMERA', 'RECORD_AUDIO']);
+const permissions = new Set(['GEOLOCATION', 'CAMERA', 'RECORD_AUDIO', 'READ_MEDIA_IMAGES', 'CREATE_MEDIA_IMAGES', 'READ_MEDIA_AUDIO', 'CREATE_MEDIA_AUDIO']);
 const pageEvents = new Set([
   'tap', 'longpress', 'touchstart', 'touchmove', 'touchend',
   'input', 'change', 'focus', 'blur', 'submit',

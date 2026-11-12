@@ -25,7 +25,7 @@ async function fixture(id, callback) {
 
 test('the new catalog adds 24 distinct scenarios without answer files or prompt guidance', async () => {
   const all = await tasks();
-  assert.equal(all.length, 79);
+  assert.equal(all.length, 80);
   assert.equal(catalog.length, 24);
   for (const [id, category] of catalog) {
     const task = await getTask(id);

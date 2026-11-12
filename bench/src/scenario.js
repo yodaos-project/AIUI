@@ -11,6 +11,10 @@ const optionalLifecycle = new Set(['onLoad', 'onShow', 'onReady', 'onHide', 'onU
 /** Validate the scenario DSL, including nested workspace paths. */
 export function validateScenario(check, validatePath) {
   if (!Array.isArray(check.steps) || !check.steps.length || !check.steps.some(step => step.action === 'expect')) throw new Error('scenario needs steps and an expectation');
+  if (check.mediaLibrary !== undefined && (!object(check.mediaLibrary) ||
+    !['granted', 'limited', 'denied'].includes(check.mediaLibrary.status) ||
+    (check.mediaLibrary.listError !== undefined && typeof check.mediaLibrary.listError !== 'boolean') ||
+    (check.mediaLibrary.filename !== undefined && typeof check.mediaLibrary.filename !== 'string'))) throw new Error('invalid media library mock');
   const instances = check.instances || {};
   if (!object(instances)) throw new Error('invalid scenario instances');
   for (const [name, instance] of Object.entries(instances)) {
@@ -76,7 +80,7 @@ async function flush() { for (let index = 0; index < 12; index++) await Promise.
 export async function runScenario(check, workspace, buttonHandler) {
   const instances = { main: { path: check.path, templatePath: check.templatePath }, ...check.instances };
   const loaded = new Map(), storage = new Map(), requests = [], locations = [], timers = new Map();
-  const effects = { navigation: [], opens: [], closes: 0, prevented: 0, storageWrites: [], clearedWatches: [] };
+  const effects = { navigation: [], opens: [], closes: 0, prevented: 0, storageWrites: [], clearedWatches: [], mediaAuthorization: [], mediaLists: [] };
   let now = 0, timerId = 0, storageFailure = false;
   const errors = [];
   const track = result => { if (result?.then) result.catch(error => errors.push(error)); };
@@ -113,7 +117,17 @@ export async function runScenario(check, workspace, buttonHandler) {
   const globals = {
     wx,
     window: { open(url, target = '_widget') { effects.opens.push({ url, target }); }, close() { effects.closes++; } },
-    navigator: { geolocation: {
+    navigator: { mediaLibrary: {
+      async requestAuthorization(access, type = 'image') {
+        effects.mediaAuthorization.push([access, type]);
+        return check.mediaLibrary?.status ?? 'denied';
+      },
+      async list(options = {}) {
+        effects.mediaLists.push(options.mediaType ?? 'image');
+        if (check.mediaLibrary?.listError) throw new Error('Library unavailable');
+        return { items: [{ id: 'photo-1', mediaType: 'image', filename: check.mediaLibrary?.filename ?? 'sunrise.jpg' }], nextCursor: null, access: check.mediaLibrary?.status === 'limited' ? 'limited' : 'full' };
+      },
+    }, geolocation: {
       getCurrentPosition(success, error) { locations.push({ success, error, watch: false }); },
       watchPosition(success, error) { locations.push({ success, error, watch: true, active: true }); return locations.length; },
       clearWatch(id) { if (locations[id - 1]) locations[id - 1].active = false; effects.clearedWatches.push(id); },
