@@ -635,6 +635,12 @@
             "docPath": "3-api/media/media-capture.en-US.md"
           },
           {
+            "id": "media-library",
+            "label": "Media Library",
+            "docId": "media-media-library",
+            "docPath": "3-api/media/media-library.en-US.md"
+          },
+          {
             "id": "video",
             "label": "Video Playback",
             "docId": "media-video",
