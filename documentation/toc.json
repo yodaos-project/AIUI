@@ -799,6 +799,12 @@
             "label": "媒体采集",
             "docId": "media-media-capture",
             "docPath": "3-api/media/media-capture.md"
+          },
+          {
+            "id": "media-library",
+            "label": "媒体库",
+            "docId": "media-media-library",
+            "docPath": "3-api/media/media-library.md"
           }
         ]
       },
