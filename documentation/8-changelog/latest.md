@@ -1,6 +1,21 @@
 # v0.20.0
 
-AIUI 0.20.0 让智能体更方便地查询权限状态、复用计算模块和调整界面。此次更新也改善了网络连接、动画播放和页面交互的稳定性。
+AIUI 0.20.0 让智能体更方便地访问媒体库、查询权限状态、复用计算模块和调整界面。此次更新也改善了网络连接、动画播放和页面交互的稳定性。
+
+## 访问系统媒体库
+
+智能体可以通过 `navigator.mediaLibrary` 浏览和读取系统媒体库中的图片与音频，也可以将图片或音频保存为新资源。例如，声明 `READ_MEDIA_IMAGES` 后，可以请求授权并读取最近的图片：
+
+```javascript
+const library = navigator.mediaLibrary;
+const status = await library.requestAuthorization('read', 'image');
+if (status === 'granted' || status === 'limited') {
+  const page = await library.list({ mediaType: 'image', limit: 20 });
+  console.log(page.items, page.nextCursor);
+}
+```
+
+图片和音频的读取、创建权限需要分别在 `app.json` 中声明，并取得系统授权。保存只创建新资源，不会覆盖现有资源；iOS 不支持音频媒体库操作。完整用法和平台限制见[媒体库](/AIUI/api/media-media-library)。
 
 ## 感知权限状态，给用户明确反馈
 

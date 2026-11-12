@@ -1,6 +1,21 @@
 # v0.20.0
 
-AIUI 0.20.0 makes it easier for agents to check permission states, reuse computation modules, and adapt their interfaces. This release also improves the reliability of networking, animations, and page interactions.
+AIUI 0.20.0 makes it easier for agents to access the media library, check permission states, reuse computation modules, and adapt their interfaces. This release also improves the reliability of networking, animations, and page interactions.
+
+## Access the System Media Library
+
+Agents can use `navigator.mediaLibrary` to browse and read images and audio in the system media library, and save new image or audio assets. For example, after declaring `READ_MEDIA_IMAGES`, request authorization and list recent images:
+
+```javascript
+const library = navigator.mediaLibrary;
+const status = await library.requestAuthorization('read', 'image');
+if (status === 'granted' || status === 'limited') {
+  const page = await library.list({ mediaType: 'image', limit: 20 });
+  console.log(page.items, page.nextCursor);
+}
+```
+
+Declare the required image or audio read and create permissions separately in `app.json` and obtain system authorization. Saving only creates new assets and does not overwrite existing ones. Audio media library operations are unavailable on iOS. See [Media Library](/AIUI/api/media-media-library) for complete usage and platform limits.
 
 ## Give Clear Feedback About Permissions
 
