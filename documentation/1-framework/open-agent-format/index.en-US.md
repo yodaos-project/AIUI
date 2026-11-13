@@ -1,108 +1,65 @@
-# Open Agent Format
+# AIX Format
 
-Open Agent Format, or OAF, is an open project format that uses directories and file conventions to describe an agent. Instead of treating an agent as a single prompt file, it breaks the problem into clear engineering layers: who the agent is, how it starts, how it interacts with users, and how its capabilities are reused.
+An agent can contain more than instructions: it may also include pages, images, and other resources. During development, you need a clear way to organize them; when sharing or installing the agent, you need a way to deliver them together to a compatible runtime.
 
-In AIUI, Open Agent Format is not only a description spec, but also the scaffold that turns an agent into a runnable application. You can think of it as AIUI taking OAF and extending it from a static description into an AI-Native User Interface with pages, components, modules, and distributable packages.
+**AIX (AI eXecutable) is a portable package format for AI agents.** It extends Open Agent Format so agent resources and interactive interfaces can be packaged, inspected, and distributed together.
 
-## What It Actually Is
+## Start with Open Agent Format
 
-If an agent only exists as a block of text, it is hard to answer practical engineering questions such as:
+Open Agent Format (OAF) uses files and directories to organize an agent. A minimal OAF agent can consist of a root `AGENTS.md` file describing its identity and instructions. A project can also include resources such as skills, MCP configurations, and sub-agents when needed.
 
-- Where the agent identity, responsibility, and behavioral boundaries are declared
-- Which entry point starts the application
-- How pages are organized and what UI the user finally sees
-- How reusable components, modules, and assets are split out
-- How the same capabilities are migrated and reused across projects
+OAF focuses on describing and organizing an agent. It is not tied to one runtime and does not prescribe a specific interactive interface. AIX **extends OAF**: it can preserve those agent files while adding application configuration, pages, page input descriptions, and a distributable package.
 
-Open Agent Format solves the organization problem behind those questions. It brings agent definition back into the file system itself, so the project structure becomes part of the agent definition.
+AIX preserves OAF instructions and resources. Their presence in a package does not automatically install skills, start services, or execute the instructions.
 
-In other words, OAF is not a single config file. It is an engineering-oriented organization model:
+## What Does AIX Add?
 
-- `AGENTS.md` expresses the agent description layer
-- `app.json` and the application entry express the runtime layer
-- `pages/` expresses pages and interaction
-- `widgets/` expresses small independent interfaces
-- `workers/` expresses background tasks shared across entries
-- Components, modules, and packages express the reuse layer
+In AIUI, AIX can bring an agent description and interface together in a distributable `.aix` file:
 
-## What AIUI Extends
+- **Application configuration**: `app.json` declares pages and other entry points and settings.
+- **Interactive interfaces**: Pages and Widgets can display content and receive user actions.
+- **Page input**: A page can describe the data it needs when opened; AIX can also derive agent-callable tool descriptions from page information.
+- **Resources and metadata**: A package can carry images, code, and other resources, along with metadata for inspecting its contents.
 
-Standard OAF focuses more on how to describe an agent. AIUI goes one step further and adds the layer that turns the agent into a UI application.
+Developers still need to write application logic, connect services, and verify behavior in the actual runtime. AIX is a **package format**, not a model or a runtime itself.
 
-In AIUI, a complete OAF project usually contains at least these parts:
+## How Is a Development Project Different from an `.aix` Package?
 
-- `AGENTS.md`: defines agent identity, system instructions, capability boundaries, and collaboration constraints
-- `app.json`: defines the application entry, page list, and global window configuration
-- `pages/`: defines concrete pages, page lifecycle, events, and interaction logic
-- `widgets/`: defines Widget entries, displayed content, and state callbacks
-- `workers/`: defines Agent Worker background tasks
-- `components/`: encapsulates reusable UI and local interaction units
-- `modules/` or other regular module files: split business logic, utility functions, and asset imports
-- `package.json` and package exports: distribute reusable capabilities to other AIUI applications
-
-Because of this, Open Agent Format in AIUI can be understood as two connected layers:
-
-- Description layer: what this agent is
-- Application layer: how this agent is run, presented, and reused
-
-That is also the biggest difference between AIUI and agent projects that only contain prompts or isolated configuration.
-
-## How To Read The Structure
-
-Here is a simplified example of an OAF / AIUI project:
+During development, you usually edit files in a project directory. For example:
 
 ```text
-agent-app/
-  AGENTS.md
-  app.json
-  app.js
-  pages/
-    home/
-      index.ink
-  widgets/
-    weather/
-      index.ink
-  workers/
-    sync.js
-  components/
-    agent-card.ink
-  modules/
-    format-message.ts
-  package.json
+my-agent/
+├── AGENTS.md
+├── app.json
+├── app.js
+├── package.json
+└── pages/
+    └── index/
+        └── index.ink
 ```
 
-Each layer answers a different question:
+`AGENTS.md` describes the agent, `app.json` declares pages, and `app.js` and page files implement logic and interfaces. A project can also include Widgets, Agent Workers, components, and image assets when needed. See [Project Structure](/AIUI/guide/structure) for common directories and examples.
 
-- `AGENTS.md`: who this agent is and how it should think and respond
-- `app.json` / `app.js`: how the agent application starts and which global behaviors it owns
-- `pages/`: which UI the user actually sees and interacts with
-- `widgets/`: the small interfaces users can quickly read or operate
-- `workers/`: the tasks that should keep running across Pages or Widgets
-- `components/`: which UI fragments should be reused and encapsulated
-- `modules/`: which logic, assets, or capabilities should be factored out
-- `package.json`: which capabilities should be exposed as a package for other projects
+When you're ready to distribute the project, you can package it as a single **`.aix` file**. It is a ZIP-based archive that compatible tools can inspect and read. A generated AIX package must include `app.json` and a `VERSION` identifying the build; tools can also generate package metadata under `META-INF/aix/`. The project's `AGENTS.md` and other OAF resources can be preserved in the package.
 
-If you think of AIUI as the framework that gives an agent a real UI, then OAF is the underlying file format that keeps that UI project organized.
+`VERSION` identifies a build; it is not the AIX format version. You normally don't need to create it manually in the source directory.
 
-## Why It Matters
+## From Project to Distributable Agent
 
-The value of Open Agent Format is not in introducing another term. Its value is that it makes agent projects more readable, maintainable, and portable:
+A typical path is:
 
-- The directory structure itself becomes documentation, which lowers handoff and collaboration cost
-- The boundary between the description layer and the UI layer becomes clearer
-- Pages, components, modules, and packages have explicit responsibilities, which helps long-term evolution
-- Different platforms can map to the same structure more easily instead of hiding behavior in private configuration
+1. **Describe the agent**: Write its responsibilities, capabilities, and instructions in `AGENTS.md`.
+2. **Create an interface**: Declare pages in `app.json`, then write their content and interactions.
+3. **Preview and verify**: Check the experience in development and test on the target device.
+4. **Package**: Generate an `.aix` file, then inspect, install, or distribute it with compatible tools.
 
-This matters even more in AIUI, because AIUI is not built for agents that only answer with text. It is built for agent applications that can run pages, host interactions, and manage state.
+A readable `.aix` file does not guarantee that its services or device capabilities are available everywhere. Check the runtime, permissions, and required services for the intended use; follow the specification when verifying package integrity or trust. **A valid format does not imply a trusted signature.**
 
 ## Continue Reading
 
-- [AGENTS.md](/AIUI/framework/config-agents): learn how the agent description file defines identity, description, and instructions
-- [app.json](/AIUI/framework/open-agent-format-app-json): learn how application entry, page lists, and global configuration work
-- [Pages](/AIUI/framework/open-agent-format-page): learn how pages carry concrete UI, lifecycle, and interaction
-- [Widget](/AIUI/framework/open-agent-format-widget): learn how to build a small independent interface
-- [Agent Worker](/AIUI/framework/open-agent-format-agent-worker): learn how to build a shared background task
-- [Components](./custom-components): learn how reusable UI units are registered, composed, and connected
-- [Modules](./module): learn how logic, assets, and WebAssembly are organized through modules
-- [Assets](./assets): learn how bundled paths, network URLs, and different asset types are loaded
-- [Packages](./package): learn how modules and components are packaged into distributable capabilities
+- [AIX Format Spec](https://yodaos-project.github.io/aix/spec?lang=en): Read the complete format, package structure, and verification rules.
+- [Project Structure](/AIUI/guide/structure): Explore common files and directories in an AIUI project.
+- [AGENTS.md](/AIUI/framework/config-agents) and [app.json](/AIUI/framework/open-agent-format-app-json): Learn about agent descriptions and application configuration.
+- [Pages](/AIUI/framework/open-agent-format-page), [Widgets](/AIUI/framework/open-agent-format-widget), and [Agent Workers](/AIUI/framework/open-agent-format-agent-worker): Learn about project interfaces and background tasks.
+- [Components](/AIUI/framework/open-agent-format-custom-components), [Modules](/AIUI/framework/open-agent-format-module), [Assets](/AIUI/framework/open-agent-format-assets), and [Packages](/AIUI/framework/open-agent-format-packages): Organize and reuse project content.
+- [Packaging and Publishing](/AIUI/guide/bundle-publish): Learn about submitting and publishing an agent.

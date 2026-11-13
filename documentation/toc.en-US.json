@@ -273,7 +273,7 @@
     "children": [
       {
         "id": "open-agent-format",
-        "label": "Open Agent Format",
+        "label": "AIX Format",
         "expanded": true,
         "children": [
           {

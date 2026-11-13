@@ -1,48 +1,43 @@
 # app.json
 
-In AIUI's extension of Open Agent Format, `app.json` defines application-level entries and global configuration. It determines where an agent application starts and how its Pages, Widgets, Agent Workers, and global window behavior are organized.
+`app.json` is the application configuration file at the root of an AIUI project. It tells AIUI which pages the project contains and, when needed, which Widgets, background tasks, and permissions it declares.
 
-However, a complete application-level definition usually includes more than `app.json`. It is typically used together with an application-level logic entry. You can think of it as:
+Think of `app.json` as declaring **entry points and settings**. The actual interfaces and behavior are written in page, Widget, and other project files.
 
-- `app.json`: Defines Pages, Widgets, Agent Workers, and global configuration
-- `app.js`: Defines application-level logic and the global lifecycle
+## Start with One Page
 
-## What `app.json` Is Responsible For
-
-`app.json` is mainly used to declare:
-
-- Which pages the application contains
-- Which Widgets the application contains
-- Which background tasks run with the agent
-- Which page the application starts from
-- Global window styles
-- Shared base configuration across pages
-
-A typical example looks like this:
+Here's a basic configuration:
 
 ```json
 {
-  "pages": [
-    "pages/index/index",
-    "pages/logs/logs"
-  ],
+  "pages": ["pages/index/index"],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#fff",
-    "navigationBarTitleText": "AIUI Agent",
-    "navigationBarTextStyle": "black"
+    "navigationBarTitleText": "My Agent"
   }
 }
 ```
 
-The most important parts here are:
+- `pages` lists page paths relative to the project root, without file extensions. For example, `pages/index/index` can correspond to `pages/index/index.ink`.
+- `window` sets application-level window defaults. Here `navigationBarTitleText` supplies a title; how it appears depends on the interface presentation.
 
-- `pages`: Declares the list of page paths
-- `window`: Declares the global window configuration
+After declaring the path, create the corresponding page file. A page can also use multiple files at the same path; see [Page Overview](/AIUI/framework/open-agent-format-page).
 
-## Declare Widgets and Background Tasks
+### How Is the Default Page Chosen?
 
-In addition to Pages, `app.json` can declare Widgets and Agent Workers:
+When another opening entry is not specified, the first item in `pages` is the default. To choose another default page, set `entryPagePath` to a path already declared in `pages`:
+
+```json
+{
+  "pages": ["pages/index/index", "pages/settings/index"],
+  "entryPagePath": "pages/settings/index"
+}
+```
+
+This makes the settings page the default. Another declared entry may also be specified when opening the application.
+
+## Add Widgets and Background Tasks When Needed
+
+Widgets and Agent Workers are optional. Declare them in `app.json` when you need a small independent interface or a background task:
 
 ```json
 {
@@ -53,7 +48,7 @@ In addition to Pages, `app.json` can declare Widgets and Agent Workers:
       "family": "1x2",
       "placement": "overlay",
       "displayName": "Weather",
-      "description": "Shows the weather and temperature for your current location."
+      "description": "Shows the weather and temperature."
     }
   ],
   "agentWorkers": [
@@ -67,14 +62,15 @@ In addition to Pages, `app.json` can declare Widgets and Agent Workers:
 }
 ```
 
-- `widgets` declares each independent Widget's entry point, name, description, size family, and presentation mode. `placement` accepts `persistent` for a fixed Widget or `overlay` for a Widget opened with `window.open(..., '_widget')`, and defaults to `persistent` when omitted.
-- `agentWorkers` declares the name, entry file, start condition, and lifetime of a background script.
+A Widget's `path` corresponds to its file, such as `widgets/weather/index.ink`. `family` is the size category: currently `1x1` or `1x2`, and it must match the declaration in the Widget file. `placement` controls presentation: `persistent` is the default, while `overlay` can be opened with `window.open(..., '_widget')`.
 
-For complete configuration and examples, see [Widget](/AIUI/framework/open-agent-format-widget) and [Agent Worker](/AIUI/framework/open-agent-format-agent-worker).
+`agentWorkers` declares a background script's name, path, trigger, and lifetime. The example uses `instant` for a short one-time task; explore `foreground` if it needs to run while a Page or Widget is open. The developer still needs to write the script.
 
-### Localize Widget Metadata
+For complete rules and files, see [Widget](/AIUI/framework/open-agent-format-widget) and [Agent Worker](/AIUI/framework/open-agent-format-agent-worker).
 
-`app.json` is the complete default configuration and provides the default `displayName` and `description` for every Widget. To add another language, create an `app.<locale>.json` file in the application root that overrides only Widget metadata:
+### Provide Widget Text in Another Language
+
+`app.json` needs a default `displayName` and `description`. To add English, for example, create `app.en-US.json` at the project root:
 
 ```json
 {
@@ -82,109 +78,68 @@ For complete configuration and examples, see [Widget](/AIUI/framework/open-agent
   "widgets": {
     "widgets/weather/index": {
       "displayName": "Weather",
-      "description": "Shows the weather and temperature for your current location."
+      "description": "Shows the weather and temperature."
     }
   }
 }
 ```
 
-The `widgets` value in a locale file is keyed by the Widget `path` and may override only `displayName` and `description`. It must not change `family`, `placement`, or other runtime configuration. The runtime selects a locale file from the user's language preferences and falls back to `app.json` when the locale or a field is missing. Use BCP 47 tags in locale filenames, such as `app.en-US.json` and `app.zh-TW.json`.
+The locale file's `widgets` object uses each Widget's `path` as its key. It overrides only `displayName` and `description`, not configuration such as `family` or `placement`. The runtime matches the user's language preferences and falls back to `app.json` when a locale or field is missing. Use BCP 47 tags in filenames, such as `app.en-US.json` or `app.zh-TW.json`.
 
-## Declare Permissions
+## Declare the Permissions Your App Needs
 
-When an application needs sensitive capabilities such as location, camera, microphone, or the system media library, declare the corresponding permissions in the `permissions` array in `app.json`:
+For capabilities such as location, camera, microphone, or the system media library, declare the permissions the app actually needs in `permissions`. For example:
 
 ```json
 {
   "pages": ["pages/index/index"],
-  "permissions": [
-    "GEOLOCATION",
-    "CAMERA",
-    "RECORD_AUDIO"
-  ]
+  "permissions": ["GEOLOCATION", "CAMERA", "RECORD_AUDIO"]
 }
 ```
 
-Permission names are case-sensitive. Declare only the permissions the application actually needs. An API fails when its required runtime permission is not declared. Unrecognized strings grant no capability.
+Permission names are case-sensitive. Common declarations include:
 
-The following permissions can currently be declared:
+| Permission | Purpose |
+| --- | --- |
+| `GEOLOCATION` | Get a location or receive location updates |
+| `CAMERA` | Capture images or video with the camera |
+| `RECORD_AUDIO` | Capture audio with the microphone |
+| `READ_MEDIA_IMAGES` | List and read images in the media library |
+| `CREATE_MEDIA_IMAGES` | Add images to the media library; does not include changing or replacing existing assets |
+| `READ_MEDIA_AUDIO` | List and read audio in the media library |
+| `CREATE_MEDIA_AUDIO` | Add audio to the media library; does not include changing or replacing existing assets |
 
-| Permission | Description | Current behavior |
-| :--- | :--- | :--- |
-| `GEOLOCATION` | Get the current location or receive location updates | `navigator.geolocation` checks this permission; see [Geolocation](/AIUI/api/geo-data-geolocation) |
-| `CAMERA` | Access cameras and capture images or video | Camera and video-capture APIs check this permission |
-| `RECORD_AUDIO` | Access microphones and capture audio | Microphone and audio-capture APIs check this permission; see [Media Capture](/AIUI/api/media-media-capture) |
-| `READ_MEDIA_IMAGES` | List and read images in the system media library | Media-library image read operations check this permission |
-| `CREATE_MEDIA_IMAGES` | Add images to the system media library | Media-library image save operations check this permission; it does not allow modifying or replacing existing assets |
-| `READ_MEDIA_AUDIO` | List and read audio in the system media library | Media-library audio read operations check this permission |
-| `CREATE_MEDIA_AUDIO` | Add audio to the system media library | Media-library audio save operations check this permission; it does not allow modifying or replacing existing assets |
+Declare `INTERNET` for network features. Not every network API currently checks this declaration; consult the relevant API documentation for its requirements.
 
-`permissions` is a capability declaration in the application manifest; it does not replace authorization from the device operating system. Location, camera, microphone, and media-library access may also require the user to grant system permission. Even when a permission is declared in `app.json`, the API can still fail if system authorization is denied or the device does not support the capability. Applications should handle permission denial and unavailable capabilities.
+`permissions` is an application declaration; **it does not mean the user has granted access**. Sensitive capabilities may also need device authorization. Even if declared, a call can still fail if the user denies access or the device doesn't support it. Handle denial and unavailable capabilities. Unknown permission names do not automatically grant access.
 
-Use [Permission State](/AIUI/api/permissions) to query geolocation, camera, or microphone state without prompting. Request access through the relevant sensitive API; there is no generic `navigator.permissions.request()`. Declarations are read at application startup, so changing the manifest does not update the current session.
+Use [Permission State](/AIUI/api/permissions) to query location, camera, and microphone status without prompting. Request access through the relevant sensitive API; there is no general `navigator.permissions.request()`. Declarations are read at application startup, so editing the file does not update a running session. See [Geolocation](/AIUI/api/geo-data-geolocation) and [Media Capture](/AIUI/api/media-media-capture) for the related capabilities.
 
-## Its Relationship With `AGENTS.md`
+## How Do `app.json`, `app.js`, and `AGENTS.md` Differ?
 
-If `AGENTS.md` defines "who this agent is and what capabilities it has," then `app.json` defines "where this agent application starts and how its UI is organized."
+| File | Responsibility |
+| --- | --- |
+| `AGENTS.md` | Describes the agent's identity, responsibilities, and behavioral guidance |
+| `app.json` | Declares entry points, window configuration, and permissions |
+| `app.js` | Defines application-level logic and shared data |
 
-They focus on different concerns:
-
-- `AGENTS.md`: Agent identity, description, system instructions, and capability boundaries
-- `app.json`: Application entry, page set, and global UI configuration
-
-## Application-level Logic: `app.js`
-
-In addition to `app.json`, AIUI applications usually have an `app.js` file as the application-level logic entry. It is used to register the application itself and carries the global lifecycle and global data.
-
-Example:
+For example, `app.js` can run code when the agent initializes:
 
 ```javascript
 export default {
-  onLaunch(options) {
-    // Agent initialization
-  },
-  onShow(options) {
-    // Agent becomes visible
-  },
-  onHide() {
-    // Agent is hidden
+  onLaunch() {
+    console.log('Agent started');
   },
   globalData: {
-    // Global data
+    city: 'Hangzhou'
   }
-}
+};
 ```
 
-You can think of `app.js` as the "application-level logic layer." It focuses more on the behavior of the entire application during startup, display, and hiding, rather than the behavior of a specific page.
+Common application-level callbacks include `onLaunch` (initialization), `onShow` (startup or return to the foreground), `onHide` (move to the background), and `onError` (application script errors). These differ from an individual page's lifecycle; handle API failures using the error mechanism for that API too.
 
-## Application-level Lifecycle
+## Continue Reading
 
-Common global lifecycle callbacks in `app.js` include:
-
-| Callback | Description | Trigger Timing |
-| :--- | :--- | :--- |
-| `onLaunch` | Listens for agent initialization | Triggered once globally when agent initialization is complete |
-| `onShow` | Listens for the agent becoming visible | Triggered when the agent starts or returns to the foreground |
-| `onHide` | Listens for the agent being hidden | Triggered when the agent moves from the foreground to the background |
-| `onError` | Error listener | Triggered when a script error occurs or an API call fails |
-
-These callbacks are different from page-level lifecycles. They describe the entire application rather than a single page.
-
-## Its Place In Open Agent Format
-
-From the perspective of Open Agent Format, `app.json` and `app.js` together complete the "application-level definition" layer:
-
-- `AGENTS.md`: Describes the agent
-- `app.json`: Defines Pages, Widgets, Agent Workers, and global configuration
-- `app.js`: Defines application-level logic and the global lifecycle
-- `pages/`: Defines concrete pages and interactive UI
-
-This is also where AIUI goes beyond a purely descriptive Agent Format: it not only describes the agent, but also defines how the agent exists as a runnable application.
-
-## Recommended Reading
-
-- [AGENTS.md](/AIUI/framework/config-agents)
-- [Page Overview](/AIUI/framework/open-agent-format-page)
-- [Page Definition](/AIUI/framework/open-agent-format-page-definition)
-- [Widget](/AIUI/framework/open-agent-format-widget)
-- [Agent Worker](/AIUI/framework/open-agent-format-agent-worker)
+- [AGENTS.md](/AIUI/framework/config-agents): Learn about agent descriptions.
+- [Page Overview](/AIUI/framework/open-agent-format-page) and [Page Definition](/AIUI/framework/open-agent-format-page-definition): Create and configure pages.
+- [Widget](/AIUI/framework/open-agent-format-widget) and [Agent Worker](/AIUI/framework/open-agent-format-agent-worker): Explore the optional entry points.

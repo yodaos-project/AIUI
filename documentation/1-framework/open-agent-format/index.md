@@ -1,108 +1,65 @@
-# Open Agent Format
+# AIX 格式
 
-Open Agent Format，简称 OAF，是一套用目录结构和文件约定来描述智能体的开放工程格式。它不把智能体理解成一个孤立的提示词文件，而是把“智能体是谁、怎么启动、如何与用户交互、哪些能力可以复用”拆分成清晰的工程层次。
+一个智能体不仅有指令，还可能包含页面、图片和其他资源。开发时，我们希望这些内容易于组织；分享或安装时，也希望把它们一起交给兼容的运行环境。
 
-在 AIUI 中，Open Agent Format 不只是“描述规范”，也是把智能体落成可运行应用的骨架。你可以把它理解成：AIUI 基于 OAF，把智能体从静态说明扩展成了具备页面、组件、模块和可分发包的 AI-Native User Interface。
+**AIX（AI eXecutable）是一种面向 AI 智能体的可移植包格式。** 它在 Open Agent Format 的基础上扩展，让智能体资源与交互界面可以一起被打包、检查和分发。
 
-## 它到底是什么
+## 先了解 Open Agent Format
 
-如果只用一段文本描述智能体，通常很难回答这些工程问题：
+Open Agent Format（OAF） 使用文件和目录组织智能体。一个最基本的 OAF 智能体可以只有根目录中的 `AGENTS.md`：这个文件描述智能体的身份和指令。项目还可以按需包含技能、MCP 配置或子智能体等资源。
 
-- 智能体的身份、职责和行为边界写在哪里
-- 应用从哪个入口启动
-- 页面如何组织，用户最终会看到什么界面
-- 可复用的组件、模块和资源如何拆分
-- 这些能力如何在不同项目之间迁移和复用
+OAF 关注如何描述和组织智能体，不限定必须使用某一种运行环境，也不规定具体的交互界面。AIX **继承并扩展 OAF**：可以保留这些智能体文件，同时增加应用配置、页面、页面输入描述和可分发的包。
 
-Open Agent Format 解决的，就是这些信息的组织问题。它把智能体重新落回“文件系统”本身，让工程结构天然成为智能体定义的一部分。
+AIX 保留 OAF 指令和资源，不会因为包里包含这些文件就自动安装技能、启动服务或执行其中的指令。
 
-换句话说，OAF 不是单个配置文件，而是一套面向工程的组织方式：
+## AIX 为智能体增加了什么？
 
-- 用 `AGENTS.md` 表达智能体描述层
-- 用 `app.json` 和应用入口表达运行层
-- 用 `pages/` 表达页面和交互层
-- 用 `widgets/` 表达小尺寸独立界面
-- 用 `workers/` 表达跨页面共享的后台任务
-- 用组件、模块与 Package 表达复用层
+在 AIUI 中，AIX 可以把智能体的描述和界面放在同一个可分发的 `.aix` 文件中：
 
-## AIUI 扩展了什么
+- **应用配置**：`app.json` 声明页面等入口和应用配置。
+- **交互界面**：页面和 Widget 可以展示内容、接收用户操作。
+- **页面输入**：页面可以描述自己需要的数据，供打开页面时使用；AIX 也可以根据页面信息生成供智能体调用的工具描述。
+- **资源和元数据**：包可以携带图片、代码及其他资源，并包含用于检查包内容的元数据。
 
-标准 OAF 更强调“如何描述一个 Agent”，而 AIUI 更进一步，补上了“如何把 Agent 运行成界面应用”这一层。
+你仍然需要编写业务逻辑、接入所需服务，并在实际运行环境中验证。AIX 是**包格式**，不是模型或运行时本身。
 
-在 AIUI 里，一个完整的 OAF 工程通常至少包含以下几部分：
+## 开发项目和 `.aix` 包有什么区别？
 
-- `AGENTS.md`：定义智能体身份、系统指令、能力边界和协作约束
-- `app.json`：定义应用入口、页面列表和全局窗口配置
-- `pages/`：定义具体页面、页面生命周期、事件以及交互逻辑
-- `widgets/`：定义 Widget 入口、显示内容和状态变化回调
-- `workers/`：定义 Agent Worker 后台任务
-- `components/`：封装可复用 UI 与局部交互单元
-- `modules/` 或其他普通模块文件：拆分业务逻辑、工具函数和资源导入
-- `package.json` 与 Package 导出：把可复用能力分发给其他 AIUI 应用
-
-因此，在 AIUI 语境下，Open Agent Format 可以理解成两层：
-
-- 描述层：说明这个智能体是什么
-- 应用层：说明这个智能体如何被运行、展示和复用
-
-这也是 AIUI 和“只有提示词或只有配置”的 Agent 工程之间最大的差别。
-
-## 典型结构怎么理解
-
-下面是一个经过抽象后的 OAF / AIUI 工程示意：
+开发时，你通常在项目目录中编辑文件。例如：
 
 ```text
-agent-app/
-  AGENTS.md
-  app.json
-  app.js
-  pages/
-    home/
-      index.ink
-  widgets/
-    weather/
-      index.ink
-  workers/
-    sync.js
-  components/
-    agent-card.ink
-  modules/
-    format-message.ts
-  package.json
+my-agent/
+├── AGENTS.md
+├── app.json
+├── app.js
+├── package.json
+└── pages/
+    └── index/
+        └── index.ink
 ```
 
-这里每一层分别回答不同问题：
+`AGENTS.md` 描述智能体，`app.json` 声明页面，`app.js` 和页面文件实现逻辑与界面。项目也可以按需添加 Widget、Agent Worker、组件和图片资源。具体目录和示例见[项目结构](/AIUI/guide/structure)。
 
-- `AGENTS.md`：这个智能体是谁，应该如何思考和回应
-- `app.json` / `app.js`：这个智能体应用如何启动，以及有哪些全局行为
-- `pages/`：用户实际看到和操作的界面是什么
-- `widgets/`：用户可以快速查看或操作的小尺寸界面是什么
-- `workers/`：哪些任务需要在多个 Page 或 Widget 之间保持运行
-- `components/`：界面里哪些片段需要复用和封装
-- `modules/`：哪些逻辑、资源或能力需要被拆分复用
-- `package.json`：哪些能力要作为 Package 暴露给别的项目使用
+准备分发时，可以把项目打包为一个 **`.aix` 文件**。它是基于 ZIP 的归档，方便兼容的工具检查和读取。生成的 AIX 包必须包含 `app.json` 和用于标识本次构建的 `VERSION`；工具还可以生成 `META-INF/aix/` 下的包元数据。项目中的 `AGENTS.md` 和其他 OAF 资源可以一并保留在包中。
 
-如果你把 AIUI 看成“让 Agent 具备真实 UI”的框架，那么 OAF 就是这套 UI 工程的基础文件格式。
+`VERSION` 标识一次构建，不是 AIX 格式版本。开发源码目录通常不需要手动创建它。
 
-## 为什么它重要
+## 从项目到可分发的智能体
 
-Open Agent Format 的价值，不在于引入新的术语，而在于让智能体工程具备更好的可读性、可维护性和可迁移性：
+可以按照下面的顺序开始：
 
-- 目录本身就是文档，降低接手和协作成本
-- 描述层与界面层边界更清晰，方便拆分职责
-- 页面、组件、模块和 Package 之间职责明确，便于长期演进
-- 不同平台之间更容易建立映射关系，而不是被私有配置锁死
+1. **描述智能体**：编写 `AGENTS.md`，说明它的职责、能力和指令。
+2. **创建界面**：在 `app.json` 中声明页面，编写页面的内容和交互。
+3. **预览和验证**：在开发环境中检查效果，并在目标设备上测试。
+4. **打包**：生成 `.aix` 文件，再通过兼容工具检查、安装或分发。
 
-对于 AIUI 来说，这一点尤其重要，因为 AIUI 面向的不是“只能回答文本的 Agent”，而是“能够运行页面、承载交互、管理状态”的智能体应用。
+一个 `.aix` 文件能够被读取，并不意味着其中的服务或设备能力在所有环境中都可用。正式使用时，还需要检查运行环境、权限和所需服务；需要验证包的完整性或可信性时，请按照规范进行检查。**格式有效不等于签名可信。**
 
 ## 继续阅读
 
-- [AGENTS.md](/AIUI/framework/config-agents)：了解智能体描述文件如何定义身份、说明和指令
-- [app.json](/AIUI/framework/open-agent-format-app-json)：了解应用入口、页面集合和全局配置
-- [页面](/AIUI/framework/open-agent-format-page)：了解页面如何承载具体 UI、生命周期和交互
-- [Widget](/AIUI/framework/open-agent-format-widget)：了解如何开发小尺寸独立界面
-- [Agent Worker](/AIUI/framework/open-agent-format-agent-worker)：了解如何开发共享后台任务
-- [组件](./custom-components)：了解可复用 UI 单元如何注册、组合和通信
-- [模块](./module)：了解逻辑、资源和 WebAssembly 如何通过模块组织
-- [资源（Assets）](./assets)：了解包内路径、网络 URL 和不同资源类型的加载规则
-- [Package](./package)：了解如何把模块与组件封装成可分发能力
+- [AIX Format Spec](https://yodaos-project.github.io/aix/spec?lang=en)：了解完整格式、包结构和验证规则。
+- [项目结构](/AIUI/guide/structure)：认识 AIUI 项目的常见文件和目录。
+- [AGENTS.md](/AIUI/framework/config-agents)和 [app.json](/AIUI/framework/open-agent-format-app-json)：了解智能体描述与应用配置。
+- [页面](/AIUI/framework/open-agent-format-page)、[Widget](/AIUI/framework/open-agent-format-widget)和 [Agent Worker](/AIUI/framework/open-agent-format-agent-worker)：了解项目中的界面和后台任务。
+- [组件](/AIUI/framework/open-agent-format-custom-components)、[模块](/AIUI/framework/open-agent-format-module)、[资源](/AIUI/framework/open-agent-format-assets)和 [Package](/AIUI/framework/open-agent-format-packages)：组织和复用项目内容。
+- [打包与发布](/AIUI/guide/bundle-publish)：了解智能体的提审与发布流程。
