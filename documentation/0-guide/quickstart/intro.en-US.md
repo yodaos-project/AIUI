@@ -1,197 +1,90 @@
 # What Is AIUI?
 
-AIUI is an **AIUI (AI-native user interface)** framework designed specifically for the era of large models. It provides an efficient collaboration platform that enables **deep collaboration between developers and AI**, allowing them to build intelligent and intuitive interfaces together. As a result, AI is no longer limited to text, but can instead deliver interactive experiences that respond precisely to user needs. In essence, **AIUI is a UI development framework built for AI-native experiences**.
+## Getting to Know AI-Native UI
 
-## What Is AIUI?
+You may already be used to chatting with AI: ask a question and read its answer. But text isn't always the easiest way to compare travel plans, adjust a budget, or understand a complex idea. What if AI could also present a diagram, a set of choices, or a small interactive tool?
 
-AIUI (AI-Native User Interface) can first be understood as a new interaction model: AI no longer just outputs a piece of text, but directly organizes its understanding into an actionable interface. Interaction between users and AI no longer happens only in chat responses, but can also take place in cards, forms, panels, game interfaces, or task interfaces. In other words, AIUI is not about "making AI able to speak," but about "making AI able to collaborate with users through interfaces."
+That's a central idea behind **AI-native user interfaces (AI-Native UI)**: combining AI's ability to understand a request with an interface built around the user's goal. Users can describe what they need in conversation, then use the interface to explore information, make choices, and continue with the task. The content and presentation can change with the task and its context.
 
-### In-Chat Interaction
+For example, you might say, “Help me plan a weekend trip.” AI could organize a few destinations into cards showing travel times and highlights. After you choose one, you could use an interface to review or adjust the itinerary. For a simple question, a clear text answer might be enough. The aim is to choose a form that helps the user with the task at hand.
 
-In-chat interaction means that the UI appears directly in the chat flow, embedded in the context as cards, result blocks, forms, or tool panels. Users can chat while clicking, selecting, entering data, or viewing results. This kind of AIUI is suitable for scenarios such as weather cards, itinerary suggestions, task confirmation, search results, and form filling. At its core, it inserts interactive interfaces into the conversation.
+![Interface mockup: a conversation with destination cards, detail buttons, and a route map](../../image/intro/trip-interface-example.png)
 
-The following example uses a weather scenario to demonstrate what in-chat interaction typically looks like: the user asks a question, the AI returns a weather card in the message flow, and then the user can keep clicking actions on the card so the interaction continues naturally within the same conversation.
+*Interface mockup: trip suggestions appear as cards and a route map. This conceptual example is not a screenshot of a real product.*
+
+Try the weather example below: look at the card in the conversation and use its buttons.
 
 <in-chat-interaction-demo></in-chat-interaction-demo>
 
-### Immersive Interface Interaction
+### A Look at ChatGPT's Intelligent UI
 
-Immersive interface interaction means that the UI is no longer attached to chat messages. Instead, a standalone interface carries the complete interaction flow. This interface can be a task panel, an agent window, a game interface, or another more complete operation space. Users can still interact with it through voice or other input methods. For example, in a Landlord game interface, the table, cards, buttons, and status area are all presented by the UI, while the user can still play cards, confirm actions, or collaborate with the Agent through voice.
+OpenAI's [introduction to GPT-6 and Intelligent UI](https://openai.com/index/gpt-6-for-everyone/) illustrates a similar idea: ChatGPT can combine text, visuals, and interactive elements based on the question. For example, it can use an interactive diagram to help someone explore a complex topic or provide a calculator within a conversation. It can also answer in text when that's the useful choice.
 
-The following example uses a Landlord scenario to demonstrate what immersive interface interaction typically looks like: the main interaction happens inside a complete interface, and the AI does more than reply with a sentence. It continuously collaborates with the user around that interface.
+This is one example of an AI-native interface in practice. It shows how an interface can extend a conversation, letting people explore and act on an answer as well as read it.
+
+### How Does It Relate to Familiar Interfaces?
+
+In a traditional application, developers usually design pages and workflows in advance, and users find features through menus, buttons, and forms. An AI-native interface can still use those familiar elements, while also letting users express a goal in natural language and presenting relevant information and actions for the task.
+
+It doesn't require AI to generate every page on the spot: developers can design interfaces in advance, and content can also be organized around the context where appropriate. In either case, the goal is to make it easier to understand information, make choices, and complete a task.
+
+## What Is AIUI?
+
+**AIUI is a UI framework for developing AI agents.** An agent is an AI assistant designed to help users achieve a particular goal, such as checking the weather or preparing to go out.
+
+AIUI helps developers create cards, pages, and interactions for an agent, so users can both talk to AI and complete tasks through an interface. You can use it to develop agents for Rokid glasses.
+
+ChatGPT's Intelligent UI is a product experience; AIUI provides tools for building AI-native interactions. Let's look at two examples of what you can build with AIUI.
+
+## What Can You Build with AIUI?
+
+An AIUI interface can appear in a conversation or open as a standalone experience. Here are two examples:
+
+### Show a Card in a Conversation
+
+The weather example above is a conversational interface: AI displays a card in the conversation, and the user can check information and interact with it without leaving the chat.
+
+This approach works well for simple interactions such as weather queries, itinerary confirmations, and search results.
+
+### Complete a Task in a Standalone Interface
+
+Some tasks involve ongoing actions and changing information, such as playing a game of Landlord. A complete interface can show the table, cards, and buttons, giving the user a place to continue interacting.
 
 <standalone-interaction-demo></standalone-interaction-demo>
 
-As a result, AIUI is more like moving AI from a "text assistant" to an "interface assistant." Developers define the interface boundaries, interaction model, and business capabilities, while the AI decides when to call capabilities, how to organize content, and how to make the overall interaction flow feel more natural based on context.
+This approach works well for games and task panels that involve multiple steps or need to show changing state.
 
-## How Can AIUI Be Implemented?
+## From an Idea to an Agent
 
-AIUI is not a fixed way of generating interfaces. In real products, there are usually two dimensions for deciding how to implement it:
+Imagine building an assistant that helps users check the weather and prepare before going out. Start with one small goal: when someone asks about the weather, show a card with the city and weather information.
 
-<aiui-implementation-chart></aiui-implementation-chart>
+In AIUI Studio, you can get started like this:
 
-Looking along these two dimensions, the most common implementation approaches for AIUI today mainly fall into three categories:
+1. **Describe the idea**: Tell the AI assistant what the card should show and what users should be able to do.
+2. **Create and refine the interface**: Generate a project, inspect the card, and adjust its text, layout, and interactions.
+3. **Preview and check**: Preview it in the browser and check that the information is clear and the interactions work as expected.
+4. **Try it on a device**: When you're ready, debug it on the glasses to experience how it looks and feels in use.
 
-### 1. Tool Rendering
+The screenshot below shows a weather interface in AIUI Studio. The preview in the center shows the interface for the glasses, while the controls on the right let you simulate input and temple gestures to check the experience.
 
-The core of Tool Rendering is to register the UI intent and the structured inputs it requires with the model through the LLM `tools` mechanism, allowing the model to actively initiate the Tool Call in the appropriate context. Developers abstract "displaying a certain kind of UI" as a callable capability. After the frontend receives that call, it renders the UI with predefined components. In essence, this is a high-control, low-freedom AIUI implementation approach.
+![Weather agent preview and simulation controls in AIUI Studio](../../image/quickstart.en-us/9.png)
 
-For example, in a weather scenario, you can register a tool such as `render_weather_card` with the model and declare that it needs an input parameter like `location`. When the user asks, "What's the weather like in Hangzhou today?", the model does not have to respond with a block of text. It can directly call the tool and pass `location: "杭州"`. The frontend then renders a weather card that shows the loading state, weather result, and related actions.
+Once the weather card is working, you could add reminders or itinerary information. Finishing one small feature first makes it easier to see your progress and expand from there.
 
-A simplified `tools` registration can be understood like this:
+To show live weather, you'll also need to connect a weather data service. AI can help write the code, but you'll still need to check the information, verify the interactions, and adjust the project as needed.
 
-```json
-{
-  "name": "render_weather_card",
-  "description": "Render a weather card for a city",
-  "input_schema": {
-    "type": "object",
-    "properties": {
-      "location": {
-        "type": "string",
-        "description": "The city name"
-      }
-    },
-    "required": ["location"]
-  }
-}
-```
+## Where Should I Start?
 
-After the frontend receives this Tool Call, it can place the parameters into the page `query`, and then let the page receive them in `onLoad(query)`:
+Ready to build? Start by creating a project with **AIUI Studio** in your browser. Then choose an example based on the kind of interaction you want to explore:
 
-```javascript
-export default {
-  data: {
-    city: "",
-    loading: true,
-    weather: null
-  },
+- [AIUI Studio quick start](./quickstart.en-US.md): Create and preview your first project.
+- [Conversational AIUI](./first-chat.en-US.md): Try showing a weather card in a chat.
+- [Immersive AIUI](./first-immersive.en-US.md): Try building a standalone game interface.
 
-  async onLoad(query) {
-    const city = query.location;
+You don't need to decide on every technical detail first. Pick an example that interests you and learn about AIUI projects, components, and interactions as you build.
 
-    this.setData({
-      city,
-      loading: true
-    });
+## Already Have Development Experience?
 
-    const weather = await getWeatherByCity(city);
+If you're familiar with Web or WeChat Mini Program development, you can use familiar approaches to build AIUI pages. AIUI provides common Web APIs and supports some WeChat Mini Program components and APIs; check the relevant reference documentation for specific support.
 
-    this.setData({
-      weather,
-      loading: false
-    });
-  }
-}
-```
-
-The corresponding page template can be rendered like this:
-
-```html
-<page>
-  <view class="weather-card">
-    <text class="title">{{ city }} 天气</text>
-
-    <view ink:if="{{ loading }}">
-      <text>天气加载中...</text>
-    </view>
-
-    <view ink:else>
-      <text>{{ weather.condition }}</text>
-      <text>{{ weather.temperature }}°C</text>
-    </view>
-  </view>
-</page>
-```
-
-In other words, the LLM decides that "it should call `render_weather_card` now and pass the `location` parameter," while the page receives those inputs through `onLoad(query)` and renders the weather card using a predefined UI structure.
-
-Suitable use cases:
-
-- Register a fixed UI capability with the model in the form of a `tool`
-- Let the model decide when to display a certain card, form, or result component based on context
-- Drive interface rendering with structured parameters instead of letting the model generate a whole block of UI code directly
-- Insert stable and controllable interactive interfaces into chat flows or task flows
-
-Less suitable use cases:
-
-- Large-scale interface generation where the model needs to decide page structure freely
-- Complex business pages that need to exist independently outside the Tool Call lifecycle
-
-### 2. MCP Apps
-
-MCP Apps can be understood as attaching an interactive UI directly to an MCP tool. In terms of input, it is not fundamentally different from Tool Rendering. Both approaches register `tools` with the LLM, allowing the model to decide when to call them and pass structured parameters based on context. The main difference lies in how rendering is hosted: Tool Rendering often maps call results to built-in UI within the Agent Loop system itself, while MCP Apps are usually loaded by the host according to the UI resources declared by the tool, for example by hosting a third-party URL in an iframe and displaying it inline in the session context. For more about this model, refer to [MCP Apps](https://apps.extensions.modelcontextprotocol.io/api/).
-
-For AIUI, this boundary is not that absolute. Since AIUI's renderer `InkView` already supports running interfaces in a sandbox environment, AIUI in in-context scenarios is often closer to the MCP Apps approach. That is, the invoked UI is carried as an independent yet controlled runtime unit.
-
-Suitable use cases:
-
-- Inline UI with independent interaction, such as charts, forms, dashboards, and design canvases
-- Calling a complete controlled interface through `tools`, instead of just rendering a simple component
-- Embedding third-party or independently running interactive views in the session context
-
-Less suitable use cases:
-
-- Open-ended page generation completely unconstrained by the host
-- Scenarios that are extremely sensitive to host integration cost and only require simple component mapping
-
-### 3. A2UI
-
-More precisely, A2UI is a declarative, LLM-friendly Generative UI specification. Its core idea is not to let the model directly output interface code for a specific platform, nor to let the model simply call an existing page entry. Instead, the model outputs a structured UI description, and the host reconstructs it into a real interface based on a predefined component catalog and renderer. It usually has several key characteristics: `JSONL` friendly, suitable for streaming output, cross-platform rendering, and more model-friendly generation.
-
-At runtime, systems of this type usually inject a tool such as `render_a2ui` into the agent, allowing the model to output an A2UI surface when needed. The frontend does not need to write a dedicated page entry for each call. Instead, it prepares a set of base components and a custom catalog, and the renderer automatically assembles those structured descriptions into cards, lists, metric blocks, images, or other UI fragments.
-
-Common A2UI components usually fall into two groups:
-
-- Base components: such as `Text`, `Image`, `Card`, and `List`
-- Business components: such as `Metric`, `StatusBadge`, and any components you extend into the catalog yourself
-
-When generating A2UI, the model does not directly output HTML or page code for a specific platform. Instead, it outputs a series of commands. A typical flow can be understood as three steps:
-
-1. `surfaceUpdate`: first declare which components should be rendered
-2. `dataModelUpdate`: then inject data into those components
-3. `beginRendering`: finally notify the host to start rendering
-
-The interactive component below uses a weather card to demonstrate the three core parts of A2UI: the component catalog, the command stream, and how it is ultimately rendered into an interface.
-
-<a2ui-explorer></a2ui-explorer>
-
-As a result, A2UI sits between tool-based UI and more open generative interfaces: it retains generative capability, but what it generates is declarative structure rather than an arbitrary page implementation.
-
-Suitable use cases:
-
-- Streaming cards, lists, metric panels, and status blocks
-- Cross-platform in-context UI, where the same description needs to be rendered on the Web, mobile, or other hosts
-- Scenarios where you want the model to generate UI more easily, but do not want to fully open up to unrestricted interface code
-- Dynamically assembling local interface fragments from a component catalog instead of jumping to a standalone page every time
-
-Less suitable use cases:
-
-- Completely unconstrained full-page generation
-- Scenarios that require directly embedding arbitrary third-party pages or standalone URLs
-- Core pages that require strict pixel-level consistency and do not want the model to participate in layout decisions
-
-### How Should You Choose?
-
-- If you prioritize explainability and debugging capability, start with **Tool Rendering**.
-- If you want to invoke an independent, interactive, and controlled inline interface through `tools`, choose **MCP Apps** first.
-- If you want to introduce generative capability within controlled boundaries, **A2UI** is the right fit.
-
-Many real products do not rely on just one approach. Instead, they combine them: for example, use **Tool Rendering** for lightweight in-context components, **MCP Apps** for more complete interactive interfaces, and **A2UI** for dynamic result areas.
-
-## Why Choose Compatibility with the WeChat Mini Program Ecosystem?
-
-AIUI is deeply compatible with the development conventions of **WeChat Mini Programs** (WXML/WXSS/API). This is not accidental, but based on the following core considerations:
-
-1. **A mature ecosystem**: WeChat Mini Programs have tens of millions of developers and an extremely rich set of components and tooling libraries. Compatibility means developers can make use of existing skills and resources with almost no barrier.
-2. **One agent, multi-platform deployment**: This is AIUI's ultimate goal. With this standard, the intelligent agents you build can run not only on **AR glasses**, but also adapt seamlessly to **phones, desktop environments**, and more emerging intelligent hardware, achieving "write once, deploy intelligence everywhere."
-3. **Native Web API support**: While remaining compatible with Mini Programs, we also provide native support for common Web APIs, allowing web developers to create in the way they are most familiar with.
-
-## What Makes AIUI Different?
-
-It is not just a rendering engine, but a "window" for collaborative expression between developers and AI:
-
-- **Intent-driven**: This is the ultimate embodiment of **developer-AI collaboration**. Interfaces are no longer preset static templates, but are assembled by AI in real time within the logical boundaries defined by the developer, returning the most precise content carrier for the current conversation context.
-- **Perfect for AR glasses (low power consumption)**: It is heavily optimized for wearable devices such as AR glasses, ensuring that the collaborative result between AI and developers can still be presented smoothly on devices with extremely strict power constraints.
-
-In short, **AIUI is the bridge connecting AI, developers, and users**, bringing the power of large models into the real world in a way that best understands users.
+You can also learn how to [develop with AI](./ai-dev.en-US.md) and use an AI assistant to help write and modify your AIUI project.
