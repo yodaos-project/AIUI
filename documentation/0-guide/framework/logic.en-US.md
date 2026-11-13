@@ -1,142 +1,84 @@
 # Logic Development
 
-In AIUI, the logic layer is the part that turns user intent into executable behavior. It adopts a modular development model similar to modern frontend frameworks: you register an agent or page by exporting a configuration object with `export default`, and organize lifecycle, state, and event handlers around how intent should be processed.
+An agent's logic handles data and actions. For example, it can increase a count when someone taps a button, or provide weather results for an interface to display.
 
-## Register an Agent (App)
+Let's start with page logic, then look at application, Widget, and Agent Worker logic.
 
-Every agent project must have an `app.js` or `app.ink` in the root directory (in SFC mode). In a `.js` file, the agent instance is registered by exporting it with `export default`. In a `.ink` file, as the SFC entry, module export is not supported directly. Instead, agent logic must be defined inside script blocks and other ESM modules can be imported as needed. The agent instance is used to handle global lifecycle hooks, coordinate agent-level intent flow, and store global shared data.
+## Start with Page Logic
 
-### Example Code
+In a page's `.ink` file, `<script setup>` defines initial data and handlers. This example increases the number each time the button is tapped:
+
+```html
+<script setup>
+export default {
+  data: {
+    count: 0
+  },
+
+  handleIncrement() {
+    this.setData({ count: this.data.count + 1 });
+  }
+};
+</script>
+
+<page>
+  <view>Count: {{ count }}</view>
+  <button bindtap="handleIncrement">Add one</button>
+</page>
+```
+
+`data` holds page data; `bindtap` connects the button to `handleIncrement`; and `this.setData()` updates the data so the bound interface can update. Use `this.data` to read the current data and `setData()` to update the interface.
+
+## Run Code at the Right Time
+
+A page goes through stages from opening to closing. Define lifecycle functions when you need them:
+
+- `onLoad(query)`: Called when the page loads; it can read parameters passed when opening the page and runs once per page instance.
+- `onShow()`: Called when the page appears or reappears.
+- `onReady()`: Called once per page instance after the first frame containing its initial view is presented.
+- `onHide()`: Called when the page is hidden.
+- `onUnload()`: Called when the page is unloaded; use it to clean up resources that are no longer needed.
+
+For example, read a city in `onLoad(query)` and remove page-created listeners in `onUnload()`. See [Page Lifecycle](/AIUI/framework/open-agent-format-page-lifecycle) for timing details.
+
+## Handle Agent-Level Logic
+
+The root `app.js` can define logic for the whole agent. For example, `onLaunch()` is called when the agent initializes; `onShow()` and `onHide()` respond to visibility changes; and `globalData` can hold application-level shared data.
 
 ```javascript
 // app.js
 export default {
-  // 智能体初始化时触发
-  onLaunch(options) {
-    console.log('Agent Launch', options);
-  },
-  // 智能体启动或从后台进入前台时触发
-  onShow(options) {
-    console.log('Agent Show');
-  },
-  // 智能体从前台进入后台时触发
-  onHide() {
-    console.log('Agent Hide');
-  },
-  // 全局共享数据
-  globalData: {
-    userInfo: null
+  globalData: { city: 'Hangzhou' },
+
+  onLaunch() {
+    console.log('Agent started');
   }
-}
-```
-
-### Lifecycle Callbacks
-
-| Callback | Description | Trigger Timing |
-| :--- | :--- | :--- |
-| `onLaunch` | Listen for agent initialization | Triggered when agent initialization completes (only once globally) |
-| `onShow` | Listen for the agent being shown | Triggered when the agent starts, or returns from background to foreground |
-| `onHide` | Listen for the agent being hidden | Triggered when the agent moves from foreground to background |
-| `onError` | Error listener | Triggered when the agent encounters a script error or an API call fails |
-
-## Register a Page (Page)
-
-Each page is defined by a page configuration object in its logic file (`.js` or `.ink`). In a `.js` file, the page is registered through `export default`; in a `.ink` file, the logic is defined directly inside `<script setup>` and required modules are imported there. This object defines the page's initial data, lifecycle callbacks, event handlers, and more. In practice, page logic is where user intent is translated into state transitions and UI updates.
-
-### Example Code
-
-```javascript
-// pages/index/index.js
-export default {
-  // 页面的初始数据
-  data: {
-    title: 'Hello AIUI',
-    count: 0
-  },
-  // 页面加载时触发
-  onLoad(query) {
-    console.log('Page Load', query);
-  },
-  // 页面显示时触发
-  onShow() {
-    console.log('Page Show');
-  },
-  // 页面初次渲染完成时触发
-  onReady() {
-    console.log('Page Ready');
-  },
-  // 页面隐藏时触发
-  onHide() {
-    console.log('Page Hide');
-  },
-  // 页面卸载时触发
-  onUnload() {
-    console.log('Page Unload');
-  },
-  // 事件处理函数
-  handleIncrement() {
-    this.setData({
-      count: this.data.count + 1
-    });
-  }
-}
-```
-
-### Lifecycle Callbacks
-
-| Callback | Description | Trigger Timing |
-| :--- | :--- | :--- |
-| `onLoad` | Listen for page loading | Triggered when the page loads (only once globally) |
-| `onShow` | Listen for the page being shown | Triggered when the page is shown or enters the foreground |
-| `onReady` | Listen for the page's first render completion | Triggered when the page finishes its first render (only once globally) |
-| `onHide` | Listen for the page being hidden | Triggered when the page is hidden or enters the background |
-| `onUnload` | Listen for page unload | Triggered when the page is unloaded |
-
-## Write Widget Logic
-
-Widget logic lives in the `<script setup>` block of its `.ink` file. Widgets also update their interface through `data` and `setData()`, but use their own display-state callbacks:
-
-```javascript
-export default {
-  data: { status: 'Ready' },
-  onCreate() {
-    this.setData({ status: 'Created' });
-  },
-  onAttach() {
-    this.setData({ status: 'Visible' });
-  },
-  onDetach() {
-    console.log('Widget hidden');
-  },
-  onDestroy() {
-    console.log('Widget destroyed');
-  },
 };
 ```
 
-`onAttach()` and `onDetach()` can run more than once. For declarations, sizes, and the complete file structure, see [Widget Development](/AIUI/framework/open-agent-format-widget).
+The application also supports callbacks for errors and other events. See [app.json and the application entry](/AIUI/framework/open-agent-format-app-json) for details.
 
-## Write Agent Worker Logic
+## Write Widget and Background Task Logic
 
-An Agent Worker does not render an interface. Each time a Page or Widget opens successfully, the runtime calls `onOpen(event)`. Register asynchronous work immediately with `event.waitUntil()`:
+A **Widget** is a small independent interface. It can also use `data` and `setData()`, but has its own lifecycle functions: `onCreate()`, `onAttach()`, `onDetach()`, and `onDestroy()`. The visibility callbacks `onAttach()` and `onDetach()` may run more than once. See [Widget Development](/AIUI/framework/open-agent-format-widget) for a complete example.
+
+An **Agent Worker** is a background script without an interface. It can perform a one-time task or a task shared by multiple Pages or Widgets. `onOpen(event)` is called when a Page or Widget opens successfully; register any asynchronous work started there with `event.waitUntil()`.
 
 ```javascript
 export default {
   onOpen(event) {
     event.waitUntil(this.prepare());
   },
+
   async prepare() {
     await new Promise((resolve) => setTimeout(resolve, 100));
     this.ready = true;
-  },
+  }
 };
 ```
 
-The same running Agent Worker retains data on its object, which is useful for one shared initialization task or Bluetooth service. For complete configuration, see [Agent Worker Development](/AIUI/framework/open-agent-format-agent-worker).
+A Worker's configuration, lifetime, and available capabilities differ from a page's. See [Agent Worker Development](/AIUI/framework/open-agent-format-agent-worker). You can start with page logic and add a Widget or Worker when needed.
 
-## Page and Widget Data Methods
+## Next Step
 
-In Page or Widget logic, use `this` to access the current instance:
-
-- **`this.setData(Object data, Function callback)`**: Updates data and the affected interface content.
-- **`this.data`**: Gets the current Page or Widget data.
+Read [UI Development](./ui.en-US.md) to see how data, buttons, and styles form the interface, or read [Runtime Mechanism](../runtime/mechanism.en-US.md) to follow an action through an interface update.

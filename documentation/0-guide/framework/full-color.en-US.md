@@ -1,12 +1,12 @@
 # Full-Color Glasses Adaptation Guide
 
-One AIUI agent can serve both monochrome and full-color glasses. Reuse the agent definition, business logic, Pages, Widgets, and data services, then adapt styles, assets, and information density to the display capability and available space.
+Already have an agent for monochrome glasses and want it to work well on full-color glasses too? You can usually keep the agent description, application logic, and data services, then adapt the interface to the display capability and available space.
 
-This guide covers Rokid Color (Chinese name: 乐奇全彩眼镜). Follow the workflow here, then see the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) and [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
+This guide covers Rokid Color (Chinese name: 乐奇全彩眼镜) and walks through color, layout, and device testing. For specific design requirements, see the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color); for experience improvements, see the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color).
 
-## What Full Color Enables
+## Before You Start: What Changes with Full Color?
 
-Full color lets you use different hues to support status, category, and data distinctions, such as chart series, task outcomes, and key values. Images and icons can also retain color information.
+Full color can help distinguish states and content. For example, a weather card can use colors to highlight temperature or conditions, while images and icons can retain their color.
 
 Full-color glasses still use a see-through display: pure black emits no light and appears transparent on the glasses. Use color to support reading, and retain text, icons, or outlines for critical states. Avoid large filled backgrounds across the field of view.
 
@@ -20,19 +20,19 @@ Full-color glasses still use a see-through display: pure black emits no light an
 
 Dimensions in the table are logical design units. WXSS examples use `px`; do not use the hardware's physical resolution directly as layout dimensions. Device names describe the scope; code should adapt to display capabilities. Full color does not imply identical cameras, sensors, or input methods, so verify those features on each target device.
 
-## 1. Reuse the Existing Agent
+## Step 1: Reuse Your Project
 
-Adding full-color support does not require a separate agent. Prefer shared functionality and display variants in one project, packaged into one AIX, with separate monochrome and full-color validation. Follow the [existing submission and publishing workflow](/AIUI/guide/bundle-publish).
+Adding full-color support usually does not require a new agent. Keep shared functionality in one project, provide styles for the different display capabilities, package one AIX, and test separately on monochrome and full-color devices. Follow the [existing submission and publishing workflow](/AIUI/guide/bundle-publish).
 
 Keep status text, task results, and interaction flows in shared logic. Keep palettes, icon assets, and compact layouts in the presentation layer. Consider a separate agent when the product positioning or core functionality itself needs to be independent.
 
-## 2. Prefer Theme Tokens
+## Step 2: Start with Theme Colors
 
-The built-in full-color theme provides a black page background, white text, color accents, transparent cards, and default typography and component styles. Reuse tokens such as `--color-text-primary`, `--color-text-secondary`, `--color-primary`, and `--card-border-color` to reduce hardcoded green colors and fixed fills.
+Theme tokens are reusable style variables. The built-in full-color theme provides a black page background, white text, color accents, transparent cards, and default typography and component styles. Reuse tokens such as `--color-text-primary`, `--color-text-secondary`, `--color-primary`, and `--card-border-color` to reduce hardcoded green colors and fixed fills.
 
-Theme defaults do not complete the adaptation automatically. Check inline styles, custom components, Canvas content, and images for fixed colors, small text, and large fills. The theme also does not automatically adapt arbitrary content to the container. See the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) for key tokens.
+After applying the theme, check inline styles, custom components, Canvas content, and images: they may still contain hardcoded colors, text that is too small, or large filled areas. The theme also does not automatically fit all content to its container. See the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) for key tokens.
 
-## 3. Handle Color and Layout Separately
+## Step 3: Adjust Color and Layout Separately
 
 AIUI runtime versions that support display capability queries accept `(color)` and `(monochrome)` in WXSS. Keep shared rules outside queries, then add color variants:
 
@@ -70,9 +70,9 @@ Use color queries for palettes, width and height queries for layout, and `target
 
 Both color queries may fail to match when display capability information is unavailable. Older runtimes may also lack these queries. Outside the queries, retain readable text, theme colors, essential actions, and a base layout suitable for a small field of view.
 
-## 4. Query Capabilities Only When Assets or Logic Need Them
+## Step 4: Query Display Capabilities When Choosing Assets
 
-Use WXSS when only colors change. To select images or a data presentation, a Page can use `window.matchMedia()`. Remove listeners when the Page unloads:
+The WXSS rules above are enough when only colors change. To select images or a data presentation based on display capability, a Page can use `window.matchMedia()`. Remove listeners when the Page unloads:
 
 ```javascript
 export default {
@@ -104,15 +104,15 @@ export default {
 
 Keep `unknown` when neither query matches. A failure to match color must not automatically mean monochrome. Provide assets and text for `unknown` that do not depend on multiple hues. These queries run in the page window; Agent Workers do not provide `window`.
 
-## 5. Reallocate Content Space
+## Step 5: Check Content Space
 
 Use 480 × 352 as the full-screen reference. The card container reference width is 480, with height adapting to its content. Make both layouts responsive to the actual container rather than fixing card height to 352.
 
 The 480 reference describes the card container, not its inner content width. Include FOV clearance, outer card padding, and internal card borders in the available space. The current full-color theme still defaults `--app-width` to 448px; override it as needed for the actual container and verify the layout.
 
-Show a clear result and essential actions first. Use summaries with details, pagination, or an operable scroll region for longer text. Do not fit an entire page by shrinking text below 14 dp, clipping actions, or reducing the specified padding.
+Show the result and actions the user needs most first. For longer content, provide a summary followed by details, pagination, or an operable scroll region. Do not fit everything by shrinking text below 14 dp, clipping actions, or reducing the specified padding.
 
-## 6. Validate Both Display Types
+## Step 6: Test Both Display Types
 
 1. Check monochrome and full-color presentations with the same business data, including shared flows, empty states, loading, failures, and long text.
 2. Verify that full-screen and adaptive-height card content is readable in its actual container and follows the spacing, text, icon, outline, and focus requirements.

@@ -1,86 +1,77 @@
 # User Interface (UI) Development
 
-In AIUI, the view layer makes intent visible and interactive. Pages carry complete interactions, while Widgets support at-a-glance information and quick actions. Both can use WXML, WXSS, built-in components, and the event system.
+The interface is what users see and operate. In a weather assistant, it can show a city, temperature, status message, and button so the user can see a result and continue to the details.
 
-## WXML (Page and Widget Structure)
+AIUI uses WXML for interface structure and WXSS for styling. You can write them in separate files or put them together with page logic in an `.ink` file.
 
-WXML is a markup language similar to HTML and describes Page or Widget structure. It supports data binding, conditional rendering, list rendering, and template references.
+## Start with a Weather Page
 
-### Core Features
-
-- **Data binding**: Use Mustache syntax (`{{ }}`) to bind data from the logic layer to the view layer.
-- **List rendering**: Use `ink:for` to bind an array to a control property, and use `item` and `index` to access the current item.
-- **Conditional rendering**: Use `ink:if`, `ink:elif`, and `ink:else` to decide whether a code block should be rendered based on a condition.
-- **Event binding**: Use attributes such as `bindtap` to bind user interaction events.
-
-### Example Code
+This example displays a city and temperature. Tapping the button updates a hint, showing how data and the interface work together. The data is fixed; the example does not fetch live weather.
 
 ```html
-<!-- index.wxml -->
-<view class="container">
-  <view class="header">
-    <text class="title">{{title}}</text>
+<script setup>
+export default {
+  data: {
+    city: 'Hangzhou',
+    temperature: 26,
+    hint: 'Tap the button for a tip'
+  },
+
+  showHint() {
+    this.setData({ hint: 'Check the weather before heading out' });
+  }
+};
+</script>
+
+<page>
+  <view class="card">
+    <text class="title">{{ city }} weather</text>
+    <text>{{ temperature }}°C</text>
+    <text>{{ hint }}</text>
+    <button bindtap="showHint">Show tip</button>
   </view>
-  
-  <view class="list">
-    <view class="item" ink:for="{{items}}" ink:key="id" bindtap="handleItemClick">
-      <text>{{index + 1}}. {{item.name}}</text>
-      <text ink:if="{{item.status === 'active'}}" class="badge">Active</text>
-    </view>
-  </view>
-</view>
-```
+</page>
 
-In an `.ink` single-file entry, a Page uses the `<page>` root element and a Widget uses `<widget>`. One file cannot contain both.
-
-## WXSS (Page and Widget Styles)
-
-WXSS is a style language used to describe component styles in WXML. It extends CSS features to better fit agent development scenarios and helps turn intent and state into clear visual feedback.
-
-### Core Features
-
-- **Sizing unit**: Introduces the `rpx` (responsive pixel) unit, which can adapt based on screen width. The screen width is defined as `480rpx`.
-- **Style import**: Use the `@import` statement to import external stylesheets.
-- **Inline styles**: Supports the `style` and `class` attributes to control component styles.
-- **Selectors**: Supports common CSS selectors such as `.class`, `#id`, `element`, `::after`, and `::before`.
-
-### Example Code
-
-```css
-/* index.wxss */
-.container {
-  padding: 20rpx;
-  background-color: #f8f8f8;
+<style>
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
 }
 
 .title {
-  font-size: 36rpx;
+  font-size: 24px;
   font-weight: bold;
-  color: #333;
 }
-
-.item {
-  display: flex;
-  justify-content: space-between;
-  padding: 30rpx;
-  margin-top: 10rpx;
-  background-color: #fff;
-  border-radius: 8rpx;
-}
-
-.badge {
-  color: #40FF5E;
-  font-size: 24rpx;
-}
+</style>
 ```
 
-## Rendering Flow
+The content inside `<page>` describes the interface: `view` groups content, `text` displays words, and `button` receives an action. Expressions such as `{{ city }}` bind page data to the interface. The button uses `bindtap` to call `showHint()` in the logic, which uses `setData()` to update the hint.
 
-1. **Data-driven updates**: When the logic layer calls `this.setData`, the view layer performs incremental updates based on the new data, so intent changes can be reflected quickly.
-2. **Shared development model**: Pages and Widgets use the same data binding, components, events, and styles, but have separate entries and lifecycle callbacks.
+WXSS inside `<style>` controls layout and text styles. For example, `.card` sets the arrangement and padding, while `.title` styles the heading.
 
-For a complete Widget file, see [Widget Development](/AIUI/framework/open-agent-format-widget).
+## What Can WXML Do?
 
-## Adapt to Monochrome and Full-Color Glasses
+Along with displaying and binding data, WXML can show content based on state, display lists, and bind user events:
 
-After building the basic interface, follow the [Full-Color Glasses Adaptation Guide](/AIUI/guide/framework/full-color) to reuse the same agent and adjust themes, assets, and layout to display capabilities. See the [Full-Color Visual Guidelines](/AIUI/design/visual-full-color) for design values and the [Full-Color Optimization Guide](/AIUI/guide/performance-full-color) to refine reading and interaction.
+- Use `{{ }}` to display data or set component attributes.
+- Use `ink:if`, `ink:elif`, and `ink:else` to choose content based on a condition.
+- Use `ink:for` to show a list and access the current item through `item` and `index`.
+- Use attributes such as `bindtap` to connect event handlers.
+
+For example, a weather page can show “Loading” during a request, then show the result. See the [WXML Introduction](/AIUI/framework/wxml-intro) for details.
+
+## What Can WXSS Do?
+
+WXSS sets colors, text, spacing, and layout using syntax similar to CSS. You can use class selectors, `class` and `style`, and `@import` to include a stylesheet.
+
+WXSS supports the responsive `rpx` unit: it adapts to screen width, which is defined as `480rpx`. Verify the result in the actual container and on the target device. See the [WXSS Introduction](/AIUI/framework/wxss-intro) for more.
+
+## Should I Use a Page or a Widget?
+
+A Page is suited to a complete page interaction; a Widget is a small independent interface for viewing information or taking an action. Both can use data binding, components, events, and styles, but they have their own entry points and lifecycles.
+
+In an `.ink` file, a Page uses a `<page>` root and a Widget uses `<widget>`; the same file cannot contain both. See [Widget Development](/AIUI/framework/open-agent-format-widget) for a complete example.
+
+If the interface needs to support different displays, continue to [Full-Color Adaptation](./full-color.en-US.md) and check text, colors, and interaction on the target device.

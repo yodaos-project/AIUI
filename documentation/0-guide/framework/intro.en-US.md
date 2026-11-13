@@ -1,21 +1,24 @@
-# Introduction
+# Introduction to the Agent Framework
 
-The core of the AIUI agent framework is not simply "rendering a page." AIUI is an intent-driven development framework: developers describe what kind of agent they are building, what user intent should be captured, how that intent should be processed, and what interaction form should be used to return feedback. The runtime then connects these parts into a complete loop.
+AIUI helps developers create agents around users' needs. A user can express a goal in a sentence, and an agent can use the capabilities its developer provides to respond with text or an interface.
 
-The interactive explanation below helps you understand the AIUI framework from two angles:
+For example, someone asks “Will I need an umbrella in Hangzhou today?” A weather assistant can receive the city, check the weather, and show a result in a card. The user can then view more details. The developer provides the weather data and specific query logic.
 
-- What parts participate in the intent-to-feedback loop
-- How a Page or Widget update happens at runtime
+## What Are the Parts of an Agent?
+
+- **Describe the agent**: `AGENTS.md` explains its identity, capabilities, and instructions.
+- **Declare project entries**: `app.json` declares the Pages, Widgets, and Agent Workers the project needs.
+- **Write logic**: Handle data, user actions, and API calls. For example, query the weather after receiving a city, then update the state.
+- **Create an interface**: Use a Page or a small independent Widget to present information and let the user interact.
+
+Pages work well for complete interactions; Widgets are useful for information and actions at a glance. A project can also use an Agent Worker for a shared background task without an interface. Not every project needs all three.
+
+## How Do They Work Together?
+
+After a user expresses a need, an agent can use its description and available capabilities to handle the request. Project logic performs the specific work, while the interface shows status and results. As the user continues, the logic and interface can update.
+
+The interactive explanation below shows the path from a user's intent to interface feedback, and how a Page or Widget updates:
 
 <framework-runtime-explorer></framework-runtime-explorer>
 
-## Core Concepts
-
-AIUI separates the logic layer from the view layer, but these layers work together with the agent description, application entry, Pages, Widgets, and Agent Workers:
-
-1. **Agent Description**: Defined by `AGENTS.md`, which specifies the agent's identity, description, capabilities, and system instructions, determining how the platform understands what kinds of intent this agent should handle.
-2. **Agent Entry (Application Entry)**: Defined by `app.json`, which declares Pages, Widgets, Agent Workers, and global configuration.
-3. **Logic Layer**: Interprets user actions, runs business logic, calls APIs, and manages data. Agent Workers can own shared tasks that do not belong to one interface.
-4. **View Layer**: Pages carry complete interactions, while Widgets provide compact information and quick actions. Both can use data binding, components, and styles.
-
-This architecture provides smooth interface updates while letting developers separately organize the intent, choose between a Page and a Widget, decide which tasks must be shared, and define how the interface responds.
+You don't need to understand every detail at once. Read [Categories](./category.en-US.md) to choose an interaction for your scenario, or see [Runtime Mechanism](../runtime/mechanism.en-US.md) for how a page updates.

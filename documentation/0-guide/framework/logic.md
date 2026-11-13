@@ -1,142 +1,84 @@
 # 逻辑开发
 
-在 AIUI 中，逻辑层是把用户意图转化为可执行行为的核心部分。它采用类似现代前端框架的模块化开发方式：你可以通过 `export default` 导出配置对象来注册智能体或页面，并围绕意图处理来组织生命周期、状态和事件处理函数。
+智能体的逻辑负责处理数据和操作。例如，用户点击按钮后，逻辑可以更新计数；查询天气后，逻辑可以把结果交给界面展示。
 
-## 注册智能体 (App)
+下面先从一个页面开始，再认识应用、Widget 和 Agent Worker 的逻辑。
 
-每个智能体项目必须在根目录下有一个 `app.js` 或 `app.ink`（在 SFC 模式下）。在 `.js` 文件中，通过 `export default` 导出智能体实例以完成注册；而 `.ink` 文件作为 SFC 入口，本身不支持模块导出，只能通过脚本块定义智能体逻辑并导入其他 ESM 模块。智能体实例用于处理全局生命周期、协调智能体级意图流转，以及存储全局数据。
+## 从页面逻辑开始
 
-### 示例代码
+在页面的 `.ink` 文件中，`<script setup>` 定义初始数据和处理函数。下面的例子每次点击按钮，数字都会加一：
+
+```html
+<script setup>
+export default {
+  data: {
+    count: 0
+  },
+
+  handleIncrement() {
+    this.setData({ count: this.data.count + 1 });
+  }
+};
+</script>
+
+<page>
+  <view>当前数量：{{ count }}</view>
+  <button bindtap="handleIncrement">加一</button>
+</page>
+```
+
+`data` 保存页面数据；`bindtap` 把按钮与 `handleIncrement` 关联；`this.setData()` 更新数据，让绑定的界面随之更新。读取当前数据时使用 `this.data`，需要更新界面时使用 `setData()`。
+
+## 在合适的时机执行代码
+
+页面从打开到关闭会经历不同阶段，你可以按需定义生命周期函数：
+
+- `onLoad(query)`：页面加载时调用，可读取打开页面时传入的参数；每个页面实例调用一次。
+- `onShow()`：页面显示或重新显示时调用。
+- `onReady()`：包含初始界面的首帧实际呈现后调用，每个页面实例调用一次。
+- `onHide()`：页面隐藏时调用。
+- `onUnload()`：页面卸载时调用，可用来清理不再需要的资源。
+
+例如，可以在 `onLoad(query)` 中读取城市，在 `onUnload()` 中清理页面创建的监听器。详细时机见[页面生命周期](/AIUI/framework/open-agent-format-page-lifecycle)。
+
+## 处理智能体级逻辑
+
+根目录中的 `app.js` 可以定义整个智能体的逻辑。例如，`onLaunch()` 在智能体初始化时调用，`onShow()` 和 `onHide()` 分别响应显示和隐藏；`globalData` 可以保存应用级共享数据。
 
 ```javascript
 // app.js
 export default {
-  // 智能体初始化时触发
-  onLaunch(options) {
-    console.log('Agent Launch', options);
-  },
-  // 智能体启动或从后台进入前台时触发
-  onShow(options) {
-    console.log('Agent Show');
-  },
-  // 智能体从前台进入后台时触发
-  onHide() {
-    console.log('Agent Hide');
-  },
-  // 全局共享数据
-  globalData: {
-    userInfo: null
+  globalData: { city: '杭州' },
+
+  onLaunch() {
+    console.log('智能体已启动');
   }
-}
-```
-
-### 生命周期回调
-
-| 回调函数 | 说明 | 触发时机 |
-| :--- | :--- | :--- |
-| `onLaunch` | 监听智能体初始化 | 智能体初始化完成时（全局只触发一次） |
-| `onShow` | 监听智能体显示 | 智能体启动，或从后台进入前台显示时 |
-| `onHide` | 监听智能体隐藏 | 智能体从前台进入后台时 |
-| `onError` | 错误监听函数 | 智能体发生脚本错误，或者 API 调用失败时 |
-
-## 注册页面 (Page)
-
-每个页面通过在其逻辑文件（`.js` 或 `.ink`）中定义页面配置对象。在 `.js` 文件中，通过 `export default` 注册页面；而 `.ink` 文件则直接在 `<script setup>` 中定义逻辑并引入所需模块。该对象定义了页面的初始数据、生命周期回调、事件处理函数等。实际开发中，页面逻辑正是把用户意图翻译成状态迁移和界面更新的地方。
-
-### 示例代码
-
-```javascript
-// pages/index/index.js
-export default {
-  // 页面的初始数据
-  data: {
-    title: 'Hello AIUI',
-    count: 0
-  },
-  // 页面加载时触发
-  onLoad(query) {
-    console.log('Page Load', query);
-  },
-  // 页面显示时触发
-  onShow() {
-    console.log('Page Show');
-  },
-  // 页面初次渲染完成时触发
-  onReady() {
-    console.log('Page Ready');
-  },
-  // 页面隐藏时触发
-  onHide() {
-    console.log('Page Hide');
-  },
-  // 页面卸载时触发
-  onUnload() {
-    console.log('Page Unload');
-  },
-  // 事件处理函数
-  handleIncrement() {
-    this.setData({
-      count: this.data.count + 1
-    });
-  }
-}
-```
-
-### 生命周期回调
-
-| 回调函数 | 说明 | 触发时机 |
-| :--- | :--- | :--- |
-| `onLoad` | 监听页面加载 | 页面加载时触发（全局只触发一次） |
-| `onShow` | 监听页面显示 | 页面显示/切入前台时触发 |
-| `onReady` | 监听页面初次渲染完成 | 页面初次渲染完成时触发（全局只触发一次） |
-| `onHide` | 监听页面隐藏 | 页面隐藏/切入后台时触发 |
-| `onUnload` | 监听页面卸载 | 页面卸载时触发 |
-
-## 编写 Widget 逻辑
-
-Widget 的逻辑写在 `.ink` 文件的 `<script setup>` 中。它同样通过 `data` 和 `setData()` 更新界面，但使用自己的显示状态回调：
-
-```javascript
-export default {
-  data: { status: '准备就绪' },
-  onCreate() {
-    this.setData({ status: '已创建' });
-  },
-  onAttach() {
-    this.setData({ status: '正在显示' });
-  },
-  onDetach() {
-    console.log('Widget 已隐藏');
-  },
-  onDestroy() {
-    console.log('Widget 已销毁');
-  },
 };
 ```
 
-`onAttach()` 和 `onDetach()` 可能多次调用。Widget 的声明、尺寸和完整结构请参阅 [Widget 开发](/AIUI/framework/open-agent-format-widget)。
+应用也支持错误处理等回调；完整配置和用法见 [app.json 与应用入口](/AIUI/framework/open-agent-format-app-json)。
 
-## 编写 Agent Worker 逻辑
+## 为 Widget 和后台任务编写逻辑
 
-Agent Worker 不渲染界面。每次 Page 或 Widget 成功打开时，运行时调用 `onOpen(event)`。如果其中启动了异步任务，需要立即用 `event.waitUntil()` 登记：
+**Widget** 是小尺寸独立界面。它也可以使用 `data` 和 `setData()`，但使用自己的生命周期函数：`onCreate()`、`onAttach()`、`onDetach()` 和 `onDestroy()`。其中显示和隐藏对应的 `onAttach()`、`onDetach()` 可能多次调用。完整示例见 [Widget 开发](/AIUI/framework/open-agent-format-widget)。
+
+**Agent Worker** 是不显示界面的后台脚本，可以用于一次任务或多个页面、Widget 共用的任务。页面或 Widget 成功打开时会调用 `onOpen(event)`；如果在其中启动异步任务，需要通过 `event.waitUntil()` 登记。
 
 ```javascript
 export default {
   onOpen(event) {
     event.waitUntil(this.prepare());
   },
+
   async prepare() {
     await new Promise((resolve) => setTimeout(resolve, 100));
     this.ready = true;
-  },
+  }
 };
 ```
 
-同一个正在运行的 Agent Worker 会保留对象上的数据，适合管理多个入口共用的初始化任务或蓝牙服务。完整配置请参阅 [Agent Worker 开发](/AIUI/framework/open-agent-format-agent-worker)。
+Worker 的配置、运行时长和可用能力与页面不同，详见 [Agent Worker 开发](/AIUI/framework/open-agent-format-agent-worker)。你可以先从页面逻辑开始，需要时再添加 Widget 或 Worker。
 
-## Page 与 Widget 数据方法
+## 下一步
 
-在 Page 或 Widget 逻辑中，可以通过 `this` 访问当前实例：
-
-- **`this.setData(Object data, Function callback)`**：更新数据和受影响的界面内容。
-- **`this.data`**：获取当前 Page 或 Widget 的数据。
+阅读[用户界面（UI）开发](./ui.md)，了解如何把数据、按钮和样式组织成用户看到的界面；也可以阅读[运行机制](../runtime/mechanism.md)，了解一次操作如何触发界面更新。

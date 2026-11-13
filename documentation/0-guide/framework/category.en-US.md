@@ -1,59 +1,30 @@
-# Categories
+# Types of Agent Interaction
 
-Within the AIUI framework, agents can be categorized by how user intent is carried through the product experience. In practice, the two main forms are `Conversational AIUI` and `Immersive AIUI`. The core difference is not "page complexity," but whether intent is handled inside the chat flow or whether a standalone interface carries the complete interaction loop.
+Imagine building a weather assistant. After a user asks about the weather, is a card in the conversation enough, or do they need a separate interface for ongoing actions? Two common AIUI interaction forms help you make that choice.
 
-## 1. Conversational AIUI
+## Conversational AIUI: Continue in the Chat
 
-Conversational AIUI means that the UI appears directly in the chat flow, embedded in the current context as cards, result blocks, forms, or tool panels. Users express intent in conversation, and the agent returns structured UI in the same context so users can continue to click, confirm, provide additional input, or view results inside the message.
+A conversational interface appears in the conversation. After a user asks a question, the agent can show a card, form, or result in the same conversation. The user can then read information, tap a button, or provide more input there.
 
-The key point of this kind of AIUI is: **keep intent handling inside the conversation**. Users do not need to jump to another standalone interface or interrupt the current session to complete viewing, confirmation, filtering, or lightweight operations.
-
-Suitable scenarios include:
-
-- Weather cards
-- Search result cards
-- Itinerary confirmation panels
-- To-do confirmation and supplemental forms
-- Quick queries and lightweight task feedback
-
-Its typical characteristics include:
-
-- **Interaction carrier**: The interface is attached to the chat flow and is naturally continuous with the message context.
-- **Context characteristics**: It usually shares the current session context and is well suited to taking over the next action after a user question.
-- **Development focus**: Design the intent trigger, parameter structure, and card interaction well, so the model knows when it should return this kind of UI.
-- **Experience goal**: Fast feedback, low interruption, and completing the task in one step.
-
-The example below shows what conversational AIUI typically looks like: after the user asks a question, the AI directly inserts a weather card into the message flow, and the user can continue interacting around that card.
+For example, an agent can answer a weather question with a card where the user can view details:
 
 <in-chat-interaction-demo></in-chat-interaction-demo>
 
-## 2. Immersive AIUI
+This works well for shorter tasks such as weather queries, search results, and itinerary confirmations. When building one, describe what the page does, when to use it, and what input it needs so it can receive and display the relevant content.
 
-Immersive AIUI means that the UI is no longer attached to chat messages. Instead, a standalone interface carries the complete interaction flow. The user's attention mainly stays on the current interface, while the AI continuously participates in collaboration around the state, operations, and feedback of that interface.
+## Immersive AIUI: Work in a Standalone Interface
 
-The key point of this kind of AIUI is: **make the interface itself the primary space for carrying intent**. Chat, voice, or other input methods can still exist, but they serve the interface more than they replace it.
+An immersive interface provides a separate space for the main interaction. Users can view state and perform multiple actions in one interface, and work with AI through the methods the application supports.
 
-Suitable scenarios include:
-
-- Landlord or other turn-based mini-games
-- Complex workflow panels
-- Device control interfaces
-- Long-running task execution interfaces
-- Tools or assistants that need continuous state feedback
-
-Its typical characteristics include:
-
-- **Interaction carrier**: The interface is the main stage, and chat is no longer the only container.
-- **Context characteristics**: It usually maintains state and flow through an independently running context, making it more suitable for long-lived sessions.
-- **Development focus**: You need to organize interface state, intent transitions, and the event loop yourself, and when necessary, integrate capabilities such as `SSE`, `WebSocket`, and `fetch` to build a complete interaction pipeline.
-- **Experience goal**: Continuous collaboration, stable state, and complete operation space.
-
-The example below shows what immersive AIUI typically looks like: the main interaction takes place in a Landlord interface, and the AI continuously collaborates around the current game state and the user's actions.
+For example, a Landlord game interface can keep the cards and game state visible while the user plays or asks for a hint:
 
 <standalone-interaction-demo></standalone-interaction-demo>
 
-## How Should You Choose?
+This works well for games, device controls, and task panels that need ongoing feedback. When building one, organize the interface state and action flow; if you need voice or model capabilities, connect the services those features require.
 
-- If you want intent handling to stay lightweight, fast, and inside the current chat context, choose **Conversational AIUI** first.
-- If you want the interface itself to become the primary operating space and carry a long-running intent loop around continuous state, choose **Immersive AIUI** first.
-- Many real products use both forms at the same time: conversational AIUI handles lightweight intent fulfillment, while immersive AIUI carries complete scenario experiences.
+## Which Should You Choose?
+
+- Want users to quickly view or confirm a result in the current conversation? Start with **conversational AIUI**.
+- Want users to follow state and perform multiple actions in one interface? Start with **immersive AIUI**.
+
+The two can also work together in one product. Once you've chosen a direction, try the examples in [Conversational AIUI](../quickstart/first-chat.en-US.md) or [Immersive AIUI](../quickstart/first-immersive.en-US.md).
