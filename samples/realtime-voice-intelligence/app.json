@@ -1,6 +1,6 @@
 {
-  "agentName": "实时语音智能",
-  "agentDesc": "麦克风 PCM → SpeechRecognitionSession VAD 断句 → 提示词组装 → LanguageModel 流式回复",
+  "agentName": "Realtime Voice Intelligence",
+  "agentDesc": "Joins your conversations and offers timely explanations, references, and suggestions",
   "pages": [
     "pages/prompt-list/index",
     "pages/prompt-select/index",
@@ -12,7 +12,7 @@
     "RECORD_AUDIO"
   ],
   "window": {
-    "navigationBarTitleText": "实时语音智能",
+    "navigationBarTitleText": "Realtime Voice Intelligence",
     "viewport": {
       "width": "device-width"
     }

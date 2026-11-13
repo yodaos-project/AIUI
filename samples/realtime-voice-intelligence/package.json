@@ -1,7 +1,7 @@
 {
     "name": "aiui-realtime-voice-intelligence",
     "version": "1.6.0",
-    "description": "Rokid Glasses 实时语音智能示例：Audio → VAD → Streaming ASR → Prompt → LLM → UI",
+    "description": "Rokid Glasses conversation-assistant sample: Audio → VAD → Streaming ASR → Prompt → LLM → UI",
     "main": "app.js",
     "type": "module",
     "dependencies": {}

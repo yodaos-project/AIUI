@@ -1,16 +1,13 @@
-// Streaming ASR pipeline: getUserMedia microphone → Web Audio PCM tap →
-// SpeechRecognitionSession.
+// Streaming ASR pipeline: getUserMedia (mic mode preserved) → Ink
+// MediaRecorder (16 kHz mono, Ogg/Opus) → SpeechRecognitionSession.
 //
 // Both pages share this one pipeline in two modes:
-// - Dictation (default): wearer mic, no segmentation. stop() closes the audio
-//   writer so the session emits its final transcript, then ends.
-// - Continuous ({ vad: true }): VAD segmentation with the capture mode picked
-//   in the mic-mode picker (lib/mic-mode.js). The writer stays open; every
-//   finalized VAD segment fires onsegment (one utterance = one turn).
-//
-// PCM is tapped straight from an AnalyserNode because the device ASR only
-// accepts raw `audio/pcm` input — MediaRecorder-encoded output is not an
-// accepted format.
+// - Dictation (default): wearer mic, no segmentation. stop() stops the
+//   recorder, drains the audio queue and closes the writer, which triggers
+//   the final transcript.
+// - Continuous ({ vad: true }): VAD segmentation negotiated from session
+//   capabilities; the writer stays open and every finalized VAD segment
+//   fires onsegment (one utterance = one turn).
 //
 // Failures are locale-neutral: onerror carries a stable `key` (mapped to
 // localized text via lib/i18n.js) plus an English `message` for logcat.
@@ -18,31 +15,25 @@
 // ASR language: this demo ships a zh-CN voice pipeline; the UI locale
 // (lib/i18n.js) is independent of it.
 const SPEECH_LANGUAGE = 'zh-CN';
+const OPUS_MIME = 'audio/ogg;codecs=opus';
 const TIMEOUT_MS = 15000;
-const TARGET_PCM_RATE = 16000;
-const TAP_FFT_SIZE = 4096;
-const LOWPASS_HZ = 7200;
+// MediaRecorder timeslice: one Ogg/Opus blob per tick, silence included —
+// that silence is what the server-side VAD segments on.
+const FRAME_MS = 250;
+// Backpressure cap: encoded audio buffered ahead of the writer. If the
+// upload falls further behind than this, fail instead of stalling.
+const MAX_PENDING_BYTES = 128000;
 const PREFERRED_VAD_SILENCE_MS = 800;
 
 // Stable error keys surfaced through onerror ({ key, message }):
 // sessionUnsupported, recorderUnsupported, micUnsupported, formatUnsupported,
-// startTimeout, stopTimeout, resultTimeout, notStarted, recognitionFailed —
-// plus whatever error name the host session reports.
+// opusHeader, vadUnsupported, uploadBackpressure, startTimeout, stopTimeout,
+// resultTimeout, recognitionFailed — plus whatever error name the host
+// session reports.
 function recognizerError(key, detail) {
   return Object.assign(new Error(detail || key), { key });
 }
 
-function getMediaApi() {
-  const mediaDevices = typeof navigator !== 'undefined' && navigator && navigator.mediaDevices;
-  return {
-    getUserMedia: mediaDevices && mediaDevices.getUserMedia
-      ? mediaDevices.getUserMedia.bind(mediaDevices)
-      : null,
-    AudioContextCtor: typeof AudioContext !== 'undefined' ? AudioContext : null,
-  };
-}
-
-// The three getUserMedia microphone modes (the `microphoneMode` constraint).
 const MICROPHONE_MODES = Object.freeze(['wearer', 'far-field', 'omnidirectional']);
 
 // Audio constraint fallback chain: ask for the preferred capture mode first,
@@ -69,14 +60,16 @@ function buildAudioConstraintChain(captureMode) {
 }
 
 async function openAudioStream(captureMode) {
-  const { getUserMedia } = getMediaApi();
-  if (!getUserMedia) throw recognizerError('recorderUnsupported');
+  const devices = typeof navigator === 'undefined' ? null : navigator.mediaDevices;
+  if (!devices?.getUserMedia) throw recognizerError('recorderUnsupported');
   let lastError = null;
   for (const audio of buildAudioConstraintChain(captureMode)) {
     try {
-      const stream = await getUserMedia({ audio });
-      console.log('[rvi] audio stream opened | mode =', captureMode, '| constraints =', JSON.stringify(audio));
-      return stream;
+      // 16 kHz mono on every constraint variant: what the Opus encoder
+      // records and the ASR endpoint expects.
+      return await devices.getUserMedia({
+        audio: { ...(audio === true ? {} : audio), sampleRate: 16000, channelCount: 1 },
+      });
     } catch (error) {
       lastError = error;
       if (!error || error.name !== 'OverconstrainedError') {
@@ -87,22 +80,21 @@ async function openAudioStream(captureMode) {
   throw recognizerError('micUnsupported', (lastError && (lastError.message || lastError.name)) || '');
 }
 
-function baseMime(value) {
-  return String(value || '').trim().toLowerCase().split(';')[0];
-}
-
-function supportsPcmFormat(capabilities) {
-  const formats = Array.isArray(capabilities && capabilities.audioFormats) ? capabilities.audioFormats : [];
-  return formats.some((format) => baseMime(format && format.mimeType) === 'audio/pcm');
-}
-
-function buildPcmAudioFormat(sampleRate) {
-  return { mimeType: 'audio/pcm', sampleRate, channelCount: 1, sampleFormat: 's16' };
+// The first blob of an Ogg/Opus recording must be an 'OggS' page whose
+// second packet starts with 'OpusHead' (page header: 27 fixed bytes, segment
+// table length at byte 26). Checking it turns a mis-encoded stream into an
+// immediate error instead of an ASR timeout.
+function isOggOpusHeader(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const packetOffset = 27 + bytes[26];
+  const matches = (offset, text) => Array.from(text)
+    .every((char, index) => bytes[offset + index] === char.charCodeAt(0));
+  return matches(0, 'OggS') && matches(packetOffset, 'OpusHead');
 }
 
 // Negotiate the documented `segmentation` option from session capabilities:
-// prefer VAD with ~800ms silence (clamped to the supported range), then plain
-// 'vad', then 'auto'.
+// prefer VAD with ~800 ms silence clamped to the supported range, then plain
+// 'vad' (host default threshold). VAD mode has no silent fallback.
 function negotiateSegmentation(capabilities) {
   const modes = Array.isArray(capabilities && capabilities.segmentationModes)
     ? capabilities.segmentationModes
@@ -117,19 +109,19 @@ function negotiateSegmentation(capabilities) {
     }
     return 'vad';
   }
-  if (modes.includes('auto')) return 'auto';
-  return undefined;
+  throw recognizerError('vadUnsupported');
 }
 
-// Extract the currently changed segment from a result event (resultIndex
-// points at it).
+// Extract the segment that changed in this result event (resultIndex points
+// at it), with its index for dedupe.
 function readSegment(event) {
   const results = event && event.results;
-  if (!results || typeof results.length !== 'number') return { text: '', isFinal: false };
+  if (!results || typeof results.length !== 'number') return { index: -1, text: '', isFinal: false };
   const index = typeof event.resultIndex === 'number' ? event.resultIndex : results.length - 1;
   const result = results[index];
   const alternative = result && result[0];
   return {
+    index,
     text: alternative && alternative.transcript ? alternative.transcript : '',
     isFinal: Boolean(result && result.isFinal),
   };
@@ -147,77 +139,8 @@ export function collectTranscript(event) {
   return transcript;
 }
 
-// Audio stream → PCM pump: the getUserMedia stream (microphone or host
-// playback) feeds an AudioContext (asking for 16k); an AnalyserNode is polled
-// on a timer and its waveform is converted to s16 frames. When the context
-// runs above 16k at an integer multiple, a lowpass precedes integer
-// decimation to avoid aliasing.
-function createMicPump({ captureMode, onChunk, onError } = {}) {
-  let handle = null;
-
-  async function start() {
-    const stream = await openAudioStream(captureMode || 'wearer');
-    const { AudioContextCtor } = getMediaApi();
-    if (!AudioContextCtor) throw recognizerError('recorderUnsupported');
-
-    const context = new AudioContextCtor({ sampleRate: TARGET_PCM_RATE });
-    const source = context.createMediaStreamSource(stream);
-    const contextRate = context.sampleRate;
-    const factor = contextRate > TARGET_PCM_RATE && contextRate % TARGET_PCM_RATE === 0
-      ? contextRate / TARGET_PCM_RATE
-      : 1;
-
-    let tapInput = source;
-    if (factor > 1) {
-      const filter = context.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = LOWPASS_HZ;
-      source.connect(filter);
-      tapInput = filter;
-    }
-    const analyser = context.createAnalyser();
-    analyser.fftSize = TAP_FFT_SIZE;
-    tapInput.connect(analyser);
-    await context.resume();
-
-    const waveform = new Float32Array(analyser.fftSize);
-    const outLength = analyser.fftSize / factor;
-    const intervalMs = Math.max(40, Math.round((analyser.fftSize / contextRate) * 1000));
-    const outputRate = contextRate / factor;
-    let timer = setInterval(() => {
-      try {
-        analyser.getFloatTimeDomainData(waveform);
-        const pcm = new Int16Array(outLength);
-        for (let index = 0; index < outLength; index += 1) {
-          const sample = Math.max(-1, Math.min(1, waveform[index * factor]));
-          pcm[index] = sample < 0 ? sample * 0x8000 : sample * 0x7fff;
-        }
-        onChunk(pcm.buffer, outputRate);
-      } catch (error) {
-        if (timer) { clearInterval(timer); timer = null; }
-        onError && onError(error);
-      }
-    }, intervalMs);
-
-    handle = { stream, context, source, timer };
-    console.log('[rvi] mic pump started | ctx rate =', contextRate, '| output rate =', outputRate);
-    return { outputRate };
-  }
-
-  function release() {
-    if (!handle) return;
-    if (handle.timer) { clearInterval(handle.timer); handle.timer = null; }
-    try { handle.source.disconnect(); } catch (_) {}
-    try { handle.stream.getTracks().forEach((track) => track.stop()); } catch (_) {}
-    try {
-      if (handle.context && handle.context.state !== 'closed') {
-        Promise.resolve(handle.context.close()).catch(() => {});
-      }
-    } catch (_) {}
-    handle = null;
-  }
-
-  return { start, release };
+function releaseStream(stream) {
+  for (const track of stream?.getTracks() || []) track.stop();
 }
 
 // Recognizer session lifecycle. Every async callback checks `live(run)` so a
@@ -226,131 +149,177 @@ export function createRecognizer({ SpeechRecognitionSession, captureMode = 'wear
   let current = null;
   const api = { start, stop, abort };
   const live = (run) => current === run;
-  const abortWriter = (run) => {
-    try { if (run.writer) Promise.resolve(run.writer.abort()).catch(() => {}); } catch (_) {}
-  };
-  // Tear the run down; a key (stable error id) turns this into a failure.
-  const endRun = (run, key, detail) => {
-    if (!live(run)) return;
+
+  // Tear a run down. With abortAudio the writer pipe is aborted so the
+  // session ends without waiting for a final result.
+  function dispose(run, abortAudio) {
     current = null;
     clearTimeout(run.timer);
-    if (run.pump) run.pump.release();
-    if (key) {
-      abortWriter(run);
-      console.error('[rvi] recognizer error | key =', key, '| detail =', detail || '');
-      if (api.onerror) api.onerror({ key, message: detail || '' });
+    if (abortAudio && run.writer) {
+      try { Promise.resolve(run.writer.abort()).catch(() => {}); } catch (_) {}
     }
-    if (api.onend) api.onend();
-  };
-  const failFrom = (run, error) => endRun(
-    run,
-    (error && error.key) || 'recognitionFailed',
-    (error && (error.message || String(error))) || ''
-  );
+    if (run.recorder && run.recorder.state !== 'inactive') {
+      try { run.recorder.stop(); } catch (_) {}
+    }
+    releaseStream(run.stream);
+  }
+
+  // Single exit point: teardown, then the error (if any) and onend. The
+  // writer is aborted unless a graceful close is already in flight.
+  function finish(run, key, message = '') {
+    if (!live(run)) return;
+    dispose(run, Boolean(key) || !run.closing);
+    if (key) {
+      console.error('[rvi] recognizer error | key =', key, '| detail =', message);
+      api.onerror?.({ key, message });
+    }
+    api.onend?.();
+  }
+
+  function fail(run, error) {
+    finish(run, error?.key || 'recognitionFailed', error?.message || String(error));
+  }
+
+  // Serialize blob writes through a promise queue — the writer is a pipe,
+  // not a queue, so out-of-order write() calls would interleave. The first
+  // blob must carry the Ogg/Opus header; pendingBytes caps how far the
+  // writer may lag behind the recorder.
+  function enqueue(run, blob) {
+    if (!live(run) || !blob?.size) return;
+    run.pendingBytes += blob.size;
+    if (run.pendingBytes > MAX_PENDING_BYTES) {
+      finish(run, 'uploadBackpressure');
+      return;
+    }
+    run.queue = run.queue.then(async () => {
+      if (!live(run)) return;
+      const buffer = await blob.arrayBuffer();
+      if (!live(run)) return;
+      if (!run.headerSent) {
+        if (!isOggOpusHeader(buffer)) throw recognizerError('opusHeader');
+        run.headerSent = true;
+      }
+      await run.writer.write(buffer);
+      run.pendingBytes -= blob.size;
+    });
+    run.queue.catch((error) => fail(run, error));
+  }
 
   async function start() {
     if (current) return;
-    const { AudioContextCtor } = getMediaApi();
-    const run = { queue: Promise.resolve(), stopping: false, started: false, pump: null, writer: null };
+    const run = { queue: Promise.resolve(), pendingBytes: 0, lastFinalIndex: -1 };
     current = run;
-    run.timer = setTimeout(() => endRun(run, 'startTimeout'), TIMEOUT_MS);
+    run.timer = setTimeout(() => finish(run, 'startTimeout'), TIMEOUT_MS);
     try {
-      if (!SpeechRecognitionSession) throw recognizerError('sessionUnsupported');
-      if (!AudioContextCtor) throw recognizerError('recorderUnsupported');
-
-      // Open the audio stream first: the session must be created with the
-      // pump's real output sample rate.
-      run.pump = createMicPump({
-        captureMode,
-        onChunk: (buffer) => {
-          if (!live(run) || !run.writer) return;
-          // Serialize writes through a promise queue; the writer is a pipe,
-          // not a queue, so out-of-order write() calls would interleave.
-          run.queue = run.queue.then(() => (live(run) ? run.writer.write(buffer) : undefined));
-          run.queue.catch((error) => failFrom(run, error));
-        },
-        onError: (error) => failFrom(run, error),
-      });
-      const { outputRate } = await run.pump.start();
-      if (!live(run)) { run.pump.release(); return; }
-
-      // Capability negotiation: PCM input support is required; segmentation
-      // is only requested in VAD mode.
+      // Gate on host support: the session must expose getCapabilities,
+      // MediaRecorder must exist, and both the ASR endpoint and the recorder
+      // must accept Ogg/Opus.
+      if (typeof SpeechRecognitionSession?.getCapabilities !== 'function') {
+        throw recognizerError('sessionUnsupported');
+      }
+      const Recorder = typeof MediaRecorder === 'undefined' ? null : MediaRecorder;
+      if (!Recorder) throw recognizerError('recorderUnsupported');
       const capabilities = await SpeechRecognitionSession.getCapabilities();
       if (!live(run)) return;
-      if (!supportsPcmFormat(capabilities)) throw recognizerError('formatUnsupported');
-
-      const options = {
-        lang: SPEECH_LANGUAGE,
-        interimResults: vad ? true : Boolean(capabilities.interimResults),
-        audio: buildPcmAudioFormat(outputRate),
-      };
-      if (vad) {
-        const segmentation = negotiateSegmentation(capabilities);
-        if (segmentation !== undefined) options.segmentation = segmentation;
+      const formats = Array.isArray(capabilities?.audioFormats) ? capabilities.audioFormats : [];
+      if (!formats.some((format) => String(format?.mimeType).toLowerCase().replace(/\s/g, '') === OPUS_MIME) ||
+          (typeof Recorder.isTypeSupported === 'function' && !Recorder.isTypeSupported(OPUS_MIME))) {
+        throw recognizerError('formatUnsupported');
       }
-      const session = new SpeechRecognitionSession(options);
+      const segmentation = vad ? negotiateSegmentation(capabilities) : undefined;
+
+      // Open the mic with the requested capture mode; the native recorder
+      // encodes it to Ogg/Opus in real time.
+      const stream = await openAudioStream(captureMode);
+      if (!live(run)) {
+        releaseStream(stream);
+        return;
+      }
+      run.stream = stream;
+      const recorder = new Recorder(stream, { mimeType: OPUS_MIME });
+      run.recorder = recorder;
+      const session = new SpeechRecognitionSession({
+        lang: SPEECH_LANGUAGE,
+        interimResults: Boolean(capabilities.interimResults),
+        audio: { mimeType: OPUS_MIME },
+        ...(vad ? { segmentation } : {}),
+      });
       run.writer = session.audio.getWriter();
       session.onresult = (event) => {
         if (!live(run)) return;
+        // Dictation mode: pass raw result events through; the page
+        // accumulates transcripts itself.
         if (!vad) {
-          if (api.onresult) api.onresult(event);
+          api.onresult?.(event);
           return;
         }
-        // VAD mode: each isFinal segment is one utterance turn; the empty
-        // interim after it marks the segment boundary.
-        const { text, isFinal } = readSegment(event);
+        // VAD mode: hosts may re-emit a final result for the same index, so
+        // only new indexes count as turns. The empty interim after a final
+        // result marks the segment boundary.
+        const { index, text, isFinal } = readSegment(event);
         if (isFinal) {
-          if (text && api.onsegment) api.onsegment({ text });
-          if (api.oninterim) api.oninterim({ text: '' });
-        } else if (api.oninterim) {
-          api.oninterim({ text });
+          if (index <= run.lastFinalIndex) return;
+          run.lastFinalIndex = index;
+          if (text) api.onsegment?.({ text });
+          api.oninterim?.({ text: '' });
+        } else {
+          api.oninterim?.({ text });
         }
       };
       // Host-side failures surface with their own error name as the key.
-      session.onerror = (event) => endRun(
-        run,
-        (event && event.error) || 'recognitionFailed',
-        (event && (event.message || event.error)) || ''
-      );
-      session.onend = () => endRun(run);
+      session.onerror = (event) => finish(run, event?.error || 'recognitionFailed', event?.message);
+      session.onend = () => finish(run);
 
-      run.started = true;
-      clearTimeout(run.timer);
-      if (api.onstart) api.onstart();
-    } catch (error) { failFrom(run, error); }
+      recorder.onstart = () => {
+        if (!live(run) || run.stopping) return;
+        clearTimeout(run.timer);
+        api.onstart?.();
+      };
+      recorder.ondataavailable = (event) => enqueue(run, event.data);
+      recorder.onerror = (event) => finish(run, 'micUnsupported', event.error?.message || event.message);
+      // Recorder stopped: release the mic, drain queued blobs, then close
+      // the writer — closing signals end-of-audio and flushes the final
+      // result. If no header was ever seen, nothing was encoded: just end.
+      recorder.onstop = async () => {
+        if (!live(run)) return;
+        releaseStream(run.stream);
+        run.stream = null;
+        clearTimeout(run.timer);
+        run.timer = setTimeout(() => finish(run, 'resultTimeout'), TIMEOUT_MS);
+        try {
+          await run.queue;
+          if (!live(run)) return;
+          if (!run.headerSent) {
+            finish(run);
+            return;
+          }
+          run.closing = true;
+          await run.writer.close();
+        } catch (error) { fail(run, error); }
+      };
+      recorder.start(FRAME_MS);
+    } catch (error) { fail(run, error); }
   }
 
-  // Stop: release the mic, drain queued audio frames, then close the writer —
-  // closing signals end-of-audio and flushes the final recognition result.
+  // Stop: end the recorder; its onstop drains the queue and closes the
+  // writer, which triggers the final transcript.
   function stop() {
     const run = current;
     if (!run || run.stopping) return;
     run.stopping = true;
+    if (!run.recorder) {
+      finish(run);
+      return;
+    }
     clearTimeout(run.timer);
-    run.timer = setTimeout(() => endRun(run, 'stopTimeout'), TIMEOUT_MS);
-    if (!run.started || !run.pump) return endRun(run, 'notStarted');
-    (async () => {
-      try {
-        run.pump.release();
-        await run.queue;
-        if (live(run)) {
-          await run.writer.close();
-          clearTimeout(run.timer);
-          run.timer = setTimeout(() => endRun(run, 'resultTimeout'), TIMEOUT_MS);
-        }
-      } catch (error) { failFrom(run, error); }
-    })();
+    run.timer = setTimeout(() => finish(run, 'stopTimeout'), TIMEOUT_MS);
+    try { run.recorder.stop(); } catch (error) { fail(run, error); }
   }
 
   // Abort: silent teardown without waiting for a final result.
   function abort() {
-    const run = current;
-    if (!run) return;
-    current = null;
-    clearTimeout(run.timer);
-    abortWriter(run);
-    if (run.pump) run.pump.release();
+    if (current) dispose(current, true);
   }
+
   return api;
 }
