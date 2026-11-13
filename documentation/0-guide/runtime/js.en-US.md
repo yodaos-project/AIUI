@@ -1,58 +1,99 @@
 # JavaScript Compatibility
 
-The AIUI runtime uses the QuickJS JavaScript engine.
+AIUI agents use JavaScript for interaction logic. You can use common modern features such as `Promise`, `async/await`, and modules, while taking care not to run synchronous code for too long.
 
-QuickJS is a lightweight JavaScript engine with full support for the ES2023 specification. Understanding its features and limitations helps you write more robust agent code.
+This page introduces useful language features and the execution limit to keep in mind.
 
-## Supported ECMAScript Features
+## Common JavaScript Features
 
-QuickJS provides support for very modern JavaScript syntax, so you can safely use the following features in agent development:
+### Asynchronous Operations
 
-### 1. Asynchronous Programming (Async / Await)
-Native support for `Promise` and `async/await`, with no need for a Polyfill.
+`Promise` and `async/await` help organize operations that need to wait. For example, this function waits one second before returning a message:
 
 ```javascript
-async function fetchAgentData() {
-  try {
-    const response = await wx.request({ url: '...' });
-    return response.data;
-  } catch (error) {
-    console.error(error);
-  }
+async function getMessage() {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return 'Ready';
 }
+
+getMessage().then((message) => console.log(message));
 ```
 
-### 2. Modern Data Structures
-Full support for `Map`, `Set`, `WeakMap`, and `WeakSet`, as well as the latest array and object methods.
+In a real project, you can also wait for results such as network responses. Check the API's documentation first: some APIs use callbacks and cannot be used as if they returned a Promise directly.
+
+### Data and Common Syntax
+
+You can use data structures such as `Map`, `Set`, `WeakMap`, and `WeakSet`, as well as optional chaining `?.` and nullish coalescing `??`:
 
 ```javascript
-const agentState = new Map();
-agentState.set('status', 'active');
+const weather = new Map();
+weather.set('city', 'Hangzhou');
 
-// 可选链 (Optional Chaining) 与 空值合并 (Nullish Coalescing)
+const user = { profile: { name: 'Alex' } };
 const userName = user?.profile?.name ?? 'Guest';
 ```
 
-### 3. ES Modules
-Supports the standard modular syntax of `import` and `export`.
+### Split and Reuse Code
+
+As a project grows, use `export` to make a function available and `import` to use it in another file.
+
+For example, export a function from `utils/format.js`:
 
 ```javascript
-import { formatTime } from '../../utils/util.js';
-export const config = { timeout: 5000 };
+export function formatCity(city) {
+  return `${city} weather`;
+}
 ```
 
-### 4. BigInt
-Native support for large integer operations, which is very useful when handling high-precision timestamps or hardware identifiers.
+Then import it in the page logic in `pages/index/index.ink`:
 
 ```javascript
-const timestamp = 9007199254740991n;
+import { formatCity } from '../../utils/format.js';
+
+console.log(formatCity('Hangzhou')); // Hangzhou weather
 ```
 
-## Synchronous Execution Budget
+### Large Integers
 
-Starting with AIUI 0.20, each instance has a default 2,000 ms synchronous JavaScript budget. Exceeding it interrupts the script realm and requests instance destruction; do not rely on cleanup continuing afterward. Asynchronous waiting is excluded after JavaScript yields control. Putting computation in an `async` function does not automatically yield.
+Use `BigInt` when you need an integer outside the safe integer range of ordinary numbers:
 
-Split long computations and yield the event loop with timers between batches. Avoid busy-wait loops and do not treat `await Promise.resolve()` as a reliable event-loop yield.
+```javascript
+const largeNumber = 9007199254740993n;
+```
+
+Language syntax and API availability are different things. Check the relevant API documentation for network, device, and other capabilities.
+
+## Can I Use TypeScript?
+
+Yes. **TypeScript** builds on JavaScript by adding type annotations. Types help editors and checking tools catch common mistakes, such as passing text to a function that expects a number.
+
+For example, define a function that accepts a number in `utils/format.ts`:
+
+```typescript
+export function formatTemperature(value: number): string {
+  return `${value}°C`;
+}
+```
+
+Then import and use it from a page's JavaScript logic:
+
+```javascript
+import { formatTemperature } from '../../utils/format.ts';
+
+console.log(formatTemperature(26)); // 26°C
+```
+
+This import path is relative to `pages/index/index.ink`. AIUI supports importing `.ts` modules directly and processes TypeScript syntax before execution; **the runtime does not type-check your code**. To check types during development or get editor hints, configure TypeScript and the type definitions in your project. TSX is not currently supported.
+
+For installation, configuration, and more examples, see [Modules: Using TypeScript](/AIUI/framework/open-agent-format-module).
+
+## Avoid Long-Running Synchronous Code
+
+Starting with AIUI 0.20, an instance has a default limit of **2,000 milliseconds** for continuous synchronous JavaScript execution. Exceeding it interrupts the script and requests instance destruction, so don't rely on cleanup running afterward. A deployment can set a different limit; an application cannot change it while running.
+
+Asynchronous waiting after JavaScript yields control doesn't count toward that time. However, putting a large computation in an `async` function doesn't automatically yield control.
+
+For a large amount of work, split it into small batches and use a timer between batches to give other work a chance to run:
 
 ```javascript
 async function processInBatches(items, processItem) {
@@ -65,8 +106,8 @@ async function processInBatches(items, processItem) {
 }
 ```
 
-Adjust batch size to the cost per item so each synchronous batch stays short. Deployment environments may configure a different budget; applications cannot change this policy while running.
+Processing costs vary, so adjust the batch size to keep each synchronous batch short. Avoid busy-wait loops; `await Promise.resolve()` is not a reliable way to yield to the event loop either.
 
-## WebAssembly Computational Modules
+## Need to Run WebAssembly?
 
-Use `WebAssembly` to run computational modules with JavaScript imports. Synchronous constructors and exported function calls should still avoid long blocking work. See [WebAssembly](/AIUI/api/webassembly) for the supported subset, resource quotas, and Module reuse.
+AIUI also supports running computational modules with `WebAssembly`. Avoid long synchronous blocking when creating modules or calling exports. For supported behavior, resource limits, and usage, see [WebAssembly](/AIUI/api/webassembly).

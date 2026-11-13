@@ -1,58 +1,99 @@
 # JavaScript 兼容性
 
-AIUI 运行时使用 QuickJS JavaScript 引擎。
+AIUI 智能体使用 JavaScript 编写交互逻辑。你可以使用 `Promise`、`async/await`、模块等常见的现代 JavaScript 特性；同时，要注意不要让一段同步代码运行太久。
 
-QuickJS 是一个轻量级且完全支持 ES2023 规范的 JavaScript 引擎。了解它的特性和限制，有助于编写更健壮的智能体代码。
+这篇文章先介绍开发时常会用到的语法，再说明需要注意的运行时间限制。
 
-## 支持的 ECMAScript 特性
+## 常用的 JavaScript 特性
 
-QuickJS 提供了非常现代的 JavaScript 语法支持，你可以在智能体开发中安全地使用以下特性：
+### 异步操作
 
-### 1. 异步编程 (Async / Await)
-原生支持 `Promise` 和 `async/await`，无需引入 Polyfill。
+`Promise` 和 `async/await` 可以帮助你组织需要等待的操作。例如，下面的函数等待一秒后返回提示文字：
 
 ```javascript
-async function fetchAgentData() {
-  try {
-    const response = await wx.request({ url: '...' });
-    return response.data;
-  } catch (error) {
-    console.error(error);
-  }
+async function getMessage() {
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  return '准备好了';
+}
+
+getMessage().then((message) => console.log(message));
+```
+
+实际开发中，你也可以用异步操作等待网络请求等结果。调用具体 API 时，请先查看它的文档：有些 API 使用回调，不能直接当作返回 Promise 的函数使用。
+
+### 数据和常用语法
+
+你可以使用 `Map`、`Set`、`WeakMap`、`WeakSet` 等数据结构，也可以使用可选链 `?.` 和空值合并 `??`：
+
+```javascript
+const weather = new Map();
+weather.set('city', '杭州');
+
+const user = { profile: { name: '小明' } };
+const userName = user?.profile?.name ?? '访客';
+```
+
+### 拆分和复用代码
+
+当项目代码变多时，可以通过 `export` 导出功能，再用 `import` 在其他文件中使用。
+
+例如，在 `utils/format.js` 中导出一个函数：
+
+```javascript
+export function formatCity(city) {
+  return `${city}天气`;
 }
 ```
 
-### 2. 现代数据结构
-全面支持 `Map`、`Set`、`WeakMap` 和 `WeakSet`，以及最新的数组/对象方法。
+然后在 `pages/index/index.ink` 的页面逻辑中导入：
 
 ```javascript
-const agentState = new Map();
-agentState.set('status', 'active');
+import { formatCity } from '../../utils/format.js';
 
-// 可选链 (Optional Chaining) 与 空值合并 (Nullish Coalescing)
-const userName = user?.profile?.name ?? 'Guest';
+console.log(formatCity('杭州')); // 杭州天气
 ```
 
-### 3. ES Modules
-支持标准的 `import` 和 `export` 模块化语法。
+### 大整数
+
+需要处理超出普通数字安全整数范围的整数时，可以使用 `BigInt`：
 
 ```javascript
-import { formatTime } from '../../utils/util.js';
-export const config = { timeout: 5000 };
+const largeNumber = 9007199254740993n;
 ```
 
-### 4. BigInt
-原生支持大整数运算，这在处理高精度时间戳或硬件标识符时非常有用。
+语法支持和 API 支持是两回事：要了解网络、设备等能力是否可用，请查看相应的 API 文档。
+
+## 可以使用 TypeScript 吗？
+
+可以。**TypeScript** 是在 JavaScript 基础上增加类型标注的语言。类型可以帮助编辑器和检查工具发现一些常见错误，比如把文字误传给需要数字的函数。
+
+例如，可以在 `utils/format.ts` 中定义一个接收数字的函数：
+
+```typescript
+export function formatTemperature(value: number): string {
+  return `${value}°C`;
+}
+```
+
+然后在页面的 JavaScript 逻辑中导入并使用它：
 
 ```javascript
-const timestamp = 9007199254740991n;
+import { formatTemperature } from '../../utils/format.ts';
+
+console.log(formatTemperature(26)); // 26°C
 ```
 
-## 同步执行预算
+这里的导入路径以 `pages/index/index.ink` 为例。AIUI 支持直接导入 `.ts` 模块，会在执行前处理 TypeScript 语法；**运行时不会替你进行类型检查**。如果希望在开发时检查类型或获得编辑器提示，需要在项目中配置 TypeScript 和类型定义。当前不支持 TSX。
 
-从 AIUI 0.20 起，每个实例默认具有 2,000 ms 的同步 JavaScript 执行预算。超过预算会中断脚本运行环境并请求销毁实例；不要依赖超时后继续执行清理逻辑。异步等待在 JavaScript 交还控制权后不计入预算；单纯把计算放入 `async` 函数不会自动让出控制权。
+安装、配置和更多示例请参阅[模块：使用 TypeScript](/AIUI/framework/open-agent-format-module)。
 
-拆分长计算，在批次之间通过计时器让出事件循环；不要使用忙等循环，也不要把 `await Promise.resolve()` 当作可靠的事件循环让出方式。
+## 避免长时间执行同步代码
+
+从 AIUI 0.20 起，每个实例默认允许一段同步 JavaScript 连续执行 **2,000 毫秒**。超过限制会中断脚本并请求销毁实例，因此不要依赖超时后继续执行清理逻辑。实际部署环境可以设置不同的限制，应用不能在运行中修改它。
+
+异步等待在 JavaScript 交还控制权后不计入这段时间。但仅仅把大量计算放进 `async` 函数，并不会自动让出控制权。
+
+如果需要处理大量数据，可以拆成小批次，在批次之间用定时器让其他工作有机会运行：
 
 ```javascript
 async function processInBatches(items, processItem) {
@@ -65,8 +106,8 @@ async function processInBatches(items, processItem) {
 }
 ```
 
-批次大小应根据单项耗时调整，确保每批同步执行都足够短。部署环境可设置不同预算；应用不能在运行中修改此策略。
+每个项目的处理耗时不同，请根据实际情况调整每批数量，保持单批执行时间短。避免使用忙等循环；`await Promise.resolve()` 也不能可靠地让出事件循环。
 
-## WebAssembly 计算模块
+## 需要运行 WebAssembly？
 
-可通过 `WebAssembly` 运行计算模块并绑定 JavaScript 导入。同步构造器和导出函数调用仍应避免长时间阻塞。支持范围、资源配额及 Module 复用方式见 [WebAssembly](/AIUI/api/webassembly)。
+AIUI 也支持使用 `WebAssembly` 运行计算模块。创建模块和调用导出函数时，同样应避免长时间同步阻塞。支持范围、资源限制和使用方式请参阅 [WebAssembly](/AIUI/api/webassembly)。
