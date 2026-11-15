@@ -308,6 +308,14 @@ controller.abort();
 
 返回 `Promise<Blob>` 并消费请求体；存在 `content-type` 请求头时用它设置 Blob 类型。
 
+#### `bytes()`
+
+返回 `Promise<Uint8Array>`，并消费请求体，适合直接处理字节数据。
+
+#### `formData()`
+
+将请求体解析为 `FormData`，返回 Promise。支持 `multipart/form-data` 和 `application/x-www-form-urlencoded`；内容类型不支持、内容无效或请求体已被使用时会拒绝。
+
 ### `Blob`、`File` 与 `FormData`
 
 - `new Blob(parts, options?)` 创建一组不可变的二进制数据，支持 `arrayBuffer()`、`bytes()`、`text()`、`stream()` 和 `slice()`。
@@ -414,7 +422,29 @@ console.log(buffer.byteLength);
 
 把响应体读取为 `Blob`，适合需要保留媒体类型的二进制内容。
 
+#### `response.bytes()`
+
+将响应体读取为 `Uint8Array`。与 `text()` 等方法共用消费状态。
+
+#### `response.formData()`
+
+将 `multipart/form-data` 或 `application/x-www-form-urlencoded` 响应体读取为 `FormData`。内容类型不支持或数据无效时 Promise 会拒绝。
+
+#### `Response.json(data, init?)`
+
+将 `data` 编码为 JSON，创建本地响应对象。
+
+#### `Response.redirect(url, status?)`
+
+创建指向 `url` 的重定向响应；默认状态码为 `302`。
+
+#### `Response.error()`
+
+创建表示网络错误的响应对象。这些方法不会自动发起网络请求。
+
 ### wx APIs
+
+调用 `abort()` 取消尚未完成的请求时，会调用 `fail` 和 `complete`；应在失败回调中处理取消。
 
 #### `wx.request(options)`
 

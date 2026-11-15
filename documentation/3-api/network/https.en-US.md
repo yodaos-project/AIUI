@@ -308,6 +308,14 @@ Returns `Promise<ArrayBuffer>` containing the body's bytes and consumes the body
 
 Returns `Promise<Blob>` and consumes the body. The Blob type derives from the `content-type` header when present.
 
+#### `bytes()`
+
+Consumes the request body and returns `Promise<Uint8Array>` for direct byte processing.
+
+#### `formData()`
+
+Consumes the request body and returns a Promise for `FormData`. It supports `multipart/form-data` and `application/x-www-form-urlencoded`; unsupported content types, invalid data, or an already used body reject.
+
 ### `Blob`, `File`, and `FormData`
 
 - `new Blob(parts, options?)` creates immutable binary data and supports `arrayBuffer()`, `bytes()`, `text()`, `stream()`, and `slice()`.
@@ -414,7 +422,29 @@ console.log(buffer.byteLength);
 
 Reads the response body as a `Blob`, which is useful for binary content that should retain its media type.
 
+#### `response.bytes()`
+
+Reads the response body as a `Uint8Array`. It shares consumption state with methods such as `text()`.
+
+#### `response.formData()`
+
+Reads a `multipart/form-data` or `application/x-www-form-urlencoded` response body as `FormData`. The Promise rejects for unsupported content types or invalid data.
+
+#### `Response.json(data, init?)`
+
+Encodes `data` as JSON and creates a local response.
+
+#### `Response.redirect(url, status?)`
+
+Creates a redirect response to `url`; the default status is `302`.
+
+#### `Response.error()`
+
+Creates a response representing a network error. These methods do not send network requests.
+
 ### wx APIs
+
+Calling `abort()` on a pending request invokes `fail` and `complete`; handle cancellation in the failure callback.
 
 #### `wx.request(options)`
 

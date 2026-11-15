@@ -141,7 +141,32 @@ ctx.stroke();
 
 Passing a closed `ImageBitmap` to `drawImage()` throws `InvalidStateError`.
 
+## Crop or Resize an Image
+
+Use `createImageBitmap()` to create a bitmap from an image file, pixel data, or canvas, then draw it on a canvas. For example, resize a bundled image to 80 pixels wide:
+
+```javascript
+const response = await fetch('/assets/photo.png');
+const photo = await response.blob();
+const bitmap = await createImageBitmap(photo, { resizeWidth: 80 });
+const canvas = new Canvas(bitmap.width, bitmap.height);
+canvas.getContext('2d').drawImage(bitmap, 0, 0);
+bitmap.close();
+```
+
+When only one dimension is specified, the other preserves the aspect ratio. Call `close()` when finished; a closed bitmap can no longer be drawn.
+
 ## API Reference
+
+### `createImageBitmap()`
+
+#### `createImageBitmap(source, options?)`
+
+Creates a bitmap from a `Blob`, `ImageData`, `ImageBitmap`, or `Canvas`, returning `Promise<ImageBitmap>`. Set output dimensions with `resizeWidth` and `resizeHeight`; `resizeQuality` can be `pixelated`, `low`, `medium`, or `high`; `imageOrientation` can be `from-image`, `flipY`, or `none`. `premultiplyAlpha` and `colorSpaceConversion` are also available.
+
+#### `createImageBitmap(source, sx, sy, sw, sh, options?)`
+
+Crops a region starting at `(sx, sy)` with width `sw` and height `sh`, then creates a bitmap using the options.
 
 ### Page Canvas
 

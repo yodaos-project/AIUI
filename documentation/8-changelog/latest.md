@@ -1,3 +1,100 @@
+# v0.21.0
+
+AIUI 0.21 让智能体可以把经纬度转换成地址、为用户打开系统导航，并在 AI 生成的界面中播放视频。这次更新还带来了图片处理、条码识别和网络请求方面的新能力，同时优化了复杂界面、绘图、录音和数据保存的性能。
+
+## 根据经纬度查询地址
+
+已有经纬度时，可以使用 `Geocoder` 将坐标转换成城市或街道地址。例如，智能体可以根据用户提供的地点坐标显示对应地址：
+
+```javascript
+const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['zh-CN'] });
+
+try {
+  const address = await geocoder.getFromLocation(30.2741, 120.1551);
+  console.log(address?.formattedAddress ?? '未找到地址');
+} catch (error) {
+  console.error('地址查询失败：', error.message);
+}
+```
+
+坐标使用 WGS-84，示例中的数字分别是纬度和经度。查询已有坐标不需要设备定位权限；地址查询能力可能因运行环境而不可用，未找到地址时返回 `null`。更多选项见 [Geolocation](/AIUI/api/geo-data-geolocation)。
+
+## 为用户打开导航
+
+智能体可以接收一个目的地地址，并打开步行导航。例如，用户询问如何到达某个地点时，先检查设备是否支持，再发起导航：
+
+```javascript
+try {
+  const capabilities = await navigator.maps.getCapabilities();
+  if (capabilities.supported && capabilities.travelModes.includes('walking')) {
+    const session = await navigator.maps.navigate({
+      destination: { type: 'address', address: '浙江省杭州市西湖区西湖风景名胜区' },
+      travelMode: 'walking',
+    });
+    session.finished.then((result) => console.log('导航结束：', result.reason));
+  } else {
+    console.log('当前设备不支持步行导航');
+  }
+} catch (error) {
+  console.error('无法开始导航：', error.message);
+}
+```
+
+导航能力和支持的出行方式因设备和运行环境而异。导航开始后，还可以更改目的地、切换出行方式或结束导航，详见[系统导航](/AIUI/api/geo-data-maps)。
+
+## 让 AI 生成的界面播放视频
+
+A2UI 可以根据结构化指令生成界面。现在，生成的内容中也可以包含视频，例如在天气卡片中播放天气动画。将下面的组件加入 `updateComponents.components`，并把视频文件放入应用的 `assets` 目录：
+
+```json
+{
+  "id": "weather-video",
+  "component": "Video",
+  "props": {
+    "src": "/assets/weather.mp4",
+    "width": 160,
+    "height": 90,
+    "objectFit": "contain",
+    "autoplay": true,
+    "loop": true,
+    "muted": true
+  }
+}
+```
+
+建议使用 H.264 编码的 MP4；视频能否播放取决于设备能力。A2UI 弹窗也新增标题、面板和关闭按钮的外观设置。完整用法见 [A2UI](/AIUI/components/a2ui)。
+
+## 缩放图片和标记条码位置
+
+处理头像或生成缩略图时，可以使用 `createImageBitmap()` 调整图片尺寸。下面把应用内的图片调整为 80 像素宽，并保持原始比例：
+
+```javascript
+const response = await fetch('/assets/photo.png');
+const photo = await response.blob();
+const bitmap = await createImageBitmap(photo, { resizeWidth: 80 });
+const canvas = new Canvas(bitmap.width, bitmap.height);
+canvas.getContext('2d').drawImage(bitmap, 0, 0);
+bitmap.close();
+```
+
+也可以先裁剪图片，再调整尺寸，详见 [Canvas](/AIUI/api/canvas)。识别二维码或条形码时，`BarcodeDetector` 的结果现在包含边界框和四个角点，方便在原图上标记位置，详见[条码识别](/AIUI/api/device-barcode)。
+
+## 性能与体验
+
+- **大型页面更新更快**：在包含大量未显示内容的测试场景中，数据更新处理耗时减少接近 **90%**，复杂页面可以更快响应内容变化。
+- **重复读取本地数据更快**：在反复读取已保存数据的测试中，读取耗时减少约 **99%**。
+- **连续保存本地数据更快**：在连续写入数据的测试中，写入调用耗时减少约 **90%**。
+
+以上为特定场景下的基准测试结果，实际效果会因设备和应用而异。保存测试只统计写入调用，不包含后续刷新保存结果的时间。
+
+## 更多改进
+
+- **请求内容更容易处理**：`Request` 和 `Response` 新增 `bytes()` 和 `formData()`，可以读取字节数据或表单；也支持创建 JSON、重定向和错误响应。详见 [HTTPS](/AIUI/api/network-https)。
+- **取消请求时能收到结果**：取消尚未完成的 `wx.request()` 会调用 `fail` 和 `complete`，方便界面处理取消状态。
+- **更容易发现脚本错误**：App 的 `onError` 接收未捕获的同步脚本错误。Promise 拒绝和 API 失败仍需单独处理，详见 [App](/AIUI/api/framework-app)。
+- **支持 WOFF2 字体**：可以在 `@font-face` 中使用 WOFF2 格式的自定义字体。
+- **交互更可靠**：改进条件显示、自定义组件生命周期、页面更新和可见溢出内容的点击处理。
+
 # v0.20.0
 
 AIUI 0.20.0 让智能体更方便地访问媒体库、查询权限状态、复用计算模块和调整界面。此次更新也改善了网络连接、动画播放和页面交互的稳定性。

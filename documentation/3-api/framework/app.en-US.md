@@ -79,7 +79,7 @@ The App lifecycle describes state changes for the entire agent application, from
 | `onLaunch` | Listens for agent initialization | When agent initialization completes, only once globally |
 | `onShow` | Listens for the agent being shown | When the agent starts, or returns from background to foreground |
 | `onHide` | Listens for the agent being hidden | When the agent moves from foreground to background |
-| `onError` | Error listener function | When a script error occurs in the agent, or when an API call fails |
+| `onError` | Error listener function | When an uncaught synchronous script error occurs |
 
 #### `onLaunch(Object options)`
 
@@ -95,7 +95,7 @@ Runs when the App moves from the foreground to the background. Use it to pause f
 
 #### `onError(String msg)`
 
-Runs when the runtime reports an unhandled script error or API-call error. `msg` is the error message and can be recorded for diagnostics; this callback does not replace error handling provided by individual asynchronous APIs.
+Runs for uncaught synchronous script errors, including errors thrown in timers or lifecycle callbacks. `msg` contains the message and any available stack trace. Caught exceptions, API failure callbacks, and Promise rejections do not trigger this hook; handle asynchronous failures separately with `try` / `catch` or `.catch()`.
 
 ### Event Callbacks
 

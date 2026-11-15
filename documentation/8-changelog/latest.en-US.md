@@ -1,3 +1,100 @@
+# v0.21.0
+
+AIUI 0.21 lets agents look up a readable address from coordinates, open system navigation, and play video in AI-generated interfaces. This update also adds image processing, barcode detection, and networking capabilities, while improving performance for complex interfaces, drawing, recording, and data storage.
+
+## Look Up an Address from Coordinates
+
+When you have coordinates, use `Geocoder` to find a city or street address. For example, an agent can show the address for coordinates supplied by a user:
+
+```javascript
+const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['en-US'] });
+
+try {
+  const address = await geocoder.getFromLocation(30.2741, 120.1551);
+  console.log(address?.formattedAddress ?? 'No address found');
+} catch (error) {
+  console.error('Address lookup failed:', error.message);
+}
+```
+
+Coordinates use WGS-84; the numbers in the example are latitude and longitude, respectively. Looking up supplied coordinates does not require device location permission. Address lookup may be unavailable in some environments, and returns `null` when no match is found. See [Geolocation](/AIUI/api/geo-data-geolocation) for more options.
+
+## Open Navigation for the User
+
+An agent can accept a destination address and open walking directions. For example, when a user asks how to reach a place, check availability before starting navigation:
+
+```javascript
+try {
+  const capabilities = await navigator.maps.getCapabilities();
+  if (capabilities.supported && capabilities.travelModes.includes('walking')) {
+    const session = await navigator.maps.navigate({
+      destination: { type: 'address', address: 'West Lake Scenic Area, Hangzhou, Zhejiang, China' },
+      travelMode: 'walking',
+    });
+    session.finished.then((result) => console.log('Navigation ended:', result.reason));
+  } else {
+    console.log('Walking navigation is unavailable on this device');
+  }
+} catch (error) {
+  console.error('Could not start navigation:', error.message);
+}
+```
+
+Navigation availability and travel modes vary by device and environment. After starting, you can change the destination, switch travel modes, or end navigation. See [System Navigation](/AIUI/api/geo-data-maps).
+
+## Play Video in AI-Generated Interfaces
+
+A2UI creates interfaces from structured instructions. Generated content can now include video, such as an animated weather clip in a weather card. Add this component to `updateComponents.components` and place the video in the application's `assets` directory:
+
+```json
+{
+  "id": "weather-video",
+  "component": "Video",
+  "props": {
+    "src": "/assets/weather.mp4",
+    "width": 160,
+    "height": 90,
+    "objectFit": "contain",
+    "autoplay": true,
+    "loop": true,
+    "muted": true
+  }
+}
+```
+
+An H.264 MP4 is recommended; playback depends on device capability. A2UI dialogs also support custom titles, panel appearance, and close-button appearance. See [A2UI](/AIUI/components/a2ui) for complete usage.
+
+## Resize Images and Mark Barcode Locations
+
+Use `createImageBitmap()` to resize an image when preparing an avatar or thumbnail. This example resizes a bundled image to 80 pixels wide while keeping its proportions:
+
+```javascript
+const response = await fetch('/assets/photo.png');
+const photo = await response.blob();
+const bitmap = await createImageBitmap(photo, { resizeWidth: 80 });
+const canvas = new Canvas(bitmap.width, bitmap.height);
+canvas.getContext('2d').drawImage(bitmap, 0, 0);
+bitmap.close();
+```
+
+You can also crop before resizing; see [Canvas](/AIUI/api/canvas). When detecting a QR code or barcode, `BarcodeDetector` now returns a bounding box and four corners, making it easier to mark the detected position on the image. See [Barcode Detection](/AIUI/api/device-barcode).
+
+## Performance and Experience
+
+- **Faster updates on large pages**: In a test with a large amount of hidden content, data update processing took nearly **90%** less time, helping complex pages respond sooner to content changes.
+- **Faster repeated local reads**: In a test that repeatedly read saved data, read time fell by approximately **99%**.
+- **Faster consecutive local saves**: In a test with consecutive data writes, write-call time fell by approximately **90%**.
+
+These benchmark results apply to specific scenarios. Actual results vary by device and application. The save test measures write calls and excludes the time to flush the saved data afterward.
+
+## More Improvements
+
+- **Easier request and response processing**: `Request` and `Response` add `bytes()` and `formData()` to read bytes or forms, and support creating JSON, redirect, and error responses. See [HTTPS](/AIUI/api/network-https).
+- **Cancellation callbacks**: Cancelling a pending `wx.request()` calls `fail` and `complete`, helping the interface handle cancellation.
+- **Easier script error reporting**: App `onError` receives uncaught synchronous script errors. Handle Promise rejections and API failures separately; see [App](/AIUI/api/framework-app).
+- **WOFF2 fonts**: Use WOFF2 custom fonts with `@font-face`.
+- **More reliable interactions**: Improved conditional display, custom component lifecycle, page updates, and taps on visible overflowing content.
+
 # v0.20.0
 
 AIUI 0.20.0 makes it easier for agents to access the media library, check permission states, reuse computation modules, and adapt their interfaces. This release also improves the reliability of networking, animations, and page interactions.

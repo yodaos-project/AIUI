@@ -888,6 +888,12 @@
             "docPath": "3-api/geo-data/geolocation.md"
           },
           {
+            "id": "maps",
+            "label": "系统导航",
+            "docId": "geo-data-maps",
+            "docPath": "3-api/geo-data/maps.md"
+          },
+          {
             "id": "gpx-document",
             "label": "GPXDocument",
             "docId": "geo-data-gpx-document",
