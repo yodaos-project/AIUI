@@ -81,13 +81,11 @@ You can also crop before resizing; see [Canvas](/AIUI/api/canvas). When detectin
 
 ## Performance and Experience
 
-These improvements apply automatically in the relevant scenarios. The actual experience depends on the device and application content:
+- **Faster updates on large pages**: In a desktop development test with 16,000 hidden content items, processing one data update fell from about 870 ms to 114 ms, a reduction of approximately **87%**. This can help complex pages respond sooner when content changes.
+- **Faster repeated local reads**: In a local test on a Mac with Apple M2, 200 repeated reads of 10 saved items fell from about 31.8 ms to 0.22 ms, a reduction of approximately **99%**. Agents that frequently read saved information can complete these operations sooner.
+- **Faster consecutive local saves**: In the same test, 100 consecutive write calls fell from about 86.2 ms to 5.8 ms, a reduction of approximately **93%**. A subsequent flush took about 1.3 ms in a separate measurement and is not included in the write-call time.
 
-- **Lighter complex interfaces**: Content whose condition is false is no longer created in advance, reducing initial work and resource use on complex pages.
-- **More efficient drawing across canvases**: In supported environments, multiple canvases in the same agent can reuse drawing resources, reducing repeated setup while keeping each canvas's content independent.
-- **Smoother recording**: Some audio processing runs in the background, and Opus recording data can be delivered sooner for real-time voice scenarios.
-- **More efficient local data storage**: Repeated reads and frequent saves are handled more efficiently, reducing unnecessary repeated work.
-- **More predictable request resource use**: Improved buffering and queuing for large responses reduce memory pressure when many requests run at once.
+These are desktop test results for specific workloads, not measurements of total page load time or performance on glasses. Actual results vary by device and application. The local data test compares a reproduction of the previous implementation with the new one using 1,000 items; figures are medians of 15 samples. The data update test uses a development build. Neither is a device measurement.
 
 ## More Improvements
 
