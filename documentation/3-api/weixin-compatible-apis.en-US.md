@@ -75,6 +75,20 @@ console.log(wx.canIUse('request.object.unknown')); // false
 
 Pass an exact function path without the `wx.` prefix. Namespaces, unknown paths, and functions added later by the application do not count as registered capabilities. `true` establishes API availability, not permissions, device readiness, or operation success.
 
+## Request Exit
+
+When a task is complete, request exit and use the result to update the interface:
+
+```javascript
+wx.exitMiniProgram({
+  success(result) { console.log('Exit accepted', result.errMsg); },
+  fail(result) { console.error('Unable to exit', result.errMsg); },
+  complete(result) { console.log('Exit request finished', result.errMsg); },
+});
+```
+
+`success` runs only when exit is accepted. A denied request or another pending exit calls `fail` and the application keeps running. Both paths call `complete`.
+
 ## API Reference
 
 ### `wx`
@@ -85,4 +99,4 @@ Pass an exact function path without the `wx.` prefix. Namespaces, unknown paths,
 
 #### `wx.exitMiniProgram(options?)`
 
-Requests exit of the current instance and returns `undefined`. Options are optional and may include `success`, `fail`, and `complete` callbacks.
+Requests exit of the current instance and returns `undefined`. Options are optional. `success(result)` runs after exit is accepted and before unload, with `result.errMsg` equal to `exitMiniProgram:ok`. A denied request or an already pending exit calls `fail(result)`, with `errMsg` starting with `exitMiniProgram:fail`. `complete(result)` follows even if the preceding callback throws. Pending callbacks are canceled if the application is replaced or destroyed.

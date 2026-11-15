@@ -55,6 +55,4 @@ export default {
 `self` is distinct from `this` inside `onOpen()`.
 
 `this.navigator` is the global Worker `navigator`. `WorkerNavigator` provides
-`id`, `renderingEnabled`, `versions`, `userAgent`, `language`, `languages`, and
-`region`. Do not assume a Page's `window`, `document`, `fetch`, routing,
-rendering, or media capture exists in the Worker.
+`id`, `renderingEnabled`, `versions`, `userAgent`, `language`, `languages`, `region`, `onLine`, and `connection`. Workers support `fetch` and `WebSocket`, and can listen to `networkstatus` through `self`. Do not assume a Page's `window`, `document`, routing, rendering, or media capture exists in the Worker. Register short-lived async work with `waitUntil()` and close resources on shutdown.

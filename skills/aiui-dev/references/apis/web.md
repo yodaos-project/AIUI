@@ -26,7 +26,7 @@ This file documents browser-style networking, Streams, text encoding, Web Crypto
 
 - Current compatibility checks explicitly cover case-insensitive key lookup.
 - Repeated header values are merged and returned from `get(name)` as a comma-separated string.
-- Verified methods in current examples include `has(name)` and `get(name)`.
+- Use `get(name)` / `has(name)` rather than property enumeration. `append`, `set`, `delete`, `entries`, `keys`, `values`, `forEach`, and `getSetCookie()` are available; invalid names and values throw. Request and response guards may disallow modifications.
 
 ### Example
 
@@ -57,13 +57,13 @@ console.log(headers.get('X-Test')); // "one, two"
 - `text()`
 - `json()`
 - `arrayBuffer()`
-- `blob()`, `bytes()`, and `formData()`
+- `blob()`, `bytes()`, `formData()`, and `textStream()`
 
-`Request` supports the same body readers. `formData()` accepts multipart or URL-encoded bodies and rejects unsupported or invalid input. `Response.json(data, init?)`, `Response.redirect(url, status?)`, and `Response.error()` create local responses.
+`Request` supports the same body readers. `textStream()` returns a `ReadableStream<string>` of incrementally decoded UTF-8; a null body yields an empty stream. It shares body consumption state, and a locked or consumed body cannot be reused. `formData()` accepts multipart or URL-encoded bodies and rejects unsupported or invalid input. `Response.json(data, init?)`, `Response.redirect(url, status?)`, and `Response.error()` create local responses.
 
 ### Behavior notes
 
-- `body` is exposed as a `ReadableStream`.
+- `body` is a `ReadableStream` or `null` for a response without a body.
 - Once the body is locked by `getReader()`, convenience readers such as `text()` and `json()` no longer consume that same body.
 - `bodyUsed` becomes `true` after consumption starts. A locked but unread body may still report `false`; it cannot be consumed by another reader while locked.
 - `clone()` allows the original response and the cloned response to be consumed independently.
@@ -256,7 +256,7 @@ Both expose stable read-only `readable` / `writable` endpoints. Consume the
 readable concurrently with manual writes to avoid waiting on backpressure.
 Readable cancellation rejects pending writes; writable abort and decoding
 errors propagate through the endpoints. All four encoding classes are
-available in Pages and Agent Workers; Workers still do not provide `fetch`.
+available in Pages and Agent Workers, which also support `fetch`.
 
 ```javascript
 const response = await fetch('https://example.com/stream');

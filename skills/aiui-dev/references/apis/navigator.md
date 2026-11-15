@@ -28,6 +28,8 @@ may depend on host support and declared agent permissions.
 | `navigator.connection` member | Meaning |
 | --- | --- |
 | `type: string` | `none`, `wifi`, `ethernet`, `cellular`, `bluetooth`, `other`, or `unknown`. |
+| `validated: boolean` | Whether internet access was validated; not a guarantee that a specific endpoint is reachable. |
+| `transport: string` | `direct` for the device network or `proxy` for the proxy route; new remote operations use the current route. |
 | `effectiveType: string` | `slow-2g`, `2g`, `3g`, `4g`, or `unknown`; a quality estimate, not a cellular generation. |
 | `downlink: number` | Estimated Mbps; `0` when unknown. |
 | `rtt: number` | Estimated round-trip milliseconds; `0` when unknown, not a measurement of the current request. |

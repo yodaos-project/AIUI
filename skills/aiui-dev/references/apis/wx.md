@@ -43,7 +43,7 @@ not permission, hardware readiness, network availability, or operation success.
 
 Behavior notes:
 
-- Options may be omitted, or contain `success`, `fail`, and `complete` callbacks. The method requests exit and returns `undefined`.
+- Options may be omitted, or contain `success`, `fail`, and `complete` callbacks. The method returns `undefined`; `success` runs only after exit is accepted and before unload. Denial or an existing pending request calls `fail`, leaving the app running. `complete` follows either result even if the first callback throws; replacing or destroying the app cancels pending callbacks.
 
 ### UI methods
 

@@ -70,9 +70,9 @@ playback. Closing a Page / Widget fires cancellation before `onUnload` /
 ## Network Status
 
 App and Page `onNetworkStatus(event)` receive `event.online: boolean` and
-`event.status: 'online' | 'offline'`. Window also emits `online` / `offline`;
+`event.status: 'online' | 'offline'`, `event.networkType`, `event.validated`, and `event.transport` (`direct` or `proxy`). Agent Workers can listen for `networkstatus`. Window also emits `online` / `offline`;
 `navigator.connection` emits `change`. See [Navigator](./apis/navigator.md).
-Online status does not guarantee a network operation will succeed.
+Online status does not guarantee a network operation will succeed. In environments with automatic routing, a route change may interrupt requests and close WebSocket or EventSource connections. Handle failure and reconnect; retry a request only when it is safe to repeat.
 
 ## Focus and Default Actions
 

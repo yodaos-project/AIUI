@@ -393,8 +393,9 @@
           },
           {
             "id": "template",
-            "label": "Template",
-            "status": "unsupported"
+            "label": "Templates and Region Updates",
+            "docId": "wxml-template",
+            "docPath": "1-framework/wxml/template.en-US.md"
           }
         ],
         "hasIndex": true

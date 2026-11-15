@@ -87,6 +87,30 @@ This import path is relative to `pages/index/index.ink`. AIUI supports importing
 
 For installation, configuration, and more examples, see [Modules: Using TypeScript](/AIUI/framework/open-agent-format-module).
 
+## Accelerate Repeated Computation
+
+When a page repeatedly processes many numbers or draws many graphics, mark a TypeScript function with `offload`. Supported calls can be accelerated; calls that are unsuitable for acceleration run as ordinary JavaScript by default.
+
+For example, define a function in `utils/sum.ts` that adds values above a threshold:
+
+```typescript
+import { offload } from 'ink:compiler';
+
+export const sumAbove = offload(function sumAbove(values: Float64Array, threshold: number): number {
+  let total = 0;
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] > threshold) total += values[i];
+  }
+  return total;
+});
+```
+
+For example, `sumAbove(new Float64Array([1, 3, 5]), 2)` returns `8`. Give the runtime the `.ts` file or `<script setup lang="ts">` source; do not compile away the marker into ordinary JavaScript first.
+
+Pass the data as arguments and use local variables and ordinary `for` loops. Do not read `this`, capture outer variables, or call custom helper functions inside the marked function. Supported Canvas 2D drawing can use the same approach, but not every drawing call can be accelerated. Measure the real workload on the target device; small tasks may not be faster.
+
+The default mode is `auto`: the original function runs when acceleration is unavailable. To check whether a call can be accelerated, pass `{ mode: 'require' }` as the second argument to `offload()`; an unsupported body reports a compilation error, and arguments that cannot be accelerated cause `OffloadUnsupportedError`. This does not replace type checking or remove the synchronous execution limit described below.
+
 ## Avoid Long-Running Synchronous Code
 
 Starting with AIUI 0.20, an instance has a default limit of **2,000 milliseconds** for continuous synchronous JavaScript execution. Exceeding it interrupts the script and requests instance destruction, so don't rely on cleanup running afterward. A deployment can set a different limit; an application cannot change it while running.

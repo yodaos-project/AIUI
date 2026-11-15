@@ -79,6 +79,39 @@ bitmap.close();
 
 You can also crop before resizing; see [Canvas](/AIUI/api/canvas). When detecting a QR code or barcode, `BarcodeDetector` now returns a bounding box and four corners, making it easier to mark the detected position on the image. See [Barcode Detection](/AIUI/api/device-barcode).
 
+## Accelerate Repeated Computation
+
+TypeScript can use `offload` for repeated numeric work or supported Canvas drawing. For example, this function adds values above a threshold:
+
+```typescript
+import { offload } from 'ink:compiler';
+
+export const sumAbove = offload(function sumAbove(values: Float64Array, threshold: number): number {
+  let total = 0;
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] > threshold) total += values[i];
+  }
+  return total;
+});
+```
+
+When a call cannot be accelerated, it falls back to ordinary JavaScript by default. See [JavaScript Compatibility](/AIUI/guide/runtime-js) for usage and limits.
+
+## Update a Single-File Interface Incrementally
+
+A single-file interface loaded with incremental update support can show a placeholder, then update a named region when content arrives while keeping the rest of the Page state. For example, reserve `result` in the Page and provide a matching update snippet later:
+
+```html
+<script setup>export default {};</script>
+<page><view><?marker name="result"></view></page>
+
+<template for="result">
+  <text>The result has arrived</text>
+</template>
+```
+
+This requires a single-file input method that supports region updates. Continue to use `setData()` for ordinary Page data changes. See [Templates and Single-File Region Updates](/AIUI/framework/wxml-template).
+
 ## Performance and Experience
 
 - **Faster updates on large pages**: In a test with a large amount of hidden content, data update processing took nearly **90%** less time, helping complex pages respond sooner to content changes.
@@ -89,7 +122,10 @@ These benchmark results apply to specific scenarios. Actual results vary by devi
 
 ## More Improvements
 
-- **Easier request and response processing**: `Request` and `Response` add `bytes()` and `formData()` to read bytes or forms, and support creating JSON, redirect, and error responses. See [HTTPS](/AIUI/api/network-https).
+- **Easier request and response processing**: `Request` and `Response` add `bytes()`, `formData()`, and `textStream()` to read bytes, forms, or text chunks, and support creating JSON, redirect, and error responses. See [HTTPS](/AIUI/api/network-https).
+- **Manage headers**: `Headers` supports reading, changing, and iterating headers. Use `get()` to read a value; see [HTTPS](/AIUI/api/network-https).
+- **Recover after network changes**: Observe changes in connection route and handle reconnection after interrupted requests or long-lived connections. See [Events](/AIUI/framework/open-agent-format-page-events).
+- **More accurate exit results**: `wx.exitMiniProgram()` calls success or failure callbacks according to the exit result. See [Compatible APIs](/AIUI/api/weixin-compatible-apis).
 - **Cancellation callbacks**: Cancelling a pending `wx.request()` calls `fail` and `complete`, helping the interface handle cancellation.
 - **Easier script error reporting**: App `onError` receives uncaught synchronous script errors. Handle Promise rejections and API failures separately; see [App](/AIUI/api/framework-app).
 - **WOFF2 fonts**: Use WOFF2 custom fonts with `@font-face`.

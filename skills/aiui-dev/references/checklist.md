@@ -43,7 +43,7 @@ Use this checklist after generating or modifying an AIUI agent and before declar
 - [ ] `onOpen(event)` calls `event.waitUntil(promise)` synchronously for work that must complete before the event ends.
 - [ ] Repeated open events reuse or serialize initialization instead of starting conflicting duplicate work.
 - [ ] Durable state is stored persistently rather than relying on values kept on Worker `this` after shutdown.
-- [ ] Worker code does not use unavailable Page, Widget, `window`, `document`, `fetch`, routing, rendering, or media-capture APIs.
+- [ ] Worker code does not use unavailable Page, Widget, `window`, `document`, routing, rendering, or media-capture APIs; network work has appropriate lifetime and cleanup.
 
 ## 5. Components, Layout, and Visual Standards
 

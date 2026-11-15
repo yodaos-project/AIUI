@@ -79,6 +79,39 @@ bitmap.close();
 
 也可以先裁剪图片，再调整尺寸，详见 [Canvas](/AIUI/api/canvas)。识别二维码或条形码时，`BarcodeDetector` 的结果现在包含边界框和四个角点，方便在原图上标记位置，详见[条码识别](/AIUI/api/device-barcode)。
 
+## 加速重复计算
+
+TypeScript 可以用 `offload` 标记重复的数值计算或受支持的 Canvas 绘制。例如，下面的函数计算大于阈值的数之和：
+
+```typescript
+import { offload } from 'ink:compiler';
+
+export const sumAbove = offload(function sumAbove(values: Float64Array, threshold: number): number {
+  let total = 0;
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] > threshold) total += values[i];
+  }
+  return total;
+});
+```
+
+不能加速时默认回退到普通 JavaScript；用法和限制见 [JavaScript 兼容性](/AIUI/guide/runtime-js)。
+
+## 逐步更新单文件界面
+
+支持增量更新的单文件界面可以先显示占位内容，收到结果后再更新指定区域，保留页面其余状态。例如，在页面中预留 `result` 区域，之后再提供同名更新片段：
+
+```html
+<script setup>export default {};</script>
+<page><view><?marker name="result"></view></page>
+
+<template for="result">
+  <text>结果已到达</text>
+</template>
+```
+
+该功能需要使用支持区域更新的单文件输入方式；普通页面的数据更新仍使用 `setData()`。详见[模板与单文件区域更新](/AIUI/framework/wxml-template)。
+
 ## 性能与体验
 
 - **大型页面更新更快**：在包含大量未显示内容的测试场景中，数据更新处理耗时减少接近 **90%**，复杂页面可以更快响应内容变化。
@@ -89,7 +122,10 @@ bitmap.close();
 
 ## 更多改进
 
-- **请求内容更容易处理**：`Request` 和 `Response` 新增 `bytes()` 和 `formData()`，可以读取字节数据或表单；也支持创建 JSON、重定向和错误响应。详见 [HTTPS](/AIUI/api/network-https)。
+- **请求内容更容易处理**：`Request` 和 `Response` 新增 `bytes()`、`formData()` 和 `textStream()`，可以读取字节数据、表单或逐段读取文本；也支持创建 JSON、重定向和错误响应。详见 [HTTPS](/AIUI/api/network-https)。
+- **请求头更易管理**：`Headers` 支持读取、修改和遍历请求头。建议使用 `get()` 读取，详见 [HTTPS](/AIUI/api/network-https)。
+- **网络切换后恢复连接**：可以通过网络状态获知连接方式变化，并在请求或长连接中断后处理重连。详见[事件](/AIUI/framework/open-agent-format-page-events)。
+- **退出结果更准确**：`wx.exitMiniProgram()` 根据实际退出结果调用成功或失败回调，详见[兼容 API](/AIUI/api/weixin-compatible-apis)。
 - **取消请求时能收到结果**：取消尚未完成的 `wx.request()` 会调用 `fail` 和 `complete`，方便界面处理取消状态。
 - **更容易发现脚本错误**：App 的 `onError` 接收未捕获的同步脚本错误。Promise 拒绝和 API 失败仍需单独处理，详见 [App](/AIUI/api/framework-app)。
 - **支持 WOFF2 字体**：可以在 `@font-face` 中使用 WOFF2 格式的自定义字体。

@@ -206,6 +206,14 @@ console.log('SN:', serialNumber);
 
 ### `NetworkInformation`
 
+#### `connection.validated`
+
+Read-only `boolean` indicating whether the current network has passed internet validation. It does not guarantee that a particular service is reachable.
+
+#### `connection.transport`
+
+Read-only string: `direct` is the device network and `proxy` is a proxy connection. New remote operations use the current route. A route change can interrupt existing operations; handle failures and reconnect when needed.
+
 #### `connection.type`
 
 Type: `string`. Connection type: `none`, `wifi`, `ethernet`, `cellular`, `bluetooth`, `other`, or `unknown`.

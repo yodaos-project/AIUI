@@ -75,6 +75,20 @@ console.log(wx.canIUse('request.object.unknown')); // false
 
 传入不带 `wx.` 前缀的精确函数路径。命名空间、未知路径和之后由应用自行添加的函数不算已注册能力。返回 `true` 只表示接口存在，不保证权限、设备状态或请求成功。
 
+## 请求退出智能体
+
+任务完成后，可以请求退出并根据结果更新界面：
+
+```javascript
+wx.exitMiniProgram({
+  success(result) { console.log('退出请求已接受', result.errMsg); },
+  fail(result) { console.error('暂时无法退出', result.errMsg); },
+  complete(result) { console.log('退出请求结束', result.errMsg); },
+});
+```
+
+只有退出请求被接受时才调用 `success`；被拒绝或已有退出请求正在处理时调用 `fail`，应用继续运行。两种情况都会调用 `complete`。
+
 ## API Reference
 
 ### `wx`
@@ -85,4 +99,4 @@ console.log(wx.canIUse('request.object.unknown')); // false
 
 #### `wx.exitMiniProgram(options?)`
 
-请求退出当前实例，返回 `undefined`。`options` 可省略；提供时可包含 `success`、`fail`、`complete` 回调。
+请求退出当前实例，返回 `undefined`。`options` 可省略；`success(result)` 在退出被接受、应用卸载前调用，`result.errMsg` 为 `exitMiniProgram:ok`；拒绝或已有待处理的退出请求时调用 `fail(result)`，其 `errMsg` 以 `exitMiniProgram:fail` 开头。随后调用 `complete(result)`，即使前一回调抛错也会执行。应用被替换或销毁时，尚未完成的回调会取消。

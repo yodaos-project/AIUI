@@ -80,7 +80,7 @@ self.addEventListener('open', (event) => {
 - `this.navigator` 与全局 `navigator` 是同一个对象。
 - 全局 `self` 和 `globalThis` 指向 Agent Worker 的全局对象，不等于 `onOpen()` 中的 `this`。
 - `onOpen()` 每次触发都会调用，不会因为前一次异步操作仍在执行而自动合并。
-- Agent Worker 不提供 `fetch`；网络请求应由 Page 或 Widget 发起。
+- Agent Worker 支持 `fetch` 和 `WebSocket`。短任务中的异步请求需要通过 `event.waitUntil()` 登记；关闭时释放不再需要的连接。
 
 Agent Worker 的声明方式和运行时长配置请参阅 [Agent Worker 开发](/AIUI/framework/open-agent-format-agent-worker)。
 
@@ -126,6 +126,8 @@ Agent Worker 的声明方式和运行时长配置请参阅 [Agent Worker 开发]
 | `language` | `string` | 首选语言 |
 | `languages` | `string[]` | 按优先级排列的语言列表 |
 | `region` | `string` | 当前区域信息 |
+| `onLine` | `boolean` | 当前在线状态，不保证服务可达 |
+| `connection` | `NetworkInformation` | 当前网络信息及变化事件 |
 
 ### `AgentWorkerGlobalScope`
 

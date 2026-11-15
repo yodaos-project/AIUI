@@ -73,6 +73,17 @@ text += decoder.decode();
 console.log(text);
 ```
 
+也可以使用 `textStream()` 直接逐段读取文本，无需手动处理跨分段的 UTF-8 字符：
+
+```javascript
+const response = await fetch('https://api.example.com/agent/stream');
+for await (const chunk of response.textStream()) {
+  console.log(chunk);
+}
+```
+
+`textStream()` 与 `text()`、`json()` 和 `body` 共用响应体；需要读取两次时，先调用 `clone()`。读取失败时应处理异常。
+
 ## 读取包内资源并检查请求内容
 
 GET/HEAD Fetch 请求可以读取完整应用包内的根路径。`/assets/route.gpx` 与 `file:///assets/route.gpx` 访问同一个包内资源，不能访问设备任意文件。远端 API 地址应使用显式 `https://` URL。
@@ -254,6 +265,57 @@ fetch('https://example.com/items', { signal: controller.signal });
 controller.abort();
 ```
 
+### `Headers`
+
+#### `new Headers(init?)`
+
+创建请求头集合。可以传入普通对象、键值对数组或另一个 `Headers`。名称不区分大小写。无效名称或值会抛出 `TypeError`。
+
+```javascript
+const headers = new Headers({ 'Content-Type': 'application/json' });
+console.log(headers.get('content-type'));
+```
+
+#### `get(name)`
+
+返回请求头的值，找不到时返回 `null`。同名值通常合并为逗号分隔的字符串。优先使用此方法读取，不要依赖对象属性或 `Object.keys()` 列举请求头。
+
+#### `has(name)`
+
+存在该名称时返回 `true`。
+
+#### `append(name, value)`
+
+添加一个值，保留同名的已有值。
+
+#### `set(name, value)`
+
+设置请求头值，替换同名的已有值。
+
+#### `delete(name)`
+
+删除该名称的所有值。某些请求头受请求或响应规则保护，不能任意修改；只读请求头的修改会抛出错误。
+
+#### `getSetCookie()`
+
+返回可读取的 `Set-Cookie` 值数组；没有时返回空数组。实际可读取的响应头取决于运行环境。
+
+#### `entries()`
+
+返回名称和值的迭代器。`Headers` 自身也可以用于 `for...of`。
+
+#### `keys()`
+
+返回请求头名称的迭代器。
+
+#### `values()`
+
+返回请求头值的迭代器。
+
+#### `forEach(callback)`
+
+对每个请求头调用回调，参数依次是值、名称和当前 `Headers`。
+
 ### `Request`
 
 #### `new Request(input, options?)`
@@ -315,6 +377,10 @@ controller.abort();
 #### `formData()`
 
 将请求体解析为 `FormData`，返回 Promise。支持 `multipart/form-data` 和 `application/x-www-form-urlencoded`；内容类型不支持、内容无效或请求体已被使用时会拒绝。
+
+#### `textStream()`
+
+返回逐段输出 UTF-8 文本的 `ReadableStream<string>`；没有请求体时返回空流。调用前请求体不能被锁定或消费，其他读取方法也不能同时使用该请求体。
 
 ### `Blob`、`File` 与 `FormData`
 
@@ -441,6 +507,10 @@ console.log(buffer.byteLength);
 #### `Response.error()`
 
 创建表示网络错误的响应对象。这些方法不会自动发起网络请求。
+
+#### `response.textStream()`
+
+返回逐段输出 UTF-8 文本的 `ReadableStream<string>`；没有响应体时返回空流。调用前响应体不能被锁定或消费；读取失败会通过流报告。
 
 ### wx APIs
 

@@ -73,6 +73,17 @@ text += decoder.decode();
 console.log(text);
 ```
 
+You can also use `textStream()` to read text incrementally without manually handling UTF-8 characters split across chunks:
+
+```javascript
+const response = await fetch('https://api.example.com/agent/stream');
+for await (const chunk of response.textStream()) {
+  console.log(chunk);
+}
+```
+
+`textStream()` shares the body with `text()`, `json()`, and `body`. Call `clone()` first if you need to read it twice, and handle read failures.
+
 ## Read Packaged Assets and Inspect a Request
 
 GET/HEAD Fetch requests can read paths rooted in a full application's package. `/assets/route.gpx` and `file:///assets/route.gpx` access the same packaged resource, not arbitrary device files. Use explicit `https://` URLs for remote API endpoints.
@@ -254,6 +265,57 @@ fetch('https://example.com/items', { signal: controller.signal });
 controller.abort();
 ```
 
+### `Headers`
+
+#### `new Headers(init?)`
+
+Creates a header collection from an object, an array of name/value pairs, or another `Headers`. Names are case-insensitive. An invalid name or value throws `TypeError`.
+
+```javascript
+const headers = new Headers({ 'Content-Type': 'application/json' });
+console.log(headers.get('content-type'));
+```
+
+#### `get(name)`
+
+Returns the value, or `null` if absent. Repeated values are usually joined with commas. Prefer this method; do not rely on object properties or `Object.keys()` to enumerate headers.
+
+#### `has(name)`
+
+Returns `true` when the name exists.
+
+#### `append(name, value)`
+
+Adds a value while retaining existing values for the same name.
+
+#### `set(name, value)`
+
+Sets a value, replacing existing values for that name.
+
+#### `delete(name)`
+
+Removes all values for the name. Some headers are protected by request or response rules and cannot be changed freely; modifying immutable headers throws.
+
+#### `getSetCookie()`
+
+Returns an array of readable `Set-Cookie` values, or an empty array. Which response headers are readable depends on the environment.
+
+#### `entries()`
+
+Returns an iterator of name/value pairs. `Headers` itself can also be used with `for...of`.
+
+#### `keys()`
+
+Returns an iterator of header names.
+
+#### `values()`
+
+Returns an iterator of header values.
+
+#### `forEach(callback)`
+
+Calls the callback for each header with the value, name, and current `Headers`, in that order.
+
 ### `Request`
 
 #### `new Request(input, options?)`
@@ -315,6 +377,10 @@ Consumes the request body and returns `Promise<Uint8Array>` for direct byte proc
 #### `formData()`
 
 Consumes the request body and returns a Promise for `FormData`. It supports `multipart/form-data` and `application/x-www-form-urlencoded`; unsupported content types, invalid data, or an already used body reject.
+
+#### `textStream()`
+
+Returns a `ReadableStream<string>` of UTF-8 text chunks; a request with no body yields an empty stream. The body must not already be locked or consumed, and cannot be used by another reader at the same time.
 
 ### `Blob`, `File`, and `FormData`
 
@@ -441,6 +507,10 @@ Creates a redirect response to `url`; the default status is `302`.
 #### `Response.error()`
 
 Creates a response representing a network error. These methods do not send network requests.
+
+#### `response.textStream()`
+
+Returns a `ReadableStream<string>` of UTF-8 text chunks; a response with no body yields an empty stream. The body must not already be locked or consumed; read failures are reported by the stream.
 
 ### wx APIs
 

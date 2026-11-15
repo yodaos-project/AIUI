@@ -30,6 +30,25 @@ export default {
 | `onHeadGesture` | 监听页面级头部手势识别结果 | 启用环境感知后，点头或摇头识别成功时触发 |
 | `onHeadGestureStateChange` | 监听头部手势识别状态 | 启用环境感知后，手势跟踪状态变化时触发 |
 
+## 在网络变化后恢复连接
+
+页面可以使用 `onNetworkStatus` 观察网络变化。例如，网络从一种连接方式切换到另一种时，`online` 可能始终为 `true`；可以结合 `transport` 了解后续请求使用的连接方式：
+
+```javascript
+export default {
+  onNetworkStatus(event) {
+    console.log('在线：', event.online);
+    console.log('网络类型：', event.networkType);
+    console.log('已验证联网：', event.validated);
+    console.log('连接方式：', event.transport);
+  },
+};
+```
+
+`transport` 为 `direct` 时使用设备网络，为 `proxy` 时通过代理连接。`validated` 表示网络是否经过联网验证，不能保证具体服务一定可用。
+
+在支持自动切换连接方式的环境中，连接方式改变可能中断正在进行的请求、WebSocket 或 EventSource。请监听各自的失败或关闭事件，在网络恢复时重新建立需要的连接和订阅。请求可能已在服务端执行，只有确认重复执行安全时才重试。
+
 ## 注册和清理监听器
 
 全局对象、Page 和 Entity 支持 DOM 风格的监听器。移除时保留回调身份和相同的 capture，或使用 signal 统一清理：

@@ -1,60 +1,42 @@
-# Templates
+# Templates and Single-File Region Updates
 
-WXML provides templates (`template`), which let you define code fragments in a template and call them in different places.
+Custom components use `<template>` to describe their own view. To reuse an interface, create a [custom component](/AIUI/framework/open-agent-format-custom-components). Defining and invoking reusable fragments with `<template name="...">` and `<template is="...">` is not currently supported.
 
-## Defining a Template
+## Reserve a Region in a Single-File Interface
 
-Use the `name` attribute as the template name. Then define the code fragment inside `<template/>`, for example:
+Single-file Source runs a complete page supplied directly as source text. When it is loaded through a method that supports incremental updates, it can show a placeholder and replace a region with a later snippet. For example, show a message until the weather result arrives:
 
 ```html
-<!--
-  index: int
-  msg: string
-  time: string
--->
-<template name="msgItem">
+<script setup>
+export default { data: { weather: 'Sunny, 22°C' } };
+</script>
+
+<page>
   <view>
-    <text> {{index}}: {{msg}} </text>
-    <text> Time: {{time}} </text>
+    <?start name="forecast">
+    <text>Loading weather…</text>
+    <?end>
   </view>
-</template>
+</page>
 ```
 
-## Using a Template
-
-Use the `is` attribute to declare which template to use, then pass in the `data` required by the template, for example:
+Then submit the update snippet:
 
 ```html
-<template is="msgItem" data="{{...item}}"/>
-```
-
-```javascript
-export default {
-  data: {
-    item: {
-      index: 0,
-      msg: 'this is a template',
-      time: '2016-09-15'
-    }
-  }
-}
-```
-
-The `is` attribute can use Mustache syntax to dynamically determine which template should be rendered:
-
-```html
-<template name="odd">
-  <view> odd </view>
+<template for="forecast">
+  <?start name="forecast">
+  <text>{{weather}}</text>
+  <?end>
 </template>
-<template name="even">
-  <view> even </view>
-</template>
-
-<block ink:for="{{[1, 2, 3, 4, 5]}}">
-  <template is="{{item % 2 == 0 ? 'even' : 'odd'}}"/>
-</block>
 ```
 
-## Template Scope
+Provide the page and script first, followed by the `<template for="forecast">` snippet; use the same application `appId` for separate submissions. Once the snippet arrives in full, it replaces the `forecast` region. This example places the markers back inside the new content so the region can be updated again later.
 
-A template has its own scope and can only use the data passed in through `data` and the `<wxs />` modules defined in the file where the template is declared.
+## What Happens During an Update
+
+- The Page instance and its existing data remain in place. `onLoad`, `onShow`, and `onReady` do not run again because of a region update.
+- Nodes inside the region are recreated. Query them again when needed; components and state outside the region remain in place.
+- New content uses the Page's existing data, methods, and declared components. An update cannot add scripts or declare components.
+- This works only with single-file Source input that supports region updates, not ordinary pages in directory projects or `.aix` packages. Continue to use `setData()` for ordinary data changes.
+
+A component's `<template>` describes its own view, and slots receive content from the component's user. Both are distinct from the region updates above.

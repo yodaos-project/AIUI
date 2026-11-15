@@ -9,7 +9,7 @@ Build AIUI agents from the current contracts in this skill. Do not assume an API
 
 ## Load Only What the Task Needs
 
-- Read [framework.md](./references/framework.md) for project structure, `app.json`, Page, Widget, Agent Worker, SFC, modules, resources, packaging, or TypeScript.
+- Read [framework.md](./references/framework.md) for project structure, `app.json`, Page, Widget, Agent Worker, SFC, modules, resources, packaging, TypeScript, `offload`, or single-file Source updates.
 - Read [events.md](./references/events.md) for lifecycle, interaction, key, focus, voice wakeup, head gesture, and environment-awareness events.
 - Read [components.md](./references/components.md) before using or reviewing built-in components and their attributes or events.
 - Read [wxss.md](./references/wxss.md) before writing styles, layout, selectors, animation, or custom fonts.

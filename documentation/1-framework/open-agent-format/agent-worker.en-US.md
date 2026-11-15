@@ -90,6 +90,27 @@ export default {
 };
 ```
 
+## Send a Network Request in the Background
+
+For example, fetch configuration when the agent opens:
+
+```javascript
+export default {
+  onOpen(event) {
+    const work = fetch('https://api.example.com/config')
+      .then((response) => {
+        if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+        return response.json();
+      })
+      .then((config) => console.log('Configuration:', config))
+      .catch((error) => console.error('Configuration request failed:', error.message));
+    event.waitUntil(work);
+  },
+};
+```
+
+Call `waitUntil()` synchronously before `onOpen()` returns so a short-lived task can wait for the request. Use `WebSocket` when a long-lived connection is needed; close it according to the task lifetime and handle network interruptions.
+
 ## Choose How Long It Runs
 
 | `lifetime` | Behavior | Typical use |
@@ -103,11 +124,11 @@ export default {
 
 An Agent Worker can use:
 
-- timers, Promises, `console`, and `performance`
+- timers, Promises, `console`, `performance`, `fetch`, and `WebSocket`
 - URL, text encoding, Web Crypto, and WebAssembly
 - ES Modules from the project
 
-An Agent Worker does not provide Page, Widget, `window`, `document`, `fetch`, interface rendering, routing, or media capture features. Let a Page or Widget handle visible interface updates and network requests.
+An Agent Worker can send network requests directly, but does not provide Page, Widget, `window`, `document`, interface rendering, routing, or media capture. Let a Page or Widget handle visible interface updates.
 
 ## Continue Reading
 
