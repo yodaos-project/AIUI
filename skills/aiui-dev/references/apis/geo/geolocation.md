@@ -14,7 +14,7 @@ The runtime supplies this object; agents do not construct it.
 
 ### `getCurrentPosition(success, error?, options?)`
 
-Temporarily unavailable; do not use this method to obtain coordinates.
+Requests one position and reports it through callbacks. Returns `undefined`; `success` is required, and `error` and `options` are optional. The `reverseGeocode` option is temporarily unavailable for this method. Use the standalone `Geocoder` to look up the returned coordinates.
 
 ### `watchPosition(success, error?, options?)`
 

@@ -1,6 +1,6 @@
 # Geolocation
 
-使用 `Geocoder` 可以根据已有经纬度查询地址；使用 `navigator.geolocation.watchPosition()` 可以持续接收设备的位置变化。`getCurrentPosition()` 暂时不可用。
+使用 `navigator.geolocation` 可以获取当前位置或持续接收位置变化；使用 `Geocoder` 可以根据已有经纬度查询地址。
 
 ## 根据坐标查询地址
 
@@ -17,6 +17,30 @@ try {
 ```
 
 坐标使用 WGS-84。此查询不需要设备定位权限，但地址查询能力并非在所有环境中可用。返回字段可能为 `null`，请准备备用显示文字。
+
+## 获取当前位置
+
+`getCurrentPosition()` 会请求一次位置。成功后，可以从 `position.coords` 读取经纬度和精度：
+
+```javascript
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    const { latitude, longitude, accuracy } = position.coords;
+    console.log('当前位置：', latitude, longitude);
+    console.log('精度：', accuracy, '米');
+  },
+  (error) => {
+    console.error('定位失败：', error.message);
+  },
+  {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
+  }
+);
+```
+
+`getCurrentPosition()` 的 `reverseGeocode` 选项暂不可用。需要地址时，请使用上面的 `Geocoder` 查询坐标。
 
 ## 持续获取位置变化
 
@@ -58,7 +82,7 @@ navigator.geolocation.clearWatch(watchId);
 
 #### `getCurrentPosition(success, error?, options?)`
 
-暂时不可用。该方法用于请求一次当前位置，结果通过回调传递；请勿依赖它获取坐标。
+获取一次当前位置。方法没有返回值，结果通过回调传递。`reverseGeocode` 选项暂不可用；需要地址时，请用 `Geocoder` 查询取得的坐标。
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -81,7 +105,7 @@ navigator.geolocation.clearWatch(watchId);
 | `enableHighAccuracy` | `boolean` | 是否优先获取更精确的位置。默认值为 `false`；高精度定位可能消耗更多电量。 |
 | `timeout` | `number` | 等待结果的最长时间，单位为毫秒；省略时由设备决定。 |
 | `maximumAge` | `number` | 可以接受的缓存位置最长时间，单位为毫秒；省略时由设备决定。 |
-| `reverseGeocode` | `object` | 设置 `enabled: true` 查询地址；`level` 可选 `country`、`region`、`city`、`district`、`street`，默认 `city`；`acceptLanguages` 是按优先顺序排列的语言标签数组。 |
+| `reverseGeocode` | `object` | 设置 `enabled: true` 查询地址。`getCurrentPosition()` 暂不支持此选项；请用 `Geocoder` 查询坐标。`level` 可选 `country`、`region`、`city`、`district`、`street`，默认 `city`；`acceptLanguages` 是按优先顺序排列的语言标签数组。 |
 
 ### `GeolocationPosition`
 

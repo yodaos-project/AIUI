@@ -341,7 +341,7 @@ AIUI 0.18.0 lets you build Widgets and background tasks, and adds more familiar 
   });
   ```
 
-- **GEO & Location**: Apps can use `navigator.geolocation` to receive ongoing location updates (`getCurrentPosition()` is temporarily unavailable). `GPXDocument` can read, create, and export GPX route data for activity tracking, navigation, and route display. Add `GEOLOCATION` to `permissions` in `app.json` before accessing location.
+- **GEO & Location**: Apps can use `navigator.geolocation` to get the current position or receive ongoing location updates. `GPXDocument` can read, create, and export GPX route data for activity tracking, navigation, and route display. Add `GEOLOCATION` to `permissions` in `app.json` before accessing location.
 
   ```js
   const route = new GPXDocument();

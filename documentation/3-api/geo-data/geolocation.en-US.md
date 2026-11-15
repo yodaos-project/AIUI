@@ -1,6 +1,6 @@
 # Geolocation
 
-Use `Geocoder` to look up an address from supplied coordinates, or `navigator.geolocation.watchPosition()` to receive position updates. `getCurrentPosition()` is temporarily unavailable.
+Use `navigator.geolocation` to get the current position or receive position updates, and `Geocoder` to look up an address from supplied coordinates.
 
 ## Look Up an Address from Coordinates
 
@@ -17,6 +17,30 @@ try {
 ```
 
 Coordinates use WGS-84. This lookup does not require device location permission, but address lookup is not available in every environment. Returned fields can be `null`, so provide fallback text.
+
+## Get the Current Position
+
+`getCurrentPosition()` requests one position. Read the coordinates and accuracy from `position.coords` after it succeeds:
+
+```javascript
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    const { latitude, longitude, accuracy } = position.coords;
+    console.log('Current position:', latitude, longitude);
+    console.log('Accuracy:', accuracy, 'metres');
+  },
+  (error) => {
+    console.error('Location failed:', error.message);
+  },
+  {
+    enableHighAccuracy: true,
+    timeout: 5000,
+    maximumAge: 0,
+  }
+);
+```
+
+The `reverseGeocode` option for `getCurrentPosition()` is temporarily unavailable. Use `Geocoder` above to look up an address from the coordinates.
 
 ## Watch Position Changes
 
@@ -58,7 +82,7 @@ Returns the application's `Geolocation` object. The runtime provides this object
 
 #### `getCurrentPosition(success, error?, options?)`
 
-Temporarily unavailable. This method is intended to request one position through callbacks; do not rely on it to obtain coordinates.
+Requests one current position. It has no return value and delivers the result through callbacks. The `reverseGeocode` option is temporarily unavailable; use `Geocoder` to look up the returned coordinates.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -81,7 +105,7 @@ Stops the location watch identified by `watchId`.
 | `enableHighAccuracy` | `boolean` | Prefer a more accurate position. Defaults to `false`; high-accuracy positioning may use more power. |
 | `timeout` | `number` | Maximum time to wait, in milliseconds; the device decides when omitted. |
 | `maximumAge` | `number` | Maximum acceptable age of a cached position, in milliseconds; the device decides when omitted. |
-| `reverseGeocode` | `object` | Set `enabled: true` to look up an address. `level` is `country`, `region`, `city`, `district`, or `street` (default `city`); `acceptLanguages` is an ordered array of language tags. |
+| `reverseGeocode` | `object` | Set `enabled: true` to look up an address. This option is temporarily unavailable for `getCurrentPosition()`; use `Geocoder` for coordinate lookup. `level` is `country`, `region`, `city`, `district`, or `street` (default `city`); `acceptLanguages` is an ordered array of language tags. |
 
 ### `GeolocationPosition`
 

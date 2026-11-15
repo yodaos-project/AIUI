@@ -341,7 +341,7 @@ AIUI 0.18.0 支持开发 Widget 和后台任务，并带来更多常用 Web API�
   });
   ```
 
-- **地理与位置**：可通过 `navigator.geolocation` 持续接收位置变化（`getCurrentPosition()` 暂时不可用）；还可以使用 `GPXDocument` 读取、创建和导出 GPX 路线数据，用于运动记录、导航和地图路线展示。使用定位前，需要在 `app.json` 的 `permissions` 中添加 `GEOLOCATION`。
+- **地理与位置**：可以通过 `navigator.geolocation` 获取当前位置或持续接收位置变化；还可以使用 `GPXDocument` 读取、创建和导出 GPX 路线数据，用于运动记录、导航和地图路线展示。使用定位前，需要在 `app.json` 的 `permissions` 中添加 `GEOLOCATION`。
 
   ```js
   const route = new GPXDocument();
