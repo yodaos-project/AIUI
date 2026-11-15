@@ -1,28 +1,22 @@
 # Geolocation
 
-`Geolocation` 用于读取设备当前所在位置，或者在用户移动时持续接收位置变化。它通过 `navigator.geolocation` 使用，适合导航、运动记录和基于位置提供内容等场景。
+使用 `Geocoder` 可以根据已有经纬度查询地址；使用 `navigator.geolocation.watchPosition()` 可以持续接收设备的位置变化。`getCurrentPosition()` 暂时不可用。
 
-## 获取当前位置
+## 根据坐标查询地址
 
-`getCurrentPosition()` 会请求一次位置。成功后，可以从 `position.coords` 读取经纬度和精度：
+已有经纬度时，可以使用 `Geocoder`，不必先获取设备位置：
 
 ```javascript
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    const { latitude, longitude, accuracy } = position.coords;
-    console.log('当前位置：', latitude, longitude);
-    console.log('精度：', accuracy, '米');
-  },
-  (error) => {
-    console.error('定位失败：', error.message);
-  },
-  {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0,
-  }
-);
+const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['zh-CN'] });
+try {
+  const address = await geocoder.getFromLocation(30.2741, 120.1551);
+  console.log(address?.formattedAddress ?? '未找到地址');
+} catch (error) {
+  console.error('地址查询失败：', error.message);
+}
 ```
+
+坐标使用 WGS-84。此查询不需要设备定位权限，但地址查询能力并非在所有环境中可用。返回字段可能为 `null`，请准备备用显示文字。
 
 ## 持续获取位置变化
 
@@ -44,39 +38,6 @@ navigator.geolocation.clearWatch(watchId);
 
 及时停止监听可以减少不必要的定位和电量消耗。
 
-## 在定位结果中获取地址
-
-需要显示用户所在城市或街道时，可以在定位选项中开启地址查询：
-
-```javascript
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    console.log(position.coords.latitude, position.coords.longitude);
-    console.log(position.address?.formattedAddress, position.reverseGeocodeStatus);
-  },
-  (error) => console.error('定位失败：', error.message),
-  { reverseGeocode: { enabled: true, level: 'street', acceptLanguages: ['zh-CN'] } },
-);
-```
-
-使用前仍需声明定位权限并取得用户授权。地址查询不可用或未找到结果时，定位成功回调仍会返回坐标，`address` 为 `null`；请根据 `reverseGeocodeStatus` 决定如何提示用户。地址查询可能比坐标多等待最多 3 秒。`watchPosition()` 也接受此选项；持续定位时地址查询有频率限制，部分更新只包含坐标。
-
-## 根据坐标查询地址
-
-已有经纬度时，可以使用 `Geocoder`，不必先获取设备位置：
-
-```javascript
-const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['zh-CN'] });
-try {
-  const address = await geocoder.getFromLocation(30.2741, 120.1551);
-  console.log(address?.formattedAddress ?? '未找到地址');
-} catch (error) {
-  console.error('地址查询失败：', error.message);
-}
-```
-
-坐标使用 WGS-84。此查询不需要设备定位权限，但地址查询能力并非在所有环境中可用。返回字段可能为 `null`，请准备备用显示文字。
-
 ## 声明定位权限
 
 使用定位前，需要在 `app.json` 中声明 `GEOLOCATION` 权限：
@@ -97,7 +58,7 @@ try {
 
 #### `getCurrentPosition(success, error?, options?)`
 
-获取一次当前位置。方法没有返回值，结果通过回调传递。
+暂时不可用。该方法用于请求一次当前位置，结果通过回调传递；请勿依赖它获取坐标。
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |

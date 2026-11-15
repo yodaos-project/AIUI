@@ -1,24 +1,23 @@
 # v0.21.0
 
-AIUI 0.21 让智能体可以把位置显示成地址、为用户打开系统导航，并在 AI 生成的界面中播放视频。这次更新还带来了图片处理、条码识别和网络请求方面的新能力，同时优化了复杂界面、绘图、录音和数据保存的性能。
+AIUI 0.21 让智能体可以把经纬度转换成地址、为用户打开系统导航，并在 AI 生成的界面中播放视频。这次更新还带来了图片处理、条码识别和网络请求方面的新能力，同时优化了复杂界面、绘图、录音和数据保存的性能。
 
-## 从当前位置获取地址
+## 根据经纬度查询地址
 
-开发天气、附近地点或出行服务时，除了经纬度，还可以显示用户所在的城市或街道。先在 `app.json` 的 `permissions` 中加入 `GEOLOCATION`，并让用户允许定位，然后开启 `reverseGeocode`：
+已有经纬度时，可以使用 `Geocoder` 将坐标转换成城市或街道地址。例如，智能体可以根据用户提供的地点坐标显示对应地址：
 
 ```javascript
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    const { latitude, longitude } = position.coords;
-    console.log('坐标：', latitude, longitude);
-    console.log('地址：', position.address?.formattedAddress ?? '暂时无法获取地址');
-  },
-  (error) => console.error('定位失败：', error.message),
-  { reverseGeocode: { enabled: true, level: 'city' } },
-);
+const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['zh-CN'] });
+
+try {
+  const address = await geocoder.getFromLocation(30.2741, 120.1551);
+  console.log(address?.formattedAddress ?? '未找到地址');
+} catch (error) {
+  console.error('地址查询失败：', error.message);
+}
 ```
 
-地址查询可能不可用或没有结果；此时只要定位成功，仍能获取坐标。已有经纬度时，也可以用 `Geocoder` 查询地址，无需获取设备当前位置。使用方法和权限说明见 [Geolocation](/AIUI/api/geo-data-geolocation)。
+坐标使用 WGS-84，示例中的数字分别是纬度和经度。查询已有坐标不需要设备定位权限；地址查询能力可能因运行环境而不可用，未找到地址时返回 `null`。更多选项见 [Geolocation](/AIUI/api/geo-data-geolocation)。
 
 ## 为用户打开导航
 
@@ -344,14 +343,9 @@ AIUI 0.18.0 支持开发 Widget 和后台任务，并带来更多常用 Web API�
   });
   ```
 
-- **地理与位置**：可以通过 `navigator.geolocation` 获取当前位置或持续接收位置变化；还可以使用 `GPXDocument` 读取、创建和导出 GPX 路线数据，用于运动记录、导航和地图路线展示。使用定位前，需要在 `app.json` 的 `permissions` 中添加 `GEOLOCATION`。
+- **地理与位置**：可通过 `navigator.geolocation` 持续接收位置变化（`getCurrentPosition()` 暂时不可用）；还可以使用 `GPXDocument` 读取、创建和导出 GPX 路线数据，用于运动记录、导航和地图路线展示。使用定位前，需要在 `app.json` 的 `permissions` 中添加 `GEOLOCATION`。
 
   ```js
-  navigator.geolocation.getCurrentPosition((position) => {
-    const { latitude, longitude } = position.coords;
-    console.log('当前位置：', latitude, longitude);
-  });
-
   const route = new GPXDocument();
   route.appendTrackPoint({ latitude: 30.2741, longitude: 120.1551 });
   route.appendTrackPoint({ latitude: 30.2792, longitude: 120.1618 });

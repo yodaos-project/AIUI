@@ -1,24 +1,23 @@
 # v0.21.0
 
-AIUI 0.21 lets agents show a readable address for a location, open system navigation, and play video in AI-generated interfaces. This update also adds image processing, barcode detection, and networking capabilities, while improving performance for complex interfaces, drawing, recording, and data storage.
+AIUI 0.21 lets agents look up a readable address from coordinates, open system navigation, and play video in AI-generated interfaces. This update also adds image processing, barcode detection, and networking capabilities, while improving performance for complex interfaces, drawing, recording, and data storage.
 
-## Get an Address for the Current Location
+## Look Up an Address from Coordinates
 
-A weather, nearby places, or travel agent can show a city or street as well as coordinates. First add `GEOLOCATION` to `permissions` in `app.json` and ask the user to allow location access, then enable `reverseGeocode`:
+When you have coordinates, use `Geocoder` to find a city or street address. For example, an agent can show the address for coordinates supplied by a user:
 
 ```javascript
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    const { latitude, longitude } = position.coords;
-    console.log('Coordinates:', latitude, longitude);
-    console.log('Address:', position.address?.formattedAddress ?? 'Address unavailable');
-  },
-  (error) => console.error('Location failed:', error.message),
-  { reverseGeocode: { enabled: true, level: 'city' } },
-);
+const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['en-US'] });
+
+try {
+  const address = await geocoder.getFromLocation(30.2741, 120.1551);
+  console.log(address?.formattedAddress ?? 'No address found');
+} catch (error) {
+  console.error('Address lookup failed:', error.message);
+}
 ```
 
-Address lookup may be unavailable or return no match. When positioning succeeds, the coordinates are still available. If you already have coordinates, use `Geocoder` to look up an address without requesting the device's current location. See [Geolocation](/AIUI/api/geo-data-geolocation) for usage and permissions.
+Coordinates use WGS-84; the numbers in the example are latitude and longitude, respectively. Looking up supplied coordinates does not require device location permission. Address lookup may be unavailable in some environments, and returns `null` when no match is found. See [Geolocation](/AIUI/api/geo-data-geolocation) for more options.
 
 ## Open Navigation for the User
 
@@ -344,14 +343,9 @@ AIUI 0.18.0 lets you build Widgets and background tasks, and adds more familiar 
   });
   ```
 
-- **GEO & Location**: Apps can use `navigator.geolocation` to get the current position or receive ongoing location updates. `GPXDocument` can read, create, and export GPX route data for activity tracking, navigation, and route display. Add `GEOLOCATION` to `permissions` in `app.json` before accessing location.
+- **GEO & Location**: Apps can use `navigator.geolocation` to receive ongoing location updates (`getCurrentPosition()` is temporarily unavailable). `GPXDocument` can read, create, and export GPX route data for activity tracking, navigation, and route display. Add `GEOLOCATION` to `permissions` in `app.json` before accessing location.
 
   ```js
-  navigator.geolocation.getCurrentPosition((position) => {
-    const { latitude, longitude } = position.coords;
-    console.log('Current position:', latitude, longitude);
-  });
-
   const route = new GPXDocument();
   route.appendTrackPoint({ latitude: 30.2741, longitude: 120.1551 });
   route.appendTrackPoint({ latitude: 30.2792, longitude: 120.1618 });

@@ -1,28 +1,22 @@
 # Geolocation
 
-`Geolocation` reads the device's current position or reports updates as the user moves. Access it through `navigator.geolocation` for navigation, activity tracking, and location-aware content.
+Use `Geocoder` to look up an address from supplied coordinates, or `navigator.geolocation.watchPosition()` to receive position updates. `getCurrentPosition()` is temporarily unavailable.
 
-## Get the Current Position
+## Look Up an Address from Coordinates
 
-`getCurrentPosition()` requests one position. Read the coordinates and accuracy from `position.coords` after it succeeds:
+When you already have coordinates, use `Geocoder` without requesting the device's position:
 
 ```javascript
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    const { latitude, longitude, accuracy } = position.coords;
-    console.log('Current position:', latitude, longitude);
-    console.log('Accuracy:', accuracy, 'metres');
-  },
-  (error) => {
-    console.error('Location failed:', error.message);
-  },
-  {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 0,
-  }
-);
+const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['en-US'] });
+try {
+  const address = await geocoder.getFromLocation(30.2741, 120.1551);
+  console.log(address?.formattedAddress ?? 'No address found');
+} catch (error) {
+  console.error('Address lookup failed:', error.message);
+}
 ```
+
+Coordinates use WGS-84. This lookup does not require device location permission, but address lookup is not available in every environment. Returned fields can be `null`, so provide fallback text.
 
 ## Watch Position Changes
 
@@ -44,39 +38,6 @@ navigator.geolocation.clearWatch(watchId);
 
 Stopping unused watches avoids unnecessary positioning work and battery use.
 
-## Include an Address with a Position
-
-To display a city or street, enable address lookup in the position options:
-
-```javascript
-navigator.geolocation.getCurrentPosition(
-  (position) => {
-    console.log(position.coords.latitude, position.coords.longitude);
-    console.log(position.address?.formattedAddress, position.reverseGeocodeStatus);
-  },
-  (error) => console.error('Location failed:', error.message),
-  { reverseGeocode: { enabled: true, level: 'street', acceptLanguages: ['en-US'] } },
-);
-```
-
-Declare location permission and obtain the user's authorization first. If address lookup is unavailable or finds no match, the success callback still receives the coordinates, with `address` set to `null`. Use `reverseGeocodeStatus` to choose a message. The address lookup may take up to 3 seconds beyond the coordinate request. `watchPosition()` accepts the same option; address lookups are rate-limited, so some updates contain coordinates only.
-
-## Look Up an Address from Coordinates
-
-When you already have coordinates, use `Geocoder` without requesting the device's position:
-
-```javascript
-const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['en-US'] });
-try {
-  const address = await geocoder.getFromLocation(30.2741, 120.1551);
-  console.log(address?.formattedAddress ?? 'No address found');
-} catch (error) {
-  console.error('Address lookup failed:', error.message);
-}
-```
-
-Coordinates use WGS-84. This lookup does not require device location permission, but address lookup is not available in every environment. Returned fields can be `null`, so provide fallback text.
-
 ## Declare Location Permission
 
 Declare the `GEOLOCATION` permission in `app.json` before using location:
@@ -97,7 +58,7 @@ Returns the application's `Geolocation` object. The runtime provides this object
 
 #### `getCurrentPosition(success, error?, options?)`
 
-Requests one current position. It has no return value and delivers the result through callbacks.
+Temporarily unavailable. This method is intended to request one position through callbacks; do not rely on it to obtain coordinates.
 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
