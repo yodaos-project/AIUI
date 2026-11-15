@@ -111,3 +111,42 @@ A2UI `Image` / `image` 的属性映射到原生图片属性：
 | `mode` | `mode` | 显式 `mode` 优先于 `fit`。 |
 
 透明度相乘和 SVG 主题着色规则见 [Image](/AIUI/components/image)。更新保留相同类型的图片组件，并按位置复用模板项，减少重复加载并保留播放状态；组件类型改变时会重新创建。
+
+## 在生成的界面中播放视频
+
+在 A2UI 的 `updateComponents` 中加入 `Video`，并设置尺寸、视频地址和播放选项：
+
+```json
+{
+  "id": "clip",
+  "component": "Video",
+  "props": {
+    "src": "/assets/intro.mp4",
+    "width": 160,
+    "height": 90,
+    "objectFit": "contain",
+    "autoplay": true,
+    "loop": true,
+    "muted": true
+  }
+}
+```
+
+建议使用 H.264 编码的 MP4；声音可使用 AAC。是否能播放取决于设备的视频能力。`src` 也可使用数据绑定，更多视频用法见 [Video](/AIUI/components/video)。
+
+## 调整弹窗外观
+
+A2UI `Modal` 可通过 `headerChild` 指定标题组件，通过 `panelAppearance`、`closeAppearance` 调整弹窗和关闭按钮。需要更细的布局时，还可使用 `props.contentStyle` 和 `props.closeButtonStyle`；`borderless: true` 可去掉弹窗边框。弹窗内容需为关闭按钮留出空间。
+
+例如，下面的 `Modal` 引用已有的打开按钮、标题和内容组件；把它与这些组件一起放入 `updateComponents.components`：
+
+```json
+{
+  "id": "dialog",
+  "component": "Modal",
+  "trigger": "open_button",
+  "content": "dialog_body",
+  "headerChild": "dialog_title",
+  "panelAppearance": { "borderRadius": 16, "padding": 20 }
+}
+```

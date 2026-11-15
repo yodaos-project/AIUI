@@ -17,7 +17,8 @@ Never infer full browser or WeChat compatibility from a familiar API name. If a 
 | `AudioPlayer`, text tracks, `Sound`, Web Audio, microphone/camera streams, `navigator.mediaLibrary`, recording sources (`captureSource`, `microphoneMode`), video | [media APIs](./media.md) |
 | Language model, image input, speech synthesis, `SpeechRecognition`, `SpeechRecognitionSession` | [AI and speech APIs](./ai.md) |
 | BLE client, accelerometer, orientation, gyroscope | [device APIs](./device.md) |
-| `navigator.geolocation`, current position, location watching | [Geolocation API](./geo/geolocation.md) |
+| `navigator.maps`, system navigation and rerouting | [System navigation](./geo/maps.md) |
+| `navigator.geolocation`, `Geocoder`, coordinates, addresses | [Geolocation API](./geo/geolocation.md) |
 | GPX route parsing, creation, and export | [GPXDocument API](./geo/gpx-document.md) |
 | `Canvas`, 2D drawing, `Path2D`, text metrics, image export, `BarcodeDetector` | [Canvas and barcode APIs](./canvas.md) |
 | `wx.request`, sockets, Event Source, storage, navigation, camera, recorder, speech | [wx APIs](./wx.md) |

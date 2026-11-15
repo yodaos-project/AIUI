@@ -1,3 +1,25 @@
+# v0.21.x（持续更新）
+
+以下内容对应 `v0.21.x` 分支当前支持的能力。不同设备和运行环境的可用性可能不同。
+
+## 位置与导航
+
+- **显示当前位置的地址**：在定位选项中开启 `reverseGeocode`，可在坐标旁显示城市或街道；也可以用 `Geocoder` 查询已有坐标。查询不到地址时仍可使用坐标，详见 [Geolocation](/AIUI/api/geo-data-geolocation)。
+- **打开系统导航**：使用 `navigator.maps` 查询是否支持导航，按地址或高德 POI 开始导航，并在需要时更改路线或结束。详见[系统导航](/AIUI/api/geo-data-maps)。
+
+## 界面与媒体
+
+- **A2UI 播放视频和调整弹窗**：生成的界面可使用 `Video` 播放短片；`Modal` 可设置标题、面板和关闭按钮样式。详见 [A2UI](/AIUI/components/a2ui)。
+- **字体与图片**：支持 WOFF2 字体；Canvas 和位图图像处理进一步完善，可裁剪或调整图片大小。
+- **二维码识别位置**：`BarcodeDetector` 的识别结果包含边界和四角坐标，方便在图像中标记结果。详见[条码识别](/AIUI/api/device-barcode)。
+
+## 网络与错误处理
+
+- **读取更多请求和响应内容**：`Request` 和 `Response` 增加 `bytes()`、`formData()`；也可创建 JSON、重定向和错误响应。详见 [HTTPS](/AIUI/api/network-https)。
+- **取消请求有明确回调**：取消尚未完成的 `wx.request()` 会触发 `fail` 和 `complete`，可在失败回调中更新界面。
+- **记录脚本错误**：App 的 `onError` 接收未捕获的同步脚本错误。Promise 拒绝和 API 失败仍需单独处理，详见 [App](/AIUI/api/framework-app)。
+- **稳定性改进**：改进条件显示、页面更新、滚动、媒体加载和网络连接，减少界面更新中的异常。
+
 # v0.20.0
 
 AIUI 0.20.0 让智能体更方便地访问媒体库、查询权限状态、复用计算模块和调整界面。此次更新也改善了网络连接、动画播放和页面交互的稳定性。

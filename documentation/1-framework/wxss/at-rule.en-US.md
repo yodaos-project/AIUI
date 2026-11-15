@@ -68,6 +68,8 @@ Used to load custom web fonts.
 }
 ```
 
+WOFF2 fonts are supported alongside other supported font formats.
+
 ---
 
 *For more details about at-rules, see [MDN CSS At-rules](https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule).*

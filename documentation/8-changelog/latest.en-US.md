@@ -1,3 +1,25 @@
+# v0.21.x (In Progress)
+
+The following describes capabilities currently available on the `v0.21.x` branch. Availability may vary by device and environment.
+
+## Location and Navigation
+
+- **Show an address with a location**: Enable `reverseGeocode` in location options to show a city or street alongside coordinates, or use `Geocoder` with existing coordinates. Coordinates remain available if the address lookup fails. See [Geolocation](/AIUI/api/geo-data-geolocation).
+- **Start system navigation**: Use `navigator.maps` to check availability, start navigation by address or Amap POI, change the route, and end navigation. See [System Navigation](/AIUI/api/geo-data-maps).
+
+## Interfaces and Media
+
+- **Play video and customize dialogs in A2UI**: Generated interfaces can use `Video`; `Modal` supports a title, panel, and close-button styling. See [A2UI](/AIUI/components/a2ui).
+- **Fonts and images**: WOFF2 fonts are supported. Canvas and bitmap processing now supports additional image sources, cropping, and resizing.
+- **Barcode locations**: `BarcodeDetector` results include a bounding box and four corners, making it possible to mark the detected code. See [Barcode Detection](/AIUI/api/device-barcode).
+
+## Networking and Error Handling
+
+- **Read more request and response bodies**: `Request` and `Response` add `bytes()` and `formData()`; you can also create JSON, redirect, and error responses. See [HTTPS](/AIUI/api/network-https).
+- **Cancellation callbacks**: Cancelling a pending `wx.request()` invokes `fail` and `complete`, so the failure callback can update the interface.
+- **Record script errors**: App `onError` receives uncaught synchronous script errors. Handle Promise rejections and API failures separately; see [App](/AIUI/api/framework-app).
+- **Reliability improvements**: Conditional display, page updates, scrolling, media loading, and networking work more reliably.
+
 # v0.20.0
 
 AIUI 0.20.0 makes it easier for agents to access the media library, check permission states, reuse computation modules, and adapt their interfaces. This release also improves the reliability of networking, animations, and page interactions.

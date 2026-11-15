@@ -141,7 +141,32 @@ ctx.stroke();
 
 已调用 `close()` 的 `ImageBitmap` 不能继续传给 `drawImage()`，会抛出 `InvalidStateError`。
 
+## 裁剪或缩放图片
+
+使用 `createImageBitmap()` 可以从图片文件、像素数据或画布创建位图，再把它画到画布上。例如，把包内图片缩小到 80 像素宽：
+
+```javascript
+const response = await fetch('/assets/photo.png');
+const photo = await response.blob();
+const bitmap = await createImageBitmap(photo, { resizeWidth: 80 });
+const canvas = new Canvas(bitmap.width, bitmap.height);
+canvas.getContext('2d').drawImage(bitmap, 0, 0);
+bitmap.close();
+```
+
+只指定一个尺寸时，另一个尺寸按原比例计算。处理完后调用 `close()`；关闭后的位图不能再绘制。
+
 ## API Reference
+
+### `createImageBitmap()`
+
+#### `createImageBitmap(source, options?)`
+
+从 `Blob`、`ImageData`、`ImageBitmap` 或 `Canvas` 创建位图，返回 `Promise<ImageBitmap>`。选项 `resizeWidth`、`resizeHeight` 指定输出尺寸；`resizeQuality` 可为 `pixelated`、`low`、`medium`、`high`；`imageOrientation` 可为 `from-image`、`flipY`、`none`。还可设置 `premultiplyAlpha` 和 `colorSpaceConversion`。
+
+#### `createImageBitmap(source, sx, sy, sw, sh, options?)`
+
+先从源图截取以 `(sx, sy)` 为起点、宽 `sw`、高 `sh` 的区域，再按选项创建位图。
 
 ### 页面画布
 

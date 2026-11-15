@@ -44,6 +44,39 @@ navigator.geolocation.clearWatch(watchId);
 
 及时停止监听可以减少不必要的定位和电量消耗。
 
+## 在定位结果中获取地址
+
+需要显示用户所在城市或街道时，可以在定位选项中开启地址查询：
+
+```javascript
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    console.log(position.coords.latitude, position.coords.longitude);
+    console.log(position.address?.formattedAddress, position.reverseGeocodeStatus);
+  },
+  (error) => console.error('定位失败：', error.message),
+  { reverseGeocode: { enabled: true, level: 'street', acceptLanguages: ['zh-CN'] } },
+);
+```
+
+使用前仍需声明定位权限并取得用户授权。地址查询不可用或未找到结果时，定位成功回调仍会返回坐标，`address` 为 `null`；请根据 `reverseGeocodeStatus` 决定如何提示用户。地址查询可能比坐标多等待最多 3 秒。`watchPosition()` 也接受此选项；持续定位时地址查询有频率限制，部分更新只包含坐标。
+
+## 根据坐标查询地址
+
+已有经纬度时，可以使用 `Geocoder`，不必先获取设备位置：
+
+```javascript
+const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['zh-CN'] });
+try {
+  const address = await geocoder.getFromLocation(30.2741, 120.1551);
+  console.log(address?.formattedAddress ?? '未找到地址');
+} catch (error) {
+  console.error('地址查询失败：', error.message);
+}
+```
+
+坐标使用 WGS-84。此查询不需要设备定位权限，但地址查询能力并非在所有环境中可用。返回字段可能为 `null`，请准备备用显示文字。
+
 ## 声明定位权限
 
 使用定位前，需要在 `app.json` 中声明 `GEOLOCATION` 权限：
@@ -62,7 +95,7 @@ navigator.geolocation.clearWatch(watchId);
 
 返回当前应用的 `Geolocation` 对象。该对象由运行时提供，不需要自行构造。
 
-### `getCurrentPosition(success, error?, options?)`
+#### `getCurrentPosition(success, error?, options?)`
 
 获取一次当前位置。方法没有返回值，结果通过回调传递。
 
@@ -72,11 +105,11 @@ navigator.geolocation.clearWatch(watchId);
 | `error` | `(error) => void` | 否 | 定位失败时调用。 |
 | `options` | `PositionOptions` | 否 | 精度、超时和缓存设置。 |
 
-### `watchPosition(success, error?, options?)`
+#### `watchPosition(success, error?, options?)`
 
 持续监听位置变化，返回数字类型的 `watchId`。应在不再需要更新时把它传给 `clearWatch()`。
 
-### `clearWatch(watchId)`
+#### `clearWatch(watchId)`
 
 停止 `watchId` 对应的位置监听。
 
@@ -87,6 +120,7 @@ navigator.geolocation.clearWatch(watchId);
 | `enableHighAccuracy` | `boolean` | 是否优先获取更精确的位置。默认值为 `false`；高精度定位可能消耗更多电量。 |
 | `timeout` | `number` | 等待结果的最长时间，单位为毫秒；省略时由设备决定。 |
 | `maximumAge` | `number` | 可以接受的缓存位置最长时间，单位为毫秒；省略时由设备决定。 |
+| `reverseGeocode` | `object` | 设置 `enabled: true` 查询地址；`level` 可选 `country`、`region`、`city`、`district`、`street`，默认 `city`；`acceptLanguages` 是按优先顺序排列的语言标签数组。 |
 
 ### `GeolocationPosition`
 
@@ -100,6 +134,8 @@ navigator.geolocation.clearWatch(watchId);
 | `coords.heading` | `number \| null` | 移动方向，不可用时为 `null`。 |
 | `coords.speed` | `number \| null` | 移动速度，不可用时为 `null`。 |
 | `timestamp` | `number` | 获取该位置时的时间戳。 |
+| `address` | `GeocodeAddress \| null` | 查询到的地址；未请求、不可用或无结果时为 `null`。 |
+| `reverseGeocodeStatus` | `string` | 地址查询状态：`not-requested`、`success`、`not-found`、`unavailable`、`timeout`、`error` 或 `rate-limited`。 |
 
 ### `GeolocationPositionError`
 
@@ -110,3 +146,17 @@ navigator.geolocation.clearWatch(watchId);
 | `3` | `TIMEOUT` | 在设定时间内没有获得位置。 |
 
 `message` 包含便于阅读的错误说明。
+
+### `Geocoder`
+
+#### `new Geocoder(options?)`
+
+创建可重复使用的地址查询器。`options.level` 与 `acceptLanguages` 的含义与上面的定位选项相同；`timeout` 是查询超时毫秒数，默认 `3000`，范围为 0 至 2147483647。
+
+#### `getFromLocation(latitude, longitude)`
+
+查询一个 WGS-84 坐标，返回 `Promise<GeocodeAddress | null>`。纬度范围为 -90 至 90，经度范围为 -180 至 180；无匹配结果返回 `null`，服务不可用、超时或查询失败时拒绝 Promise，错误 `code` 分别为 `UNAVAILABLE`、`TIMEOUT`、`PROVIDER_ERROR`。
+
+### `GeocodeAddress`
+
+`formattedAddress`、`country`、`countryCode`、`region`、`city`、`district`、`street`、`streetNumber` 和 `postalCode` 均为字符串或 `null`。实际返回内容取决于地址查询服务。

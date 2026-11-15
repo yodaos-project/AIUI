@@ -44,6 +44,39 @@ navigator.geolocation.clearWatch(watchId);
 
 Stopping unused watches avoids unnecessary positioning work and battery use.
 
+## Include an Address with a Position
+
+To display a city or street, enable address lookup in the position options:
+
+```javascript
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    console.log(position.coords.latitude, position.coords.longitude);
+    console.log(position.address?.formattedAddress, position.reverseGeocodeStatus);
+  },
+  (error) => console.error('Location failed:', error.message),
+  { reverseGeocode: { enabled: true, level: 'street', acceptLanguages: ['en-US'] } },
+);
+```
+
+Declare location permission and obtain the user's authorization first. If address lookup is unavailable or finds no match, the success callback still receives the coordinates, with `address` set to `null`. Use `reverseGeocodeStatus` to choose a message. The address lookup may take up to 3 seconds beyond the coordinate request. `watchPosition()` accepts the same option; address lookups are rate-limited, so some updates contain coordinates only.
+
+## Look Up an Address from Coordinates
+
+When you already have coordinates, use `Geocoder` without requesting the device's position:
+
+```javascript
+const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['en-US'] });
+try {
+  const address = await geocoder.getFromLocation(30.2741, 120.1551);
+  console.log(address?.formattedAddress ?? 'No address found');
+} catch (error) {
+  console.error('Address lookup failed:', error.message);
+}
+```
+
+Coordinates use WGS-84. This lookup does not require device location permission, but address lookup is not available in every environment. Returned fields can be `null`, so provide fallback text.
+
 ## Declare Location Permission
 
 Declare the `GEOLOCATION` permission in `app.json` before using location:
@@ -62,7 +95,7 @@ The user must also allow the device's location permission. The error callback re
 
 Returns the application's `Geolocation` object. The runtime provides this object; applications do not construct it.
 
-### `getCurrentPosition(success, error?, options?)`
+#### `getCurrentPosition(success, error?, options?)`
 
 Requests one current position. It has no return value and delivers the result through callbacks.
 
@@ -72,11 +105,11 @@ Requests one current position. It has no return value and delivers the result th
 | `error` | `(error) => void` | No | Called when positioning fails. |
 | `options` | `PositionOptions` | No | Accuracy, timeout, and cache settings. |
 
-### `watchPosition(success, error?, options?)`
+#### `watchPosition(success, error?, options?)`
 
 Watches for position changes and returns a numeric `watchId`. Pass it to `clearWatch()` when updates are no longer needed.
 
-### `clearWatch(watchId)`
+#### `clearWatch(watchId)`
 
 Stops the location watch identified by `watchId`.
 
@@ -87,6 +120,7 @@ Stops the location watch identified by `watchId`.
 | `enableHighAccuracy` | `boolean` | Prefer a more accurate position. Defaults to `false`; high-accuracy positioning may use more power. |
 | `timeout` | `number` | Maximum time to wait, in milliseconds; the device decides when omitted. |
 | `maximumAge` | `number` | Maximum acceptable age of a cached position, in milliseconds; the device decides when omitted. |
+| `reverseGeocode` | `object` | Set `enabled: true` to look up an address. `level` is `country`, `region`, `city`, `district`, or `street` (default `city`); `acceptLanguages` is an ordered array of language tags. |
 
 ### `GeolocationPosition`
 
@@ -100,6 +134,8 @@ Stops the location watch identified by `watchId`.
 | `coords.heading` | `number \| null` | Direction of travel, or `null` when unavailable. |
 | `coords.speed` | `number \| null` | Travel speed, or `null` when unavailable. |
 | `timestamp` | `number` | Timestamp when the position was obtained. |
+| `address` | `GeocodeAddress \| null` | The address, or `null` when not requested, unavailable, or not found. |
+| `reverseGeocodeStatus` | `string` | Address status: `not-requested`, `success`, `not-found`, `unavailable`, `timeout`, `error`, or `rate-limited`. |
 
 ### `GeolocationPositionError`
 
@@ -110,3 +146,17 @@ Stops the location watch identified by `watchId`.
 | `3` | `TIMEOUT` | No position was available before the timeout. |
 
 `message` contains a human-readable description of the error.
+
+### `Geocoder`
+
+#### `new Geocoder(options?)`
+
+Creates a reusable address lookup. `options.level` and `acceptLanguages` have the same meaning as in the position options above; `timeout` is the lookup timeout in milliseconds, defaulting to `3000`, with a range of 0 to 2147483647.
+
+#### `getFromLocation(latitude, longitude)`
+
+Looks up one WGS-84 coordinate and returns `Promise<GeocodeAddress | null>`. Latitude must be between -90 and 90 and longitude between -180 and 180. A missing match returns `null`; an unavailable service, timeout, or lookup failure rejects with error `code` `UNAVAILABLE`, `TIMEOUT`, or `PROVIDER_ERROR`, respectively.
+
+### `GeocodeAddress`
+
+`formattedAddress`, `country`, `countryCode`, `region`, `city`, `district`, `street`, `streetNumber`, and `postalCode` are each a string or `null`. The actual fields depend on the address service.

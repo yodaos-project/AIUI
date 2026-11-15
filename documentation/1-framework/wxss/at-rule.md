@@ -68,6 +68,8 @@
 }
 ```
 
+支持 WOFF2 字体，也可以使用已支持的其他字体格式。
+
 ---
 
 *更多 @规则 的使用详情，请参考 [MDN CSS At-rules](https://developer.mozilla.org/zh-CN/docs/Web/CSS/At-rule)。*

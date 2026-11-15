@@ -58,3 +58,9 @@ const watchId = navigator.geolocation.watchPosition(
 // During cleanup:
 navigator.geolocation.clearWatch(watchId);
 ```
+
+## Addresses
+
+Use `reverseGeocode: { enabled: true, level, acceptLanguages }` in location options to include an address. `position.address` can be null even when coordinates succeed; inspect `reverseGeocodeStatus` (`not-requested`, `success`, `not-found`, `unavailable`, `timeout`, `error`, `rate-limited`). Address lookup can add up to 3 seconds; watches rate-limit lookups. `level` is `country`, `region`, `city`, `district`, or `street` (default `city`).
+
+For supplied WGS-84 coordinates use `new Geocoder({ level, acceptLanguages, timeout }).getFromLocation(latitude, longitude)`. It returns `Promise<GeocodeAddress | null>`, does not require device location permission, and rejects with `UNAVAILABLE`, `TIMEOUT`, or `PROVIDER_ERROR` in `error.code`. Address fields can be null. Address service availability varies.
