@@ -1,24 +1,102 @@
-# v0.21.x（持续更新）
+# v0.21.x
 
-以下内容对应 `v0.21.x` 分支当前支持的能力。不同设备和运行环境的可用性可能不同。
+AIUI 0.21 让智能体可以把位置显示成地址、为用户打开系统导航，并在 AI 生成的界面中播放视频。这次更新还带来了图片处理、条码识别和网络请求方面的新能力，同时优化了复杂界面、绘图、录音和数据保存的性能。
 
-## 位置与导航
+## 从当前位置获取地址
 
-- **显示当前位置的地址**：在定位选项中开启 `reverseGeocode`，可在坐标旁显示城市或街道；也可以用 `Geocoder` 查询已有坐标。查询不到地址时仍可使用坐标，详见 [Geolocation](/AIUI/api/geo-data-geolocation)。
-- **打开系统导航**：使用 `navigator.maps` 查询是否支持导航，按地址或高德 POI 开始导航，并在需要时更改路线或结束。详见[系统导航](/AIUI/api/geo-data-maps)。
+开发天气、附近地点或出行服务时，除了经纬度，还可以显示用户所在的城市或街道。先在 `app.json` 的 `permissions` 中加入 `GEOLOCATION`，并让用户允许定位，然后开启 `reverseGeocode`：
 
-## 界面与媒体
+```javascript
+navigator.geolocation.getCurrentPosition(
+  (position) => {
+    const { latitude, longitude } = position.coords;
+    console.log('坐标：', latitude, longitude);
+    console.log('地址：', position.address?.formattedAddress ?? '暂时无法获取地址');
+  },
+  (error) => console.error('定位失败：', error.message),
+  { reverseGeocode: { enabled: true, level: 'city' } },
+);
+```
 
-- **A2UI 播放视频和调整弹窗**：生成的界面可使用 `Video` 播放短片；`Modal` 可设置标题、面板和关闭按钮样式。详见 [A2UI](/AIUI/components/a2ui)。
-- **字体与图片**：支持 WOFF2 字体；Canvas 和位图图像处理进一步完善，可裁剪或调整图片大小。
-- **二维码识别位置**：`BarcodeDetector` 的识别结果包含边界和四角坐标，方便在图像中标记结果。详见[条码识别](/AIUI/api/device-barcode)。
+地址查询可能不可用或没有结果；此时只要定位成功，仍能获取坐标。已有经纬度时，也可以用 `Geocoder` 查询地址，无需获取设备当前位置。使用方法和权限说明见 [Geolocation](/AIUI/api/geo-data-geolocation)。
 
-## 网络与错误处理
+## 为用户打开导航
 
-- **读取更多请求和响应内容**：`Request` 和 `Response` 增加 `bytes()`、`formData()`；也可创建 JSON、重定向和错误响应。详见 [HTTPS](/AIUI/api/network-https)。
-- **取消请求有明确回调**：取消尚未完成的 `wx.request()` 会触发 `fail` 和 `complete`，可在失败回调中更新界面。
-- **记录脚本错误**：App 的 `onError` 接收未捕获的同步脚本错误。Promise 拒绝和 API 失败仍需单独处理，详见 [App](/AIUI/api/framework-app)。
-- **稳定性改进**：改进条件显示、页面更新、滚动、媒体加载和网络连接，减少界面更新中的异常。
+智能体可以接收一个目的地地址，并打开步行导航。例如，用户询问如何到达某个地点时，先检查设备是否支持，再发起导航：
+
+```javascript
+try {
+  const capabilities = await navigator.maps.getCapabilities();
+  if (capabilities.supported && capabilities.travelModes.includes('walking')) {
+    const session = await navigator.maps.navigate({
+      destination: { type: 'address', address: '浙江省杭州市西湖区西湖风景名胜区' },
+      travelMode: 'walking',
+    });
+    session.finished.then((result) => console.log('导航结束：', result.reason));
+  } else {
+    console.log('当前设备不支持步行导航');
+  }
+} catch (error) {
+  console.error('无法开始导航：', error.message);
+}
+```
+
+导航能力和支持的出行方式因设备和运行环境而异。导航开始后，还可以更改目的地、切换出行方式或结束导航，详见[系统导航](/AIUI/api/geo-data-maps)。
+
+## 让 AI 生成的界面播放视频
+
+A2UI 可以根据结构化指令生成界面。现在，生成的内容中也可以包含视频，例如在天气卡片中播放天气动画。将下面的组件加入 `updateComponents.components`，并把视频文件放入应用的 `assets` 目录：
+
+```json
+{
+  "id": "weather-video",
+  "component": "Video",
+  "props": {
+    "src": "/assets/weather.mp4",
+    "width": 160,
+    "height": 90,
+    "objectFit": "contain",
+    "autoplay": true,
+    "loop": true,
+    "muted": true
+  }
+}
+```
+
+建议使用 H.264 编码的 MP4；视频能否播放取决于设备能力。A2UI 弹窗也新增标题、面板和关闭按钮的外观设置。完整用法见 [A2UI](/AIUI/components/a2ui)。
+
+## 缩放图片和标记条码位置
+
+处理头像或生成缩略图时，可以使用 `createImageBitmap()` 调整图片尺寸。下面把应用内的图片调整为 80 像素宽，并保持原始比例：
+
+```javascript
+const response = await fetch('/assets/photo.png');
+const photo = await response.blob();
+const bitmap = await createImageBitmap(photo, { resizeWidth: 80 });
+const canvas = new Canvas(bitmap.width, bitmap.height);
+canvas.getContext('2d').drawImage(bitmap, 0, 0);
+bitmap.close();
+```
+
+也可以先裁剪图片，再调整尺寸，详见 [Canvas](/AIUI/api/canvas)。识别二维码或条形码时，`BarcodeDetector` 的结果现在包含边界框和四个角点，方便在原图上标记位置，详见[条码识别](/AIUI/api/device-barcode)。
+
+## 性能与体验
+
+这些优化会自动作用于相应场景，实际体验取决于设备和应用内容：
+
+- **复杂界面更轻快**：条件不满足的内容不再提前创建，有助于减少复杂页面的初始工作和资源占用。
+- **多画布使用资源更高效**：在支持的环境中，同一智能体中的多个 Canvas 可以复用绘图资源，减少重复创建；每个画布的内容仍然独立。
+- **录音处理更流畅**：部分音频处理工作移到后台，Opus 录音数据可以更及时地输出，有助于实时语音场景。
+- **本地数据保存更高效**：重复读取和频繁保存的数据会得到更高效的处理，减少不必要的重复操作。
+- **请求占用更可控**：处理较大的网络响应时，改进了数据缓存和排队方式，降低大量请求同时进行时的内存压力。
+
+## 更多改进
+
+- **请求内容更容易处理**：`Request` 和 `Response` 新增 `bytes()` 和 `formData()`，可以读取字节数据或表单；也支持创建 JSON、重定向和错误响应。详见 [HTTPS](/AIUI/api/network-https)。
+- **取消请求时能收到结果**：取消尚未完成的 `wx.request()` 会调用 `fail` 和 `complete`，方便界面处理取消状态。
+- **更容易发现脚本错误**：App 的 `onError` 接收未捕获的同步脚本错误。Promise 拒绝和 API 失败仍需单独处理，详见 [App](/AIUI/api/framework-app)。
+- **支持 WOFF2 字体**：可以在 `@font-face` 中使用 WOFF2 格式的自定义字体。
+- **交互更可靠**：改进条件显示、自定义组件生命周期、页面更新和可见溢出内容的点击处理。
 
 # v0.20.0
 
