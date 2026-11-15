@@ -90,6 +90,27 @@ export default {
 };
 ```
 
+## 在后台发起网络请求
+
+例如，智能体打开时获取一份配置：
+
+```javascript
+export default {
+  onOpen(event) {
+    const work = fetch('https://api.example.com/config')
+      .then((response) => {
+        if (!response.ok) throw new Error(`请求失败：${response.status}`);
+        return response.json();
+      })
+      .then((config) => console.log('配置：', config))
+      .catch((error) => console.error('获取配置失败：', error.message));
+    event.waitUntil(work);
+  },
+};
+```
+
+在 `onOpen()` 返回前同步调用 `waitUntil()`，才能让短任务等待请求完成。需要长连接时可使用 `WebSocket`；根据任务生命周期关闭连接，并处理网络变化造成的中断。
+
 ## 选择运行时长
 
 | `lifetime` | 行为 | 适合场景 |
@@ -103,11 +124,11 @@ export default {
 
 Agent Worker 可以使用：
 
-- 定时器、Promise、`console` 和 `performance`
+- 定时器、Promise、`console`、`performance`、`fetch` 和 `WebSocket`
 - URL、文本编解码、Web Crypto 和 WebAssembly
 - 项目内的 ES Module
 
-Agent Worker 不提供 Page、Widget、`window`、`document`、`fetch`、界面渲染、路由和媒体采集能力。需要更新界面或发送网络请求时，应由 Page 或 Widget 处理。
+Agent Worker 可以直接发起网络请求，但不提供 Page、Widget、`window`、`document`、界面渲染、路由和媒体采集能力。更新可见界面仍需由 Page 或 Widget 处理。
 
 ## 继续阅读
 

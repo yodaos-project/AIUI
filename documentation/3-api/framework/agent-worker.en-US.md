@@ -80,7 +80,7 @@ The `AgentWorker` instance is not an `EventTarget`; use `self` when you need `ad
 - `this.navigator` and the global `navigator` are the same object.
 - Global `self` and `globalThis` refer to the Agent Worker global object, not the `this` value used by `onOpen()`.
 - Every `open` trigger calls `onOpen()`; overlapping asynchronous work is not merged automatically.
-- Agent Workers do not provide `fetch`; start network requests from a Page or Widget.
+- Agent Workers support `fetch` and `WebSocket`. Register asynchronous work in short-lived tasks with `event.waitUntil()` and release unused connections when stopping.
 
 For declarations and lifetime configuration, see [Agent Worker Development](/AIUI/framework/open-agent-format-agent-worker).
 
@@ -126,6 +126,8 @@ The event's `type` is `'open'`. Its `target` and `currentTarget` refer to the Ag
 | `language` | `string` | Preferred language |
 | `languages` | `string[]` | Language preferences in priority order |
 | `region` | `string` | Current region information |
+| `onLine` | `boolean` | Current online status; does not guarantee service reachability |
+| `connection` | `NetworkInformation` | Current network information and change events |
 
 ### `AgentWorkerGlobalScope`
 

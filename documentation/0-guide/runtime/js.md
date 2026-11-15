@@ -87,6 +87,30 @@ console.log(formatTemperature(26)); // 26°C
 
 安装、配置和更多示例请参阅[模块：使用 TypeScript](/AIUI/framework/open-agent-format-module)。
 
+## 加速重复计算
+
+当页面需要反复处理很多数字或绘制大量图形时，可以在 TypeScript 中用 `offload` 标记一个函数。支持的调用会尝试加速；不适合加速的调用默认仍按原来的 JavaScript 方式执行。
+
+例如，在 `utils/sum.ts` 中计算超过指定数值的总和：
+
+```typescript
+import { offload } from 'ink:compiler';
+
+export const sumAbove = offload(function sumAbove(values: Float64Array, threshold: number): number {
+  let total = 0;
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] > threshold) total += values[i];
+  }
+  return total;
+});
+```
+
+调用时传入 `Float64Array` 和阈值，例如 `sumAbove(new Float64Array([1, 3, 5]), 2)` 的结果是 `8`。代码需要以 `.ts` 文件或 `<script setup lang="ts">` 源码交给运行时处理；不要先把标记编译成普通 JavaScript。
+
+将要处理的数据作为参数传入，函数内使用局部变量和普通 `for` 循环。不要在标记的函数中读取 `this`、引用外层变量或调用自己定义的辅助函数。支持的 Canvas 2D 绘制也可以使用该方式，但不是所有绘图调用都能加速。请在目标设备上测量实际场景，短小的任务不一定更快。
+
+默认模式是 `auto`：无法加速时执行原函数。测试是否可以加速时，可以把 `{ mode: 'require' }` 作为 `offload()` 的第二个参数；不支持的函数在编译时报告错误，当前参数无法加速时会抛出 `OffloadUnsupportedError`。该能力不能代替类型检查，也不能消除下方的同步执行限制。
+
 ## 避免长时间执行同步代码
 
 从 AIUI 0.20 起，每个实例默认允许一段同步 JavaScript 连续执行 **2,000 毫秒**。超过限制会中断脚本并请求销毁实例，因此不要依赖超时后继续执行清理逻辑。实际部署环境可以设置不同的限制，应用不能在运行中修改它。

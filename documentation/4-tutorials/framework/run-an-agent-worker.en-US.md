@@ -21,5 +21,5 @@ export default {
 
 <!-- /aiui-tutorial-step -->
 
-Agent Workers do not provide `fetch`, page routing, or interface rendering. See [Agent Worker](/AIUI/framework/open-agent-format-agent-worker).
+Agent Workers support `fetch` and `WebSocket`, but not page routing or interface rendering. See [Agent Worker](/AIUI/framework/open-agent-format-agent-worker).
 

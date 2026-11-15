@@ -113,7 +113,7 @@ export default {
 
 ## 组合
 
-也可以在 Mustache 内直接进行组合，构成新的对象或者数组。
+可以在绑定中组合数组；需要组合对象时，使用页面逻辑。
 
 ### 数组
 ```html
@@ -129,75 +129,23 @@ export default {
 最终组合成数组 `[0, 1, 2, 3, 4]`。
 
 ### 对象
+
+需要更新对象中的字段时，先在页面逻辑中构造新对象，再通过 `setData()` 更新：
+
 ```html
-<template is="objectCombine" data="{{for: a, bar: b}}"></template>
+<text>{{profile.name}}，{{profile.city}}</text>
 ```
+
 ```javascript
 export default {
-  data: {
-    a: 1,
-    b: 2
-  }
-}
+  data: { profile: { name: '小明', city: '杭州' } },
+  moveToShanghai() {
+    this.setData({ profile: { ...this.data.profile, city: '上海' } });
+  },
+};
 ```
-最终组合成的对象是 `{for: 1, bar: 2}`
 
-也可以用扩展运算符 `...` 来将一个对象展开
-```html
-<template is="objectCombine" data="{{...obj1, ...obj2, e: 5}}"></template>
-```
-```javascript
-export default {
-  data: {
-    obj1: {
-      a: 1,
-      b: 2
-    },
-    obj2: {
-      c: 3,
-      d: 4
-    }
-  }
-}
-```
-最终组合成的对象是 `{a: 1, b: 2, c: 3, d: 4, e: 5}`。
-
-如果对象的 key 和 value 相同，也可以间接地表达。
-```html
-<template is="objectCombine" data="{{foo, bar}}"></template>
-```
-```javascript
-export default {
-  data: {
-    foo: 'my-foo',
-    bar: 'my-bar'
-  }
-}
-```
-最终组合成的对象是 `{foo: 'my-foo', bar:'my-bar'}`。
-
-**注意：上述方式可以随意组合，但是如有存在变量名相同的情况，后边的会覆盖前面，如：**
-```html
-<template is="objectCombine" data="{{...obj1, ...obj2, a: c}}"></template>
-```
-```javascript
-export default {
-  data: {
-    obj1: {
-      a: 1,
-      b: 2
-    },
-    obj2: {
-      b: 3,
-      c: 4
-    },
-    a: 5
-  }
-}
-```
-最终组合成的对象是 `{a: 5, b: 3, c: 4}`。
-
-*注意：花括号和引号之间如果有空格，将最终被解析成为字符串*
+对象展开语法在 JavaScript 中执行；不要使用 `<template name>` / `<template is>` 传递对象，它们当前不支持。需要复用界面时，请使用[自定义组件](/AIUI/framework/open-agent-format-custom-components)。
 
 ## 在回调中继续更新
 

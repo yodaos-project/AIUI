@@ -336,7 +336,7 @@ export default {
 
 Making `onOpen()` async does not automatically extend the event. A running Worker retains values on `this`; values reset when it stops. Persist durable state in storage.
 
-Workers provide timers, Promise, `console`, `performance`, URL/text encoding (including `TextEncoderStream` and `TextDecoderStream`), Web Crypto, WebAssembly, and project ES modules. They do not provide Page/Widget objects, `window`, `document`, `fetch`, routing, rendering, or media capture.
+Workers provide timers, Promise, `console`, `performance`, `fetch`, `WebSocket`, URL/text encoding (including `TextEncoderStream` and `TextDecoderStream`), Web Crypto, WebAssembly, and project ES modules. They do not provide Page/Widget objects, `window`, `document`, routing, rendering, or media capture.
 
 ## Modules, Components, and Resources
 
@@ -350,3 +350,13 @@ Workers provide timers, Promise, `console`, `performance`, URL/text encoding (in
 ## TypeScript and WebAssembly
 
 Use project-supported `.ts` entry points where declared. Keep public values crossing JavaScript boundaries serializable. For WebAssembly, load packaged modules through the supported module/resource workflow rather than browser-only filesystem assumptions.
+
+## Accelerating TypeScript
+
+For repeated numeric loops or supported Canvas 2D operations, a `.ts` module or `<script setup lang="ts">` source can use `import { offload } from 'ink:compiler'`, then mark a named function expression as `offload(function name(...) { ... })` or use `@offload` on a public class method. Pass dependencies as arguments; do not capture outer values, use `this`, or call custom helpers in the marked body. Default `auto` falls back to JavaScript when the call cannot accelerate; `{ mode: 'require' }` reports unsupported bodies or throws `OffloadUnsupportedError` for unsupported calls. Measure representative workloads; short operations may not improve. Source must remain TypeScript until processed by the runtime. The normal execution limits still apply.
+
+## Single-File Source Region Updates
+
+Only a single-file Source delivered through an update-capable input can use named regions: `<?start name="forecast"> ... <?end>` or a marker in the initial Page, followed by top-level `<template for="forecast"> ... </template>` updates. Provide initialization before updates and reinsert markers to update a region again. Updates keep the Page instance, data, and nodes outside the region; replaced nodes are recreated, so re-query them. They cannot add setup scripts or component declarations. Use `setData()` for value updates. This is not an API for ordinary directory or AIX package Pages. `<template name>` / `<template is>` are not supported for reusable fragments; use custom components.
+
+Conditional `ink:if` components are detached when hidden and recreated when shown; local state is not preserved across new instances. Release timers and listeners in `detached` and keep persistent state outside the conditional component.

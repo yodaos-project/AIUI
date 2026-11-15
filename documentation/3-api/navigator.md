@@ -207,6 +207,14 @@ console.log('SN:', serialNumber);
 
 ### `NetworkInformation`
 
+#### `connection.validated`
+
+只读 `boolean`，表示当前网络是否已通过联网验证。它不保证特定服务可用。
+
+#### `connection.transport`
+
+只读字符串：`direct` 表示设备网络，`proxy` 表示代理连接。新建的远程操作使用当前连接方式；当连接方式改变时，正在进行的操作可能中断，需要处理失败并按需重连。
+
 #### `connection.type`
 
 类型: `string`. 连接类型：`none`、`wifi`、`ethernet`、`cellular`、`bluetooth`、`other`、`unknown`。

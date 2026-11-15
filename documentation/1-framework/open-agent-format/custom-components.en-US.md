@@ -165,6 +165,8 @@ export default {
 }
 ```
 
+When an `ink:if` condition becomes false, components inside it are removed and receive `detached`. When it becomes true again, new instances run their creation and attachment lifecycles. Component-local state is not automatically retained; store values on the Page or another suitable location when they must survive, and clean up timers and listeners in `detached`.
+
 ## Notes
 
 - Components can reference other components to build nested component trees

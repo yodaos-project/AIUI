@@ -21,5 +21,5 @@ export default {
 
 <!-- /aiui-tutorial-step -->
 
-Agent Worker 不提供 `fetch`、页面路由或界面渲染。参见 [Agent Worker](/AIUI/framework/open-agent-format-agent-worker)。
+Agent Worker 支持 `fetch` 和 `WebSocket`，不提供页面路由或界面渲染。参见 [Agent Worker](/AIUI/framework/open-agent-format-agent-worker)。
 

@@ -2,7 +2,7 @@
 
 WXML (WeiXin Markup Language) is a tag language designed by the framework. Combined with base components and the event system, it can be used to build the structure of a page.
 
-AIUI follows the WXML specification of WeChat Mini Programs. The following simple examples show what WXML can do:
+AIUI supports a WXML subset similar to WeChat Mini Programs. These examples show common page structure and data usage:
 
 ## Data Binding
 
@@ -26,7 +26,7 @@ export default {
 <!--wxml-->
 <view ink:if="{{view == 'WEBVIEW'}}"> WEBVIEW </view>
 <view ink:elif="{{view == 'APP'}}"> APP </view>
-<view ink:else="{{view == 'MINA'}}"> MINA </view>
+<view ink:else> MINA </view>
 ```
 
 ```javascript
@@ -54,30 +54,6 @@ export default {
 }
 ```
 
-## Templates
+## Reuse an Interface
 
-```html
-<!--wxml-->
-<template name="staffName">
-  <view>
-    FirstName: {{firstName}}, LastName: {{lastName}}
-  </view>
-</template>
-
-<template is="staffName" data="{{...staffA}}"></template>
-<template is="staffName" data="{{...staffB}}"></template>
-<template is="staffName" data="{{...staffC}}"></template>
-```
-
-```javascript
-// page.js
-export default {
-  data: {
-    staffA: {firstName: 'Hulk', lastName: 'Hu'},
-    staffB: {firstName: 'Shang', lastName: 'You'},
-    staffC: {firstName: 'Gideon', lastName: 'Lin'}
-  }
-}
-```
-
-See the following chapters for the specific capabilities and usage details.
+To use the same interface in multiple places, create a [custom component](/AIUI/framework/open-agent-format-custom-components). A single-file interface with incremental update support can also use [region updates](/AIUI/framework/wxml-template) to add content as it arrives.

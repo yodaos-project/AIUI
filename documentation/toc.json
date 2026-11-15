@@ -393,8 +393,9 @@
           },
           {
             "id": "template",
-            "label": "模版",
-            "status": "unsupported"
+            "label": "模板与区域更新",
+            "docId": "wxml-template",
+            "docPath": "1-framework/wxml/template.md"
           }
         ],
         "hasIndex": true

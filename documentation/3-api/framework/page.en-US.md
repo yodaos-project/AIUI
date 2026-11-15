@@ -269,7 +269,7 @@ Runs when the host sends a message to the current page. `event.data` can contain
 
 #### `onNetworkStatus(event)`
 
-Runs when network status changes. `event.online` is a boolean; `event.status` is `'online'` or `'offline'`. Read connection type and quality from [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator). Online status does not guarantee request success.
+Runs when network status changes. `event.online` is a boolean and `event.status` is `'online'` or `'offline'`; `event.networkType` reports the network type, `event.validated` reports internet validation, and `event.transport` is `'direct'` or `'proxy'`. Online status does not guarantee request success. See [Events](/AIUI/framework/open-agent-format-page-events) and [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator) for recovery.
 
 ### System Status Bar
 

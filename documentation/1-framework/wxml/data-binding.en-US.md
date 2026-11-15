@@ -113,7 +113,7 @@ export default {
 
 ## Composition
 
-You can also compose values directly inside Mustache syntax to form new objects or arrays.
+You can compose arrays in bindings. Compose objects in the page logic.
 
 ### Arrays
 ```html
@@ -129,75 +129,23 @@ export default {
 The final composed array is `[0, 1, 2, 3, 4]`.
 
 ### Objects
+
+To update an object field, create a new object in the page logic and pass it to `setData()`:
+
 ```html
-<template is="objectCombine" data="{{for: a, bar: b}}"></template>
+<text>{{profile.name}}, {{profile.city}}</text>
 ```
+
 ```javascript
 export default {
-  data: {
-    a: 1,
-    b: 2
-  }
-}
+  data: { profile: { name: 'Alex', city: 'Hangzhou' } },
+  moveToShanghai() {
+    this.setData({ profile: { ...this.data.profile, city: 'Shanghai' } });
+  },
+};
 ```
-The final composed object is `{for: 1, bar: 2}`
 
-You can also use the spread operator `...` to expand an object.
-```html
-<template is="objectCombine" data="{{...obj1, ...obj2, e: 5}}"></template>
-```
-```javascript
-export default {
-  data: {
-    obj1: {
-      a: 1,
-      b: 2
-    },
-    obj2: {
-      c: 3,
-      d: 4
-    }
-  }
-}
-```
-The final composed object is `{a: 1, b: 2, c: 3, d: 4, e: 5}`.
-
-If the key and value of an object are the same, you can also use the shorthand form.
-```html
-<template is="objectCombine" data="{{foo, bar}}"></template>
-```
-```javascript
-export default {
-  data: {
-    foo: 'my-foo',
-    bar: 'my-bar'
-  }
-}
-```
-The final composed object is `{foo: 'my-foo', bar:'my-bar'}`.
-
-**Note: the methods above can be combined freely, but if duplicate variable names exist, the later ones override the earlier ones. For example:**
-```html
-<template is="objectCombine" data="{{...obj1, ...obj2, a: c}}"></template>
-```
-```javascript
-export default {
-  data: {
-    obj1: {
-      a: 1,
-      b: 2
-    },
-    obj2: {
-      b: 3,
-      c: 4
-    },
-    a: 5
-  }
-}
-```
-The final composed object is `{a: 5, b: 3, c: 4}`.
-
-*Note: if there are spaces between the curly braces and the quotation marks, the result will be parsed as a string.*
+The object spread runs in JavaScript. Do not pass objects with `<template name>` / `<template is>`; these forms are not currently supported. To reuse an interface, use a [custom component](/AIUI/framework/open-agent-format-custom-components).
 
 ## Continue updating in a callback
 

@@ -268,7 +268,7 @@ Page 生命周期描述单个页面从创建、显示、首次渲染到隐藏和
 
 #### `onNetworkStatus(event)`
 
-连接状态变化时调用。`event.online` 为布尔值，`event.status` 为 `'online'` 或 `'offline'`。详细网络类型与质量从 [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator) 读取；在线状态不是请求成功的保证。
+连接状态变化时调用。`event.online` 为布尔值，`event.status` 为 `'online'` 或 `'offline'`；`event.networkType` 表示网络类型，`event.validated` 表示是否通过联网验证，`event.transport` 为 `'direct'` 或 `'proxy'`。在线状态不保证请求成功；连接切换及恢复方式见[事件](/AIUI/framework/open-agent-format-page-events)和 [navigator.connection](/AIUI/api/weixin-compatible-apis-navigator)。
 
 ### 系统状态栏
 

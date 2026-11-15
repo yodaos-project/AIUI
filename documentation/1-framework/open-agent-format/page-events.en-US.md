@@ -30,6 +30,25 @@ export default {
 | `onHeadGesture` | Listens for recognized page-level head gestures | Triggered when a nod or shake is recognized after enabling world awareness |
 | `onHeadGestureStateChange` | Listens for head-gesture recognition state | Triggered when tracking state changes after enabling world awareness |
 
+## Recover Connections After Network Changes
+
+A Page can observe network changes with `onNetworkStatus`. For example, `online` can remain `true` while the connection changes. Use `transport` to see the route used for new requests:
+
+```javascript
+export default {
+  onNetworkStatus(event) {
+    console.log('Online:', event.online);
+    console.log('Network type:', event.networkType);
+    console.log('Internet validated:', event.validated);
+    console.log('Transport:', event.transport);
+  },
+};
+```
+
+`transport` is `direct` for the device network and `proxy` for a proxy connection. `validated` indicates whether internet access was verified; it does not guarantee that a particular service is reachable.
+
+In environments that automatically switch connection routes, a change can interrupt pending requests, WebSockets, or EventSource connections. Handle each operation's failure or close event and recreate needed connections and subscriptions when the network recovers. A server may already have acted on a request, so retry only when repeating it is safe.
+
 ## Register and Clean Up Listeners
 
 Global objects, Page, and Entity support DOM-style listeners. Keep callback identity and the same capture value when removing a listener, or use a signal to remove a group:
