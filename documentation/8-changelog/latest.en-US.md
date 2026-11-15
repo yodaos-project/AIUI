@@ -1,4 +1,4 @@
-# v0.21.x
+# v0.21.0
 
 AIUI 0.21 lets agents show a readable address for a location, open system navigation, and play video in AI-generated interfaces. This update also adds image processing, barcode detection, and networking capabilities, while improving performance for complex interfaces, drawing, recording, and data storage.
 
