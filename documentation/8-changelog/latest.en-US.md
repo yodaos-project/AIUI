@@ -81,11 +81,11 @@ You can also crop before resizing; see [Canvas](/AIUI/api/canvas). When detectin
 
 ## Performance and Experience
 
-- **Faster updates on large pages**: In a desktop development test with 16,000 hidden content items, processing one data update fell from about 870 ms to 114 ms, a reduction of approximately **87%**. This can help complex pages respond sooner when content changes.
-- **Faster repeated local reads**: In a local test on a Mac with Apple M2, 200 repeated reads of 10 saved items fell from about 31.8 ms to 0.22 ms, a reduction of approximately **99%**. Agents that frequently read saved information can complete these operations sooner.
-- **Faster consecutive local saves**: In the same test, 100 consecutive write calls fell from about 86.2 ms to 5.8 ms, a reduction of approximately **93%**. A subsequent flush took about 1.3 ms in a separate measurement and is not included in the write-call time.
+- **Faster updates on large pages**: In a test with a large amount of hidden content, data update processing took nearly **90%** less time, helping complex pages respond sooner to content changes.
+- **Faster repeated local reads**: In a test that repeatedly read saved data, read time fell by approximately **99%**.
+- **Faster consecutive local saves**: In a test with consecutive data writes, write-call time fell by approximately **90%**.
 
-These are desktop test results for specific workloads, not measurements of total page load time or performance on glasses. Actual results vary by device and application. The local data test compares a reproduction of the previous implementation with the new one using 1,000 items; figures are medians of 15 samples. The data update test uses a development build. Neither is a device measurement.
+These benchmark results apply to specific scenarios. Actual results vary by device and application. The save test measures write calls and excludes the time to flush the saved data afterward.
 
 ## More Improvements
 
