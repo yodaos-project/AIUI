@@ -47,10 +47,11 @@ npm run --silent bench -- inspect 002-create-counter
 
 ```bash
 npx skills add https://github.com/yodaos-project/AIUI/tree/main/skills/aiui-dev
+npx skills add https://github.com/yodaos-project/AIUI/tree/main/skills/aiui-debug
 npx skills add https://github.com/yodaos-project/AIUI/tree/main/skills/aiui-optimize
 ```
 
-[包体优化技能](./skills/aiui-optimize/SKILL.md)用于检查和优化 AIUI 包体；[云端集成技能](./skills/aiui-cloud-integration/SKILL.md)介绍通知流程；[云 API 技能](./skills/aiui-cloud-apis/SKILL.md)提供云端 API 使用指引。
+[调试技能](./skills/aiui-debug/SKILL.md)结合日志、源码和设备信息定位 AIUI 问题；[包体优化技能](./skills/aiui-optimize/SKILL.md)用于检查和优化 AIUI 包体；[云端集成技能](./skills/aiui-cloud-integration/SKILL.md)介绍通知流程；[云 API 技能](./skills/aiui-cloud-apis/SKILL.md)提供云端 API 使用指引。
 
 ## 仓库导航
 
