@@ -27,7 +27,7 @@
     {
       "id": "ai",
       "label": "AI and Speech",
-      "description": "Use language models, speech recognition, and speech synthesis.",
+      "description": "Use language models, Agent conversations, speech recognition, and speech synthesis.",
       "order": 50
     },
     {
@@ -451,6 +451,102 @@
       "estimatedMinutes": 5,
       "tags": ["AIX", "aix check"],
       "order": 320
+    },
+    {
+      "id": "ask-a-follow-up-question",
+      "title": "Ask a Language Model a Follow-Up Question",
+      "description": "Send two messages in the same model session so the follow-up can use the first message as context.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/ask-a-follow-up-question",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["LanguageModel", "prompt"],
+      "order": 330
+    },
+    {
+      "id": "describe-an-image",
+      "title": "Describe an Image with a Language Model",
+      "description": "Put a bundled PNG and a question in the same model message.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/describe-an-image",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["LanguageModel", "image_url"],
+      "order": 340
+    },
+    {
+      "id": "send-an-agent-message",
+      "title": "Send a Message to the Current Agent Conversation",
+      "description": "Submit a user text message with conversation.sendMessage.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/send-an-agent-message",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["AgentSession", "sendMessage"],
+      "order": 350
+    },
+    {
+      "id": "display-live-transcription",
+      "title": "Show a Live Speech Transcript",
+      "description": "Read interim recognition results and replace the current sentence with the latest text.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/display-live-transcription",
+      "difficulty": "beginner",
+      "estimatedMinutes": 9,
+      "tags": ["SpeechRecognition", "interimResults"],
+      "order": 360
+    },
+    {
+      "id": "transcribe-an-audio-file",
+      "title": "Transcribe an Audio File",
+      "description": "Write a bundled WAV file to a recognition session and display the final transcript.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/transcribe-an-audio-file",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["SpeechRecognitionSession", "audio/wav"],
+      "order": 370
+    },
+    {
+      "id": "choose-a-speaking-voice",
+      "title": "Choose a Voice for a Spoken Line",
+      "description": "Set different voice values for the same text and listen to each voice.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/choose-a-speaking-voice",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["SpeechSynthesisUtterance", "voice"],
+      "order": 380
+    },
+    {
+      "id": "queue-speech-prompts",
+      "title": "Play Several Spoken Prompts in Order",
+      "description": "Put two prompts in the shared queue with enqueue so they play in order.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/queue-speech-prompts",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["speechSynthesis", "enqueue"],
+      "order": 390
+    },
+    {
+      "id": "show-synchronized-speech-captions",
+      "title": "Show Captions in Sync with Spoken Audio",
+      "description": "Use SpeechAudioPlayer to show the caption at the current playback position.",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/show-synchronized-speech-captions",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["SpeechAudioPlayer", "cuechange"],
+      "order": 400
     }
   ]
 }

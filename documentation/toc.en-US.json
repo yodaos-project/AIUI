@@ -1012,6 +1012,46 @@
             "id": "stream-a-model-response",
             "label": "Display a Language Model Response as It Streams",
             "sourcePath": "4-tutorials/ai/stream-a-model-response"
+          },
+          {
+            "id": "ask-a-follow-up-question",
+            "label": "Ask a Language Model a Follow-Up Question",
+            "sourcePath": "4-tutorials/ai/ask-a-follow-up-question"
+          },
+          {
+            "id": "describe-an-image",
+            "label": "Describe an Image with a Language Model",
+            "sourcePath": "4-tutorials/ai/describe-an-image"
+          },
+          {
+            "id": "send-an-agent-message",
+            "label": "Send a Message to the Current Agent Conversation",
+            "sourcePath": "4-tutorials/ai/send-an-agent-message"
+          },
+          {
+            "id": "display-live-transcription",
+            "label": "Show a Live Speech Transcript",
+            "sourcePath": "4-tutorials/ai/display-live-transcription"
+          },
+          {
+            "id": "transcribe-an-audio-file",
+            "label": "Transcribe an Audio File",
+            "sourcePath": "4-tutorials/ai/transcribe-an-audio-file"
+          },
+          {
+            "id": "choose-a-speaking-voice",
+            "label": "Choose a Voice for a Spoken Line",
+            "sourcePath": "4-tutorials/ai/choose-a-speaking-voice"
+          },
+          {
+            "id": "queue-speech-prompts",
+            "label": "Play Several Spoken Prompts in Order",
+            "sourcePath": "4-tutorials/ai/queue-speech-prompts"
+          },
+          {
+            "id": "show-synchronized-speech-captions",
+            "label": "Show Captions in Sync with Spoken Audio",
+            "sourcePath": "4-tutorials/ai/show-synchronized-speech-captions"
           }
         ]
       },

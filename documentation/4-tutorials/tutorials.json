@@ -27,7 +27,7 @@
     {
       "id": "ai",
       "label": "AI 与语音",
-      "description": "使用语言模型、语音识别和语音合成能力。",
+      "description": "使用语言模型、Agent 会话、语音识别和语音播报能力。",
       "order": 50
     },
     {
@@ -451,6 +451,102 @@
       "estimatedMinutes": 5,
       "tags": ["AIX", "aix check"],
       "order": 320
+    },
+    {
+      "id": "ask-a-follow-up-question",
+      "title": "向语言模型追问",
+      "description": "在同一个模型会话里发送两条消息，让第二条沿用第一条的上下文。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/ask-a-follow-up-question",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["LanguageModel", "prompt"],
+      "order": 330
+    },
+    {
+      "id": "describe-an-image",
+      "title": "用语言模型描述一张图片",
+      "description": "把一张项目内的 PNG 和一个问题放在同一条模型消息中。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/describe-an-image",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["LanguageModel", "image_url"],
+      "order": 340
+    },
+    {
+      "id": "send-an-agent-message",
+      "title": "向当前 Agent 会话发送一条消息",
+      "description": "用 conversation.sendMessage 提交一条用户文本消息。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/send-an-agent-message",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["AgentSession", "sendMessage"],
+      "order": 350
+    },
+    {
+      "id": "display-live-transcription",
+      "title": "实时显示语音识别文字",
+      "description": "读取中间识别结果，用最新文字替换当前句子。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/display-live-transcription",
+      "difficulty": "beginner",
+      "estimatedMinutes": 9,
+      "tags": ["SpeechRecognition", "interimResults"],
+      "order": 360
+    },
+    {
+      "id": "transcribe-an-audio-file",
+      "title": "将一段录音转成文字",
+      "description": "将项目内的 WAV 写入识别会话，显示最终转写。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/transcribe-an-audio-file",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["SpeechRecognitionSession", "audio/wav"],
+      "order": 370
+    },
+    {
+      "id": "choose-a-speaking-voice",
+      "title": "为同一句播报选择音色",
+      "description": "为相同的文字设置不同 voice 值，试听两种音色。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/choose-a-speaking-voice",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["SpeechSynthesisUtterance", "voice"],
+      "order": 380
+    },
+    {
+      "id": "queue-speech-prompts",
+      "title": "按顺序播报多条提示",
+      "description": "用 enqueue 把两条播报放入共享队列，依次播放。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/queue-speech-prompts",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["speechSynthesis", "enqueue"],
+      "order": 390
+    },
+    {
+      "id": "show-synchronized-speech-captions",
+      "title": "为语音播报显示同步字幕",
+      "description": "用 SpeechAudioPlayer 跟随播放进度显示当前字幕。",
+      "category": "ai",
+      "featured": false,
+      "sourcePath": "4-tutorials/ai/show-synchronized-speech-captions",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["SpeechAudioPlayer", "cuechange"],
+      "order": 400
     }
   ]
 }

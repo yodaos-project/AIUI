@@ -1172,6 +1172,46 @@
             "id": "stream-a-model-response",
             "label": "逐段显示语言模型回复",
             "sourcePath": "4-tutorials/ai/stream-a-model-response"
+          },
+          {
+            "id": "ask-a-follow-up-question",
+            "label": "向语言模型追问",
+            "sourcePath": "4-tutorials/ai/ask-a-follow-up-question"
+          },
+          {
+            "id": "describe-an-image",
+            "label": "用语言模型描述一张图片",
+            "sourcePath": "4-tutorials/ai/describe-an-image"
+          },
+          {
+            "id": "send-an-agent-message",
+            "label": "向当前 Agent 会话发送一条消息",
+            "sourcePath": "4-tutorials/ai/send-an-agent-message"
+          },
+          {
+            "id": "display-live-transcription",
+            "label": "实时显示语音识别文字",
+            "sourcePath": "4-tutorials/ai/display-live-transcription"
+          },
+          {
+            "id": "transcribe-an-audio-file",
+            "label": "将一段录音转成文字",
+            "sourcePath": "4-tutorials/ai/transcribe-an-audio-file"
+          },
+          {
+            "id": "choose-a-speaking-voice",
+            "label": "为同一句播报选择音色",
+            "sourcePath": "4-tutorials/ai/choose-a-speaking-voice"
+          },
+          {
+            "id": "queue-speech-prompts",
+            "label": "按顺序播报多条提示",
+            "sourcePath": "4-tutorials/ai/queue-speech-prompts"
+          },
+          {
+            "id": "show-synchronized-speech-captions",
+            "label": "为语音播报显示同步字幕",
+            "sourcePath": "4-tutorials/ai/show-synchronized-speech-captions"
           }
         ]
       },
