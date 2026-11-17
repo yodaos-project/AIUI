@@ -1145,6 +1145,26 @@
             "id": "share-state-between-pages",
             "label": "在两个页面之间共享状态",
             "sourcePath": "4-tutorials/framework/share-state-between-pages"
+          },
+          {
+            "id": "fill-a-component-slot",
+            "label": "为组件填充一个具名插槽",
+            "sourcePath": "4-tutorials/framework/fill-a-component-slot"
+          },
+          {
+            "id": "import-a-typescript-helper",
+            "label": "在 Page 中导入 TypeScript 函数",
+            "sourcePath": "4-tutorials/framework/import-a-typescript-helper"
+          },
+          {
+            "id": "refresh-a-visible-widget",
+            "label": "在 Widget 可见时刷新时钟",
+            "sourcePath": "4-tutorials/framework/refresh-a-visible-widget"
+          },
+          {
+            "id": "wait-for-agent-worker-task",
+            "label": "让 Agent Worker 等待异步任务完成",
+            "sourcePath": "4-tutorials/framework/wait-for-agent-worker-task"
           }
         ]
       },
@@ -1234,6 +1254,26 @@
             "id": "decode-a-qr-image",
             "label": "读取图片中的二维码",
             "sourcePath": "4-tutorials/device/decode-a-qr-image"
+          },
+          {
+            "id": "show-gyroscope-readings",
+            "label": "显示设备的旋转速度",
+            "sourcePath": "4-tutorials/device/show-gyroscope-readings"
+          },
+          {
+            "id": "find-a-bluetooth-heart-rate-sensor",
+            "label": "发现附近的蓝牙心率设备",
+            "sourcePath": "4-tutorials/device/find-a-bluetooth-heart-rate-sensor"
+          },
+          {
+            "id": "get-current-location",
+            "label": "读取一次当前位置",
+            "sourcePath": "4-tutorials/device/get-current-location"
+          },
+          {
+            "id": "take-one-photo",
+            "label": "用摄像头拍一张照片",
+            "sourcePath": "4-tutorials/device/take-one-photo"
           }
         ]
       },

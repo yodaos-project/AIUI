@@ -21,7 +21,7 @@
     {
       "id": "framework",
       "label": "Framework Capabilities",
-      "description": "Organize projects with Widgets, Agent Workers, and custom components.",
+      "description": "Organize projects with Widgets, Agent Workers, custom components, and modules.",
       "order": 40
     },
     {
@@ -33,7 +33,7 @@
     {
       "id": "device",
       "label": "Device Capabilities",
-      "description": "Read device sensors provided by the glasses and host.",
+      "description": "Read device sensors, discover Bluetooth accessories, get the current location, and use the camera.",
       "order": 60
     },
     {
@@ -547,6 +547,102 @@
       "estimatedMinutes": 10,
       "tags": ["SpeechAudioPlayer", "cuechange"],
       "order": 400
+    },
+    {
+      "id": "fill-a-component-slot",
+      "title": "Fill a Named Component Slot",
+      "description": "Place content supplied by the page at a specific position in the component template.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/fill-a-component-slot",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Component", "slot"],
+      "order": 410
+    },
+    {
+      "id": "import-a-typescript-helper",
+      "title": "Import a TypeScript Helper into a Page",
+      "description": "Export a function from a separate .ts module and call it from a page.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/import-a-typescript-helper",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": ["TypeScript", "ES Modules"],
+      "order": 420
+    },
+    {
+      "id": "refresh-a-visible-widget",
+      "title": "Refresh a Clock While Its Widget Is Visible",
+      "description": "Start and stop a clock timer using the Widget lifecycle.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/refresh-a-visible-widget",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["Widget", "onAttach", "onDetach"],
+      "order": 430
+    },
+    {
+      "id": "wait-for-agent-worker-task",
+      "title": "Keep an Agent Worker Alive Until a Task Finishes",
+      "description": "Use event.waitUntil to keep a short-lived Worker running until a promise settles.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/wait-for-agent-worker-task",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Agent Worker", "waitUntil"],
+      "order": 440
+    },
+    {
+      "id": "show-gyroscope-readings",
+      "title": "Display the Device’s Rotation Rate",
+      "description": "Read three-axis gyroscope measurements and stop sampling when the page is hidden.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/show-gyroscope-readings",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Gyroscope", "reading"],
+      "order": 450
+    },
+    {
+      "id": "find-a-bluetooth-heart-rate-sensor",
+      "title": "Find a Nearby Bluetooth Heart-Rate Sensor",
+      "description": "Filter a BLE scan by the Heart Rate service and stop after finding one device.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/find-a-bluetooth-heart-rate-sensor",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["Bluetooth", "scanDevices"],
+      "order": 460
+    },
+    {
+      "id": "get-current-location",
+      "title": "Read the Current Location Once",
+      "description": "Get one pair of coordinates and display the reported accuracy.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/get-current-location",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Geolocation", "getCurrentPosition"],
+      "order": 470
+    },
+    {
+      "id": "take-one-photo",
+      "title": "Take a Photo with the Camera",
+      "description": "Capture one encoded photo from a camera track and release the camera.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/take-one-photo",
+      "difficulty": "beginner",
+      "estimatedMinutes": 9,
+      "tags": ["ImageCapture", "takePhoto"],
+      "order": 480
     }
   ]
 }

@@ -985,6 +985,26 @@
             "id": "share-state-between-pages",
             "label": "Share State Between Two Pages",
             "sourcePath": "4-tutorials/framework/share-state-between-pages"
+          },
+          {
+            "id": "fill-a-component-slot",
+            "label": "Fill a Named Component Slot",
+            "sourcePath": "4-tutorials/framework/fill-a-component-slot"
+          },
+          {
+            "id": "import-a-typescript-helper",
+            "label": "Import a TypeScript Helper into a Page",
+            "sourcePath": "4-tutorials/framework/import-a-typescript-helper"
+          },
+          {
+            "id": "refresh-a-visible-widget",
+            "label": "Refresh a Clock While Its Widget Is Visible",
+            "sourcePath": "4-tutorials/framework/refresh-a-visible-widget"
+          },
+          {
+            "id": "wait-for-agent-worker-task",
+            "label": "Keep an Agent Worker Alive Until a Task Finishes",
+            "sourcePath": "4-tutorials/framework/wait-for-agent-worker-task"
           }
         ]
       },
@@ -1074,6 +1094,26 @@
             "id": "decode-a-qr-image",
             "label": "Decode a QR Code from an Image",
             "sourcePath": "4-tutorials/device/decode-a-qr-image"
+          },
+          {
+            "id": "show-gyroscope-readings",
+            "label": "Display the Device’s Rotation Rate",
+            "sourcePath": "4-tutorials/device/show-gyroscope-readings"
+          },
+          {
+            "id": "find-a-bluetooth-heart-rate-sensor",
+            "label": "Find a Nearby Bluetooth Heart-Rate Sensor",
+            "sourcePath": "4-tutorials/device/find-a-bluetooth-heart-rate-sensor"
+          },
+          {
+            "id": "get-current-location",
+            "label": "Read the Current Location Once",
+            "sourcePath": "4-tutorials/device/get-current-location"
+          },
+          {
+            "id": "take-one-photo",
+            "label": "Take a Photo with the Camera",
+            "sourcePath": "4-tutorials/device/take-one-photo"
           }
         ]
       },
