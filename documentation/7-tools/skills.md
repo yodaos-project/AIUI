@@ -1,37 +1,29 @@
 # Skills
 
-AIUI Skills 用于为智能体补充面向特定开发任务的上下文、规范与最佳实践，帮助模型在编写页面、调用 API、处理样式和遵循设计系统时输出更准确的结果。
+AIUI Skills 为编码助手提供开发指引、API 参考和示例，帮助你开发 AIUI 智能体、排查问题、优化 AIX 包体，以及接入 Rokid 云服务。
 
-## 当前可用 Skill
+## 按任务选择 Skill
 
-### aiui-dev
+| Skill | 适用任务 |
+| --- | --- |
+| [`aiui-dev`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-dev/SKILL.md) | 创建或修改 AIUI 工程，编写 Page、Widget 或 Agent Worker，查阅组件、WXSS、运行时 API 及单色和全彩眼镜的设计规范。 |
+| [`aiui-debug`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-debug/SKILL.md) | 结合日志、工程源码、运行时版本和设备信息，排查页面、交互、存储、网络或媒体问题。 |
+| [`aiui-optimize`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-optimize/SKILL.md) | 检查 `.aix` 包的实际体积和文件构成，优化发布内容及图片、音频资源，并验证重新打包后的大小。 |
+| [`aiui-cloud-apis`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-cloud-apis/SKILL.md) | 在 AIUI 应用内通过内置 `open` 模块的 `createOpenAPI()` 调用云 API，例如读取账号资料、调用灵珠智能体或读取缓存消息。 |
+| [`aiui-cloud-integration`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-cloud-integration/SKILL.md) | 在服务端通过 `@yodaos-pkg/cloud-integration` 或 HTTP 缓存一次性消息、发送 Rokid 眼镜通知，或配置点击通知后打开的 AIUI 页面。 |
 
-- 仓库地址：<https://github.com/jsar-project/AIUI/tree/main/skills/aiui-dev>
-- 本地路径：`/skills/aiui-dev`
+## 安装和使用
 
-`aiui-dev` 是面向 AIUI 应用开发的专用 Skill，适用于以下场景：
+如果你的编码助手支持 Skills，可以在工程根目录运行 `npx skills`。下面的命令会安装面向日常开发的 `aiui-dev`。
 
-- 编写 AIUI 页面与交互逻辑
-- 查询 AIUI / `wx` 相关 API 用法
-- 参考组件、WXSS 与设计系统约束
-- 在智能体生成代码时提供更稳定的开发上下文
+```bash
+npx skills add https://github.com/yodaos-project/AIUI --skill aiui-dev
+```
 
-## 包含内容
+将 `aiui-dev` 替换为表中的其他 Skill 名称，并按提示选择你使用的编码助手。工具版本要求和安装选项见 [Skills CLI 文档](https://github.com/vercel-labs/skills#install-a-skill)。
 
-`aiui-dev` 当前包含以下能力说明文档：
+如果你在 AIUI Studio 中使用 AIUI Coding，可以在编辑器中下载并启用内置的 `aiui-dev`。操作步骤见 [AIUI Editor](/AIUI/tools/editor)。
 
-- `SKILL.md`：Skill 的定位、适用场景与总览说明
-- `apis.md`：AIUI 运行时 API 总索引
-- `apis-wx.md`：`wx` 相关 API 参考
-- `apis-device.md`：设备能力相关 API 参考
-- `apis-media.md`：媒体能力相关 API 参考
-- `apis-canvas.md`：Canvas 相关 API 参考
-- `components.md`：内置组件说明
-- `wxss.md`：WXSS 与样式能力说明
-- `design-system-green.md`：绿色单色显示设备设计规范
+开始任务时，在提示词里写明 Skill 名称，附上相关材料，并说明你希望助手确认什么。
 
-## 使用建议
-
-- 当你希望智能体生成 AIUI 页面代码时，优先引入 `aiui-dev`
-- 当你需要确认组件、样式或 API 是否受支持时，以该 Skill 中的说明为准
-- 当你开发面向 Rokid 等目标设备的界面时，结合设计系统文档统一视觉与交互约束
+> 使用 `aiui-debug` 排查为什么这个页面在眼镜上打开后没有响应。根据附件里的日志和页面代码还原事件顺序，并说明还需要在设备上验证什么。

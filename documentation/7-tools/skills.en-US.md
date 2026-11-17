@@ -1,37 +1,29 @@
 # Skills
 
-AIUI Skills provide task-specific context, conventions, and best practices for agents, helping models produce more accurate results when writing pages, using APIs, styling interfaces, and following the design system.
+AIUI Skills give your coding assistant development guidance, API references, and examples for building and debugging AIUI agents, reducing AIX package size, and integrating with Rokid cloud services.
 
-## Available Skill
+## Choose a Skill for Your Task
 
-### aiui-dev
+| Skill | Use it to |
+| --- | --- |
+| [`aiui-dev`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-dev/SKILL.md) | Create or modify an AIUI project, build Pages, Widgets, or Agent Workers, and look up components, WXSS, runtime APIs, and design guidelines for monochrome and full-color glasses. |
+| [`aiui-debug`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-debug/SKILL.md) | Diagnose page, interaction, storage, network, or media problems using logs, project code, runtime versions, and device information. |
+| [`aiui-optimize`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-optimize/SKILL.md) | Measure an actual `.aix` package, inspect its contents, optimize release files and image or audio assets, and verify the rebuilt package size. |
+| [`aiui-cloud-apis`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-cloud-apis/SKILL.md) | Call cloud APIs from an AIUI app with `createOpenAPI()` from the built-in `open` module. For example, read a user profile, invoke a Lingzhu agent, or retrieve a cached message. |
+| [`aiui-cloud-integration`](https://github.com/yodaos-project/AIUI/blob/main/skills/aiui-cloud-integration/SKILL.md) | Use `@yodaos-pkg/cloud-integration` or HTTP on a server to cache one-time messages, send Rokid Glasses notifications, or set which AIUI page opens when a notification is tapped. |
 
-- Repository: <https://github.com/jsar-project/AIUI/tree/main/skills/aiui-dev>
-- Local path: `/skills/aiui-dev`
+## Install and Use a Skill
 
-`aiui-dev` is a dedicated Skill for AIUI application development. It is useful when you need to:
+If your coding assistant supports Skills, run `npx skills` from your project root. The following command installs `aiui-dev` for everyday AIUI development.
 
-- write AIUI pages and interaction logic
-- look up AIUI or `wx` API usage
-- follow component, WXSS, and design-system constraints
-- provide stable development context for agent-generated code
+```bash
+npx skills add https://github.com/yodaos-project/AIUI --skill aiui-dev
+```
 
-## Included References
+For another skill, replace `aiui-dev` with its name from the table and follow the prompts to select your coding assistant. See the [Skills CLI documentation](https://github.com/vercel-labs/skills#install-a-skill) for requirements and installation options.
 
-`aiui-dev` currently includes the following reference documents:
+If you use AIUI Coding in AIUI Studio, you can download and enable the built-in `aiui-dev` in the editor. See [AIUI Editor](/AIUI/tools/editor) for the steps.
 
-- `SKILL.md`: positioning, usage scenarios, and overview of the Skill
-- `apis.md`: index of AIUI runtime APIs
-- `apis-wx.md`: reference for `wx` APIs
-- `apis-device.md`: reference for device-related APIs
-- `apis-media.md`: reference for media-related APIs
-- `apis-canvas.md`: reference for Canvas APIs
-- `components.md`: built-in component reference
-- `wxss.md`: WXSS and styling capability reference
-- `design-system-green.md`: design guidelines for green monochrome displays
+In your prompt, name the skill, share the relevant materials, and say what you want the assistant to verify.
 
-## Recommendations
-
-- Prefer `aiui-dev` when you want an agent to generate AIUI page code
-- Use the Skill as the source of truth when checking whether a component, style, or API is supported
-- Combine it with the design system reference when building interfaces for Rokid and similar target devices
+> Use `aiui-debug` to investigate why this page stops responding after it opens on the glasses. Reconstruct the sequence of events from the attached logs and page code, and identify what still needs to be verified on the device.
