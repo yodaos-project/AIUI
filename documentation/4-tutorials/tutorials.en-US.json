@@ -15,13 +15,13 @@
     {
       "id": "data",
       "label": "Data and Network",
-      "description": "Load data from an endpoint and present it in an AIUI page.",
+      "description": "Build requests, handle network responses, and save local data.",
       "order": 30
     },
     {
       "id": "framework",
       "label": "Framework Capabilities",
-      "description": "Organize projects with Widgets, Agent Workers, and custom components.",
+      "description": "Organize projects with Widgets, Agent Workers, custom components, and modules.",
       "order": 40
     },
     {
@@ -33,13 +33,13 @@
     {
       "id": "device",
       "label": "Device Capabilities",
-      "description": "Read device sensors provided by the glasses and host.",
+      "description": "Read device sensors, discover Bluetooth accessories, get the current location, and use the camera.",
       "order": 60
     },
     {
       "id": "delivery",
       "label": "Build and Delivery",
-      "description": "Package, inspect, and prepare an agent for release.",
+      "description": "Check agent source, package it, and preview or install the artifact.",
       "order": 70
     }
   ],
@@ -547,6 +547,198 @@
       "estimatedMinutes": 10,
       "tags": ["SpeechAudioPlayer", "cuechange"],
       "order": 400
+    },
+    {
+      "id": "fill-a-component-slot",
+      "title": "Fill a Named Component Slot",
+      "description": "Place content supplied by the page at a specific position in the component template.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/fill-a-component-slot",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Component", "slot"],
+      "order": 410
+    },
+    {
+      "id": "import-a-typescript-helper",
+      "title": "Import a TypeScript Helper into a Page",
+      "description": "Export a function from a separate .ts module and call it from a page.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/import-a-typescript-helper",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": ["TypeScript", "ES Modules"],
+      "order": 420
+    },
+    {
+      "id": "refresh-a-visible-widget",
+      "title": "Refresh a Clock While Its Widget Is Visible",
+      "description": "Start and stop a clock timer using the Widget lifecycle.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/refresh-a-visible-widget",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["Widget", "onAttach", "onDetach"],
+      "order": 430
+    },
+    {
+      "id": "wait-for-agent-worker-task",
+      "title": "Keep an Agent Worker Alive Until a Task Finishes",
+      "description": "Use event.waitUntil to keep a short-lived Worker running until a promise settles.",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/wait-for-agent-worker-task",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Agent Worker", "waitUntil"],
+      "order": 440
+    },
+    {
+      "id": "show-gyroscope-readings",
+      "title": "Display the Device’s Rotation Rate",
+      "description": "Read three-axis gyroscope measurements and stop sampling when the page is hidden.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/show-gyroscope-readings",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Gyroscope", "reading"],
+      "order": 450
+    },
+    {
+      "id": "find-a-bluetooth-heart-rate-sensor",
+      "title": "Find a Nearby Bluetooth Heart-Rate Sensor",
+      "description": "Filter a BLE scan by the Heart Rate service and stop after finding one device.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/find-a-bluetooth-heart-rate-sensor",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["Bluetooth", "scanDevices"],
+      "order": 460
+    },
+    {
+      "id": "get-current-location",
+      "title": "Read the Current Location Once",
+      "description": "Get one pair of coordinates and display the reported accuracy.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/get-current-location",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Geolocation", "getCurrentPosition"],
+      "order": 470
+    },
+    {
+      "id": "take-one-photo",
+      "title": "Take a Photo with the Camera",
+      "description": "Capture one encoded photo from a camera track and release the camera.",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/take-one-photo",
+      "difficulty": "beginner",
+      "estimatedMinutes": 9,
+      "tags": ["ImageCapture", "takePhoto"],
+      "order": 480
+    },
+    {
+      "id": "build-a-query-url",
+      "title": "Add Query Parameters to a URL",
+      "description": "Use searchParams to encode a search term with spaces and special characters.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/build-a-query-url",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["URL", "URLSearchParams"],
+      "order": 490
+    },
+    {
+      "id": "post-json-data",
+      "title": "Send a JSON Payload with POST",
+      "description": "Use fetch to send an object to an endpoint that accepts JSON.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/post-json-data",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["fetch", "POST", "JSON"],
+      "order": 500
+    },
+    {
+      "id": "display-a-streaming-response",
+      "title": "Display an HTTP Text Response as It Arrives",
+      "description": "Read UTF-8 text with response.textStream and update the page as it arrives.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/display-a-streaming-response",
+      "difficulty": "beginner",
+      "estimatedMinutes": 9,
+      "tags": ["fetch", "textStream"],
+      "order": 510
+    },
+    {
+      "id": "show-online-status",
+      "title": "Show Whether the Page Is Online",
+      "description": "Update an online or offline indicator from Page network events.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/show-online-status",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["navigator.onLine", "onNetworkStatus"],
+      "order": 520
+    },
+    {
+      "id": "exclude-files-from-an-aix",
+      "title": "Exclude Local Files from an AIX Package",
+      "description": "Keep local notes out of an AIX package with .aixignore and verify the archive contents.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/exclude-files-from-an-aix",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": [".aixignore", "aix pack"],
+      "order": 530
+    },
+    {
+      "id": "inspect-an-aix-definition",
+      "title": "Inspect the Agent Definition of an AIX Package",
+      "description": "Use aix show to check the agent name and ID that installation will use.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/inspect-an-aix-definition",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["aix show", "Agent Definition"],
+      "order": 540
+    },
+    {
+      "id": "preview-a-packaged-agent",
+      "title": "Preview an AIX Package in the Browser",
+      "description": "Open the packaged artifact with aix preview and check its home page.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/preview-a-packaged-agent",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": ["aix preview", "AIX"],
+      "order": 550
+    },
+    {
+      "id": "install-an-aix-on-glasses",
+      "title": "Install an AIX Package on Glasses",
+      "description": "Use ADB to install a packaged agent in the glasses’ development environment.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/install-an-aix-on-glasses",
+      "difficulty": "beginner",
+      "estimatedMinutes": 8,
+      "tags": ["aix install", "ADB"],
+      "order": 560
     }
   ]
 }

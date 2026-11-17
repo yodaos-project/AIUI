@@ -15,13 +15,13 @@
     {
       "id": "data",
       "label": "数据与网络",
-      "description": "从接口加载数据并呈现在 AIUI 页面中。",
+      "description": "构造请求、处理网络响应并保存本地数据。",
       "order": 30
     },
     {
       "id": "framework",
       "label": "框架能力",
-      "description": "使用 Widget、Agent Worker 和自定义组件组织项目。",
+      "description": "使用 Widget、Agent Worker、自定义组件和模块组织项目。",
       "order": 40
     },
     {
@@ -33,13 +33,13 @@
     {
       "id": "device",
       "label": "设备能力",
-      "description": "读取眼镜和宿主提供的设备传感器。",
+      "description": "读取传感器，发现蓝牙外设，并使用定位和摄像头。",
       "order": 60
     },
     {
       "id": "delivery",
       "label": "构建与交付",
-      "description": "打包、检查并准备发布智能体。",
+      "description": "检查源码、打包智能体并预览或安装产物。",
       "order": 70
     }
   ],
@@ -547,6 +547,198 @@
       "estimatedMinutes": 10,
       "tags": ["SpeechAudioPlayer", "cuechange"],
       "order": 400
+    },
+    {
+      "id": "fill-a-component-slot",
+      "title": "为组件填充一个具名插槽",
+      "description": "把页面提供的内容插入组件模板中的指定位置。",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/fill-a-component-slot",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Component", "slot"],
+      "order": 410
+    },
+    {
+      "id": "import-a-typescript-helper",
+      "title": "在 Page 中导入 TypeScript 函数",
+      "description": "从独立的 .ts 模块导出函数，在页面中调用。",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/import-a-typescript-helper",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": ["TypeScript", "ES Modules"],
+      "order": 420
+    },
+    {
+      "id": "refresh-a-visible-widget",
+      "title": "在 Widget 可见时刷新时钟",
+      "description": "通过 Widget 生命周期启动和停止时钟定时器。",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/refresh-a-visible-widget",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["Widget", "onAttach", "onDetach"],
+      "order": 430
+    },
+    {
+      "id": "wait-for-agent-worker-task",
+      "title": "让 Agent Worker 等待异步任务完成",
+      "description": "用 event.waitUntil 让短生命周期任务等到 Promise 完成。",
+      "category": "framework",
+      "featured": false,
+      "sourcePath": "4-tutorials/framework/wait-for-agent-worker-task",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Agent Worker", "waitUntil"],
+      "order": 440
+    },
+    {
+      "id": "show-gyroscope-readings",
+      "title": "显示设备的旋转速度",
+      "description": "读取陀螺仪的三轴角速度，并在页面隐藏时停止采样。",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/show-gyroscope-readings",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Gyroscope", "reading"],
+      "order": 450
+    },
+    {
+      "id": "find-a-bluetooth-heart-rate-sensor",
+      "title": "发现附近的蓝牙心率设备",
+      "description": "按 Heart Rate 服务过滤扫描，并在找到一台设备后停止。",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/find-a-bluetooth-heart-rate-sensor",
+      "difficulty": "beginner",
+      "estimatedMinutes": 10,
+      "tags": ["Bluetooth", "scanDevices"],
+      "order": 460
+    },
+    {
+      "id": "get-current-location",
+      "title": "读取一次当前位置",
+      "description": "获取一组经纬度，并显示定位精度。",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/get-current-location",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["Geolocation", "getCurrentPosition"],
+      "order": 470
+    },
+    {
+      "id": "take-one-photo",
+      "title": "用摄像头拍一张照片",
+      "description": "从摄像头轨道取得一张编码后的照片，并释放摄像头。",
+      "category": "device",
+      "featured": false,
+      "sourcePath": "4-tutorials/device/take-one-photo",
+      "difficulty": "beginner",
+      "estimatedMinutes": 9,
+      "tags": ["ImageCapture", "takePhoto"],
+      "order": 480
+    },
+    {
+      "id": "build-a-query-url",
+      "title": "为 URL 添加查询参数",
+      "description": "用 searchParams 为包含空格和特殊字符的搜索词编码。",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/build-a-query-url",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["URL", "URLSearchParams"],
+      "order": 490
+    },
+    {
+      "id": "post-json-data",
+      "title": "用 POST 发送一条 JSON 数据",
+      "description": "用 fetch 将一个对象发送给接收 JSON 的接口。",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/post-json-data",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["fetch", "POST", "JSON"],
+      "order": 500
+    },
+    {
+      "id": "display-a-streaming-response",
+      "title": "逐段显示 HTTP 文本响应",
+      "description": "使用 response.textStream 读取 UTF-8 文本并更新页面。",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/display-a-streaming-response",
+      "difficulty": "beginner",
+      "estimatedMinutes": 9,
+      "tags": ["fetch", "textStream"],
+      "order": 510
+    },
+    {
+      "id": "show-online-status",
+      "title": "在页面上显示在线状态",
+      "description": "用 Page 网络事件更新在线或离线提示。",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/show-online-status",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["navigator.onLine", "onNetworkStatus"],
+      "order": 520
+    },
+    {
+      "id": "exclude-files-from-an-aix",
+      "title": "从 AIX 包中排除本地文件",
+      "description": "用 .aixignore 排除本地笔记，并检查产物内容。",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/exclude-files-from-an-aix",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": [".aixignore", "aix pack"],
+      "order": 530
+    },
+    {
+      "id": "inspect-an-aix-definition",
+      "title": "查看 AIX 包的智能体定义",
+      "description": "用 aix show 核对安装时使用的智能体名称与标识。",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/inspect-an-aix-definition",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["aix show", "Agent Definition"],
+      "order": 540
+    },
+    {
+      "id": "preview-a-packaged-agent",
+      "title": "在浏览器里预览 AIX 包",
+      "description": "用 aix preview 打开打包产物并检查首页。",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/preview-a-packaged-agent",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": ["aix preview", "AIX"],
+      "order": 550
+    },
+    {
+      "id": "install-an-aix-on-glasses",
+      "title": "把 AIX 包安装到眼镜",
+      "description": "通过 ADB 将已打包的智能体安装到眼镜的开发环境。",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/install-an-aix-on-glasses",
+      "difficulty": "beginner",
+      "estimatedMinutes": 8,
+      "tags": ["aix install", "ADB"],
+      "order": 560
     }
   ]
 }
