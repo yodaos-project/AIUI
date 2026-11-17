@@ -953,6 +953,26 @@
             "id": "save-a-text-file",
             "label": "Save Text to a Local File",
             "sourcePath": "4-tutorials/data/save-a-text-file"
+          },
+          {
+            "id": "build-a-query-url",
+            "label": "Add Query Parameters to a URL",
+            "sourcePath": "4-tutorials/data/build-a-query-url"
+          },
+          {
+            "id": "post-json-data",
+            "label": "Send a JSON Payload with POST",
+            "sourcePath": "4-tutorials/data/post-json-data"
+          },
+          {
+            "id": "display-a-streaming-response",
+            "label": "Display an HTTP Text Response as It Arrives",
+            "sourcePath": "4-tutorials/data/display-a-streaming-response"
+          },
+          {
+            "id": "show-online-status",
+            "label": "Show Whether the Page Is Online",
+            "sourcePath": "4-tutorials/data/show-online-status"
           }
         ]
       },
@@ -1131,6 +1151,26 @@
             "id": "check-agent-source",
             "label": "Check an Agent’s Source Files",
             "sourcePath": "4-tutorials/delivery/check-agent-source"
+          },
+          {
+            "id": "exclude-files-from-an-aix",
+            "label": "Exclude Local Files from an AIX Package",
+            "sourcePath": "4-tutorials/delivery/exclude-files-from-an-aix"
+          },
+          {
+            "id": "inspect-an-aix-definition",
+            "label": "Inspect the Agent Definition of an AIX Package",
+            "sourcePath": "4-tutorials/delivery/inspect-an-aix-definition"
+          },
+          {
+            "id": "preview-a-packaged-agent",
+            "label": "Preview an AIX Package in the Browser",
+            "sourcePath": "4-tutorials/delivery/preview-a-packaged-agent"
+          },
+          {
+            "id": "install-an-aix-on-glasses",
+            "label": "Install an AIX Package on Glasses",
+            "sourcePath": "4-tutorials/delivery/install-an-aix-on-glasses"
           }
         ]
       }

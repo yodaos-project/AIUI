@@ -15,7 +15,7 @@
     {
       "id": "data",
       "label": "Data and Network",
-      "description": "Load data from an endpoint and present it in an AIUI page.",
+      "description": "Build requests, handle network responses, and save local data.",
       "order": 30
     },
     {
@@ -39,7 +39,7 @@
     {
       "id": "delivery",
       "label": "Build and Delivery",
-      "description": "Package, inspect, and prepare an agent for release.",
+      "description": "Check agent source, package it, and preview or install the artifact.",
       "order": 70
     }
   ],
@@ -643,6 +643,102 @@
       "estimatedMinutes": 9,
       "tags": ["ImageCapture", "takePhoto"],
       "order": 480
+    },
+    {
+      "id": "build-a-query-url",
+      "title": "Add Query Parameters to a URL",
+      "description": "Use searchParams to encode a search term with spaces and special characters.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/build-a-query-url",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["URL", "URLSearchParams"],
+      "order": 490
+    },
+    {
+      "id": "post-json-data",
+      "title": "Send a JSON Payload with POST",
+      "description": "Use fetch to send an object to an endpoint that accepts JSON.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/post-json-data",
+      "difficulty": "beginner",
+      "estimatedMinutes": 7,
+      "tags": ["fetch", "POST", "JSON"],
+      "order": 500
+    },
+    {
+      "id": "display-a-streaming-response",
+      "title": "Display an HTTP Text Response as It Arrives",
+      "description": "Read UTF-8 text with response.textStream and update the page as it arrives.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/display-a-streaming-response",
+      "difficulty": "beginner",
+      "estimatedMinutes": 9,
+      "tags": ["fetch", "textStream"],
+      "order": 510
+    },
+    {
+      "id": "show-online-status",
+      "title": "Show Whether the Page Is Online",
+      "description": "Update an online or offline indicator from Page network events.",
+      "category": "data",
+      "featured": false,
+      "sourcePath": "4-tutorials/data/show-online-status",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["navigator.onLine", "onNetworkStatus"],
+      "order": 520
+    },
+    {
+      "id": "exclude-files-from-an-aix",
+      "title": "Exclude Local Files from an AIX Package",
+      "description": "Keep local notes out of an AIX package with .aixignore and verify the archive contents.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/exclude-files-from-an-aix",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": [".aixignore", "aix pack"],
+      "order": 530
+    },
+    {
+      "id": "inspect-an-aix-definition",
+      "title": "Inspect the Agent Definition of an AIX Package",
+      "description": "Use aix show to check the agent name and ID that installation will use.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/inspect-an-aix-definition",
+      "difficulty": "beginner",
+      "estimatedMinutes": 5,
+      "tags": ["aix show", "Agent Definition"],
+      "order": 540
+    },
+    {
+      "id": "preview-a-packaged-agent",
+      "title": "Preview an AIX Package in the Browser",
+      "description": "Open the packaged artifact with aix preview and check its home page.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/preview-a-packaged-agent",
+      "difficulty": "beginner",
+      "estimatedMinutes": 6,
+      "tags": ["aix preview", "AIX"],
+      "order": 550
+    },
+    {
+      "id": "install-an-aix-on-glasses",
+      "title": "Install an AIX Package on Glasses",
+      "description": "Use ADB to install a packaged agent in the glasses’ development environment.",
+      "category": "delivery",
+      "featured": false,
+      "sourcePath": "4-tutorials/delivery/install-an-aix-on-glasses",
+      "difficulty": "beginner",
+      "estimatedMinutes": 8,
+      "tags": ["aix install", "ADB"],
+      "order": 560
     }
   ]
 }

@@ -1113,6 +1113,26 @@
             "id": "save-a-text-file",
             "label": "将文字保存为本地文件",
             "sourcePath": "4-tutorials/data/save-a-text-file"
+          },
+          {
+            "id": "build-a-query-url",
+            "label": "为 URL 添加查询参数",
+            "sourcePath": "4-tutorials/data/build-a-query-url"
+          },
+          {
+            "id": "post-json-data",
+            "label": "用 POST 发送一条 JSON 数据",
+            "sourcePath": "4-tutorials/data/post-json-data"
+          },
+          {
+            "id": "display-a-streaming-response",
+            "label": "逐段显示 HTTP 文本响应",
+            "sourcePath": "4-tutorials/data/display-a-streaming-response"
+          },
+          {
+            "id": "show-online-status",
+            "label": "在页面上显示在线状态",
+            "sourcePath": "4-tutorials/data/show-online-status"
           }
         ]
       },
@@ -1291,6 +1311,26 @@
             "id": "check-agent-source",
             "label": "检查智能体源码",
             "sourcePath": "4-tutorials/delivery/check-agent-source"
+          },
+          {
+            "id": "exclude-files-from-an-aix",
+            "label": "从 AIX 包中排除本地文件",
+            "sourcePath": "4-tutorials/delivery/exclude-files-from-an-aix"
+          },
+          {
+            "id": "inspect-an-aix-definition",
+            "label": "查看 AIX 包的智能体定义",
+            "sourcePath": "4-tutorials/delivery/inspect-an-aix-definition"
+          },
+          {
+            "id": "preview-a-packaged-agent",
+            "label": "在浏览器里预览 AIX 包",
+            "sourcePath": "4-tutorials/delivery/preview-a-packaged-agent"
+          },
+          {
+            "id": "install-an-aix-on-glasses",
+            "label": "把 AIX 包安装到眼镜",
+            "sourcePath": "4-tutorials/delivery/install-an-aix-on-glasses"
           }
         ]
       }
