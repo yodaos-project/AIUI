@@ -891,6 +891,31 @@
             "id": "draw-on-canvas",
             "label": "Draw on Canvas",
             "sourcePath": "4-tutorials/interface/draw-on-canvas"
+          },
+          {
+            "id": "toggle-a-setting",
+            "label": "Toggle a Setting with a Switch",
+            "sourcePath": "4-tutorials/interface/toggle-a-setting"
+          },
+          {
+            "id": "select-a-list-item",
+            "label": "Identify the List Item the User Tapped",
+            "sourcePath": "4-tutorials/interface/select-a-list-item"
+          },
+          {
+            "id": "make-content-scroll",
+            "label": "Make Long Content Scroll Vertically",
+            "sourcePath": "4-tutorials/interface/make-content-scroll"
+          },
+          {
+            "id": "display-a-packaged-image",
+            "label": "Display an Image Bundled with the Project",
+            "sourcePath": "4-tutorials/interface/display-a-packaged-image"
+          },
+          {
+            "id": "render-markdown",
+            "label": "Render Markdown on a Page",
+            "sourcePath": "4-tutorials/interface/render-markdown"
           }
         ]
       },
@@ -918,6 +943,16 @@
             "id": "connect-a-websocket",
             "label": "Connect a WebSocket",
             "sourcePath": "4-tutorials/data/connect-a-websocket"
+          },
+          {
+            "id": "cancel-a-request",
+            "label": "Cancel an In-Flight Request",
+            "sourcePath": "4-tutorials/data/cancel-a-request"
+          },
+          {
+            "id": "save-a-text-file",
+            "label": "Save Text to a Local File",
+            "sourcePath": "4-tutorials/data/save-a-text-file"
           }
         ]
       },
@@ -940,6 +975,16 @@
             "id": "reuse-a-component",
             "label": "Reuse a Custom Component",
             "sourcePath": "4-tutorials/framework/reuse-a-component"
+          },
+          {
+            "id": "handle-a-component-event",
+            "label": "Handle a Component Event on a Page",
+            "sourcePath": "4-tutorials/framework/handle-a-component-event"
+          },
+          {
+            "id": "share-state-between-pages",
+            "label": "Share State Between Two Pages",
+            "sourcePath": "4-tutorials/framework/share-state-between-pages"
           }
         ]
       },
@@ -962,6 +1007,11 @@
             "id": "recognize-speech",
             "label": "Recognize a Speech Input",
             "sourcePath": "4-tutorials/ai/recognize-speech"
+          },
+          {
+            "id": "stream-a-model-response",
+            "label": "Display a Language Model Response as It Streams",
+            "sourcePath": "4-tutorials/ai/stream-a-model-response"
           }
         ]
       },
@@ -974,6 +1024,16 @@
             "id": "read-accelerometer",
             "label": "Read Accelerometer Data",
             "sourcePath": "4-tutorials/device/read-accelerometer"
+          },
+          {
+            "id": "read-battery-level",
+            "label": "Display the Current Battery Percentage",
+            "sourcePath": "4-tutorials/device/read-battery-level"
+          },
+          {
+            "id": "decode-a-qr-image",
+            "label": "Decode a QR Code from an Image",
+            "sourcePath": "4-tutorials/device/decode-a-qr-image"
           }
         ]
       },
@@ -986,6 +1046,11 @@
             "id": "package-an-aix",
             "label": "Package an AIX File",
             "sourcePath": "4-tutorials/delivery/package-an-aix"
+          },
+          {
+            "id": "check-agent-source",
+            "label": "Check an Agent’s Source Files",
+            "sourcePath": "4-tutorials/delivery/check-agent-source"
           }
         ]
       }

@@ -1051,6 +1051,31 @@
             "id": "draw-on-canvas",
             "label": "在 Canvas 上绘图",
             "sourcePath": "4-tutorials/interface/draw-on-canvas"
+          },
+          {
+            "id": "toggle-a-setting",
+            "label": "用开关切换设置",
+            "sourcePath": "4-tutorials/interface/toggle-a-setting"
+          },
+          {
+            "id": "select-a-list-item",
+            "label": "读取用户点击的列表项",
+            "sourcePath": "4-tutorials/interface/select-a-list-item"
+          },
+          {
+            "id": "make-content-scroll",
+            "label": "让长内容可以纵向滚动",
+            "sourcePath": "4-tutorials/interface/make-content-scroll"
+          },
+          {
+            "id": "display-a-packaged-image",
+            "label": "显示项目内的图片",
+            "sourcePath": "4-tutorials/interface/display-a-packaged-image"
+          },
+          {
+            "id": "render-markdown",
+            "label": "在页面中显示 Markdown",
+            "sourcePath": "4-tutorials/interface/render-markdown"
           }
         ]
       },
@@ -1078,6 +1103,16 @@
             "id": "connect-a-websocket",
             "label": "建立 WebSocket 连接",
             "sourcePath": "4-tutorials/data/connect-a-websocket"
+          },
+          {
+            "id": "cancel-a-request",
+            "label": "取消正在进行的请求",
+            "sourcePath": "4-tutorials/data/cancel-a-request"
+          },
+          {
+            "id": "save-a-text-file",
+            "label": "将文字保存为本地文件",
+            "sourcePath": "4-tutorials/data/save-a-text-file"
           }
         ]
       },
@@ -1100,6 +1135,16 @@
             "id": "reuse-a-component",
             "label": "复用自定义组件",
             "sourcePath": "4-tutorials/framework/reuse-a-component"
+          },
+          {
+            "id": "handle-a-component-event",
+            "label": "在页面中接收组件事件",
+            "sourcePath": "4-tutorials/framework/handle-a-component-event"
+          },
+          {
+            "id": "share-state-between-pages",
+            "label": "在两个页面之间共享状态",
+            "sourcePath": "4-tutorials/framework/share-state-between-pages"
           }
         ]
       },
@@ -1122,6 +1167,11 @@
             "id": "recognize-speech",
             "label": "识别一次语音输入",
             "sourcePath": "4-tutorials/ai/recognize-speech"
+          },
+          {
+            "id": "stream-a-model-response",
+            "label": "逐段显示语言模型回复",
+            "sourcePath": "4-tutorials/ai/stream-a-model-response"
           }
         ]
       },
@@ -1134,6 +1184,16 @@
             "id": "read-accelerometer",
             "label": "读取加速度计数据",
             "sourcePath": "4-tutorials/device/read-accelerometer"
+          },
+          {
+            "id": "read-battery-level",
+            "label": "显示当前电量百分比",
+            "sourcePath": "4-tutorials/device/read-battery-level"
+          },
+          {
+            "id": "decode-a-qr-image",
+            "label": "读取图片中的二维码",
+            "sourcePath": "4-tutorials/device/decode-a-qr-image"
           }
         ]
       },
@@ -1146,6 +1206,11 @@
             "id": "package-an-aix",
             "label": "打包 AIX 文件",
             "sourcePath": "4-tutorials/delivery/package-an-aix"
+          },
+          {
+            "id": "check-agent-source",
+            "label": "检查智能体源码",
+            "sourcePath": "4-tutorials/delivery/check-agent-source"
           }
         ]
       }
