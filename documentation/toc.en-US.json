@@ -729,6 +729,12 @@
             "docPath": "3-api/geo-data/geolocation.en-US.md"
           },
           {
+            "id": "maps",
+            "label": "System Navigation",
+            "docId": "geo-data-maps",
+            "docPath": "3-api/geo-data/maps.en-US.md"
+          },
+          {
             "id": "gpx-document",
             "label": "GPXDocument",
             "docId": "geo-data-gpx-document",
