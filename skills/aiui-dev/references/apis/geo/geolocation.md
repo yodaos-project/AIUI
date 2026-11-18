@@ -40,6 +40,8 @@ and timeout; clear watches when their owning Page or Widget stops needing them.
 
 `position.coords` contains numeric `latitude`, `longitude`, and `accuracy`
 (meters), plus nullable `altitude`, `altitudeAccuracy`, `heading`, and `speed`.
+Both `getCurrentPosition()` and `watchPosition()` report latitude and longitude
+in WGS-84 decimal degrees.
 `position.timestamp` is the acquisition time as a number.
 
 Errors use codes `1` (`PERMISSION_DENIED`), `2` (`POSITION_UNAVAILABLE`), and `3` (`TIMEOUT`).

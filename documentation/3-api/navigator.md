@@ -170,7 +170,7 @@ console.log('Bluetooth mounted:', !!bluetooth);
 #### `navigator.geolocation`
 
 - **类型**：`Geolocation`。
-- **说明**：地理位置能力入口，用于读取当前位置、监听位置变化和清理监听。使用前需要获得定位权限；完整接口见 [Geolocation](/AIUI/api/geo-data-geolocation)。
+- **说明**：地理位置能力入口，用于读取当前位置、监听位置变化和清理监听。返回的经纬度使用 WGS-84 坐标系。使用前需要获得定位权限。完整接口见 [Geolocation](/AIUI/api/geo-data-geolocation)。
 
 ```javascript
 const geolocation = navigator.geolocation;

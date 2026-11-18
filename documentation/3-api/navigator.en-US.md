@@ -170,7 +170,7 @@ console.log('Bluetooth mounted:', !!bluetooth);
 #### `navigator.geolocation`
 
 - **Type**: `Geolocation`.
-- **Description**: Entry point for reading the current position, watching changes, and clearing watches. Location permission is required; see [Geolocation](/AIUI/api/geo-data-geolocation).
+- **Description**: Entry point for reading the current position, watching changes, and clearing watches. Reported latitude and longitude use the WGS-84 coordinate system. Location permission is required. See [Geolocation](/AIUI/api/geo-data-geolocation).
 
 ```javascript
 const geolocation = navigator.geolocation;
