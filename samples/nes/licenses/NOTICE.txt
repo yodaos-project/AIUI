@@ -1,0 +1,50 @@
+assets/falling.nes is Falling by tragicmuffin (MIT, see Falling.txt).
+https://github.com/xram64/falling-nes/tree/52dcb8a951200562e696dfc2aba5d4d14edd0078
+
+assets/nesnake.nes is NESnake by John-David Bell (MIT, see NESnake.txt).
+https://github.com/cyborgx37/nesnake/tree/9ff0a94f7801057a834a07e3effd397d6304e356
+The Falling and NESnake thumbnails adapt sprites from those cartridges.
+
+assets/falling-blocks.nes is Legally Distinct Falling Block Game by Zorchenhimer
+(MIT, see Falling-Blocks.txt). Built from e64ef29 with ca65/ld65 V2.19.
+The first 16 bytes use an equivalent iNES 1.0 header for QuickNES: mapper 5,
+64 KiB PRG, 16 KiB CHR, vertical mirroring and 8 KiB battery-backed PRG RAM.
+PRG and CHR data are unchanged from that build. The audio driver is FamiStudio
+by Mathieu Gauthier.
+https://github.com/zorchenhimer/nes-tetris/tree/e64ef29e4b68decd3f2c36a8f9f3cd7d679a4b7c
+
+assets/breakout.nes and assets/pong.nes are the unmodified openNES Breakout
+and openNES Pong v1.0.1 release ROMs by Sebastian Dine, both under the zlib
+license. See openNES-Breakout.txt and openNES-Pong.txt respectively.
+https://github.com/sebastiandine/openNES-Breakout/releases/tag/v1.0.1
+https://github.com/sebastiandine/openNES-Pong/releases/tag/v1.0.1
+
+assets/void-lancer.nes is the unmodified VOID LANCER v1.0.0 release ROM
+(MIT, see VOID-LANCER.txt).
+https://github.com/Riyoway/void-lancer-nes/releases/tag/v1.0.0
+
+assets/mines.nes is NES-Minesweeper (MIT, see NES-Minesweeper.txt).
+Built from the unmodified source using ca65 and ld65 V2.19:
+ca65 src/main.asm -g -o build/main.o
+ld65 -o mines.nes -C src/linker.cfg build/main.o
+https://github.com/ProgrEmily/NES-Minesweeper/tree/1c376724227f4707147af8c7f496898d22fcc2c4
+
+assets/2048.nes is the unmodified NES 2048 v0.1 ROM by G42makes.
+The author permits redistribution of the binary with the credits page intact.
+https://github.com/G42makes/nes_2048/releases/tag/0.1
+https://github.com/G42makes/nes_2048/blob/ee8cc377008cae05a801ceb96f1e66f80aa80eba/README.md
+
+assets/concentration.nes is an exact copy of croom.nes from Concentration Room
+0.02 by Damian Yerrick. The GPLv3-or-later license and the author's exception
+for distributing the unmodified iNES binary are included in
+Concentration-Room-GPL-3.0.txt and Concentration-Room.txt.
+https://pineight.com/croom/ConcentrationRoom-0.02.zip
+
+assets/nes.wasm uses Nes_Emu by Shay Green and contributors to libretro's
+QuickNES_Core. The original core is LGPL-2.1-or-later and includes additional
+GPL-2.0-or-later mappers. The module and its bridge are distributed under
+GPL-2.0-or-later. See QuickNES-GPL-2.0.txt and QuickNES-LGPL-2.1.txt.
+The VRC7 synthesizer incorporates emu2413 by Mitsutaka Okazaki.
+Original notices and the complete core sources are in core/quicknes-src.tar.gz.
+core/build.sh and core/bridge.cpp reproduce the module with Emscripten 4.0.4.
+https://github.com/libretro/QuickNES_Core/tree/26bb785c9deddb66a17717b21bb4e328f03ade32
