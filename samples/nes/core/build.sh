@@ -4,7 +4,7 @@ set -eu
 cd "$(dirname "$0")"
 build_dir=$(mktemp -d)
 trap 'rm -rf "$build_dir"' EXIT
-tar -xzf quicknes-src.tar.gz -C "$build_dir"
+tar -xf quicknes-src.tar.xz -C "$build_dir"
 src="$build_dir/nes_emu"
 
 # The page displays QuickNES's returned mapper error. Omit its duplicate

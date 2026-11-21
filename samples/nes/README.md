@@ -40,7 +40,7 @@ Web 预览需要 Ink 0.20.1 或更新版本。如果 AIX 当前选择的版本�
 | Falling | 在标题画面按 Enter 开始，左右躲避下落途中的障碍 | [Falling](https://github.com/xram64/falling-nes/tree/52dcb8a951200562e696dfc2aba5d4d14edd0078) |
 | NESnake | 用方向键控制蛇，吃苹果并避开自己的身体 | [NESnake](https://github.com/cyborgx37/nesnake/tree/9ff0a94f7801057a834a07e3effd397d6304e356) |
 
-游戏的具体版本、构建来源和分发许可保存在 [卡带声明](./licenses/NOTICE.txt)。
+每款游戏和 WASM 核心的版本、来源、署名和分发条款见[第三方声明](./licenses/NOTICE.txt)。
 
 ## 添加卡带
 
@@ -62,4 +62,4 @@ ink-open samples/nes --query 'rom=puzzle.nes'
 samples/nes/core/build.sh
 ```
 
-构建脚本解包随附的 QuickNES 源码，去掉一条重复的标准错误输出，随后编译 C++ 接口。生成的 WASM 没有宿主导入。源码归档来自上游提交 `26bb785c` 的 `nes_emu/` 和 `LICENSE`。[QuickNES 源码](https://github.com/libretro/QuickNES_Core/tree/26bb785c9deddb66a17717b21bb4e328f03ade32)
+构建脚本解包 `core/quicknes-src.tar.xz`，去掉一条重复的标准错误输出，随后编译 C++ 接口。生成的 WASM 没有宿主导入。归档保留上游提交 `26bb785c` 的 `nes_emu/` 源码与 `LICENSE`，已剔除预编译的 Linux 工具 `nes_emu/tools/proto`。[QuickNES 源码](https://github.com/libretro/QuickNES_Core/tree/26bb785c9deddb66a17717b21bb4e328f03ade32)

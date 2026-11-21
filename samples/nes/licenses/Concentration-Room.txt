@@ -1,7 +1,0 @@
-Copyright © 2010 Damian Yerrick <croom@pineight.com>
-
-Copying and distribution of this file, with or without modification, are permitted in any medium without royalty provided the copyright notice and this notice are preserved.  This file is offered as-is, without any warranty.
-
-The accompanying program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License, version 3 or later. As a special exception, you may copy and distribute exact copies of the program, as published by Damian Yerrick, in iNES or UNIF executable form without source code.
-
-This product is not sponsored or endorsed by Nintendo, Ravensburger, Hasbro, Mattel, Quaker Oats, NBC Universal, GameTek, or Apple.
