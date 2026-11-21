@@ -1,0 +1,8 @@
+{
+  "engine": ">=0.20.1",
+  "pages": ["pages/index/index", "pages/play/index"],
+  "window": {
+    "navigationBarTitleText": "NES 模拟器",
+    "viewport": { "width": "device-width" }
+  }
+}

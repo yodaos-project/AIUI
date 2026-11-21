@@ -1,0 +1,122 @@
+NES cartridges
+
+Falling (assets/falling.nes) — MIT
+Copyright (c) 2018 tragicmuffin
+https://github.com/xram64/falling-nes/tree/52dcb8a951200562e696dfc2aba5d4d14edd0078
+
+NESnake (assets/nesnake.nes) — MIT
+Copyright (c) 2019 John-David Bell
+https://github.com/cyborgx37/nesnake/tree/9ff0a94f7801057a834a07e3effd397d6304e356
+
+The Falling and NESnake thumbnails adapt sprites from those cartridges.
+
+Legally Distinct Falling Block Game (assets/falling-blocks.nes) — MIT
+Copyright (c) 2025 Zorchenhimer
+Built with ca65/ld65 V2.19. Only the header was converted to iNES 1.0
+for QuickNES (mapper 5, 64 KiB PRG, 16 KiB CHR, vertical mirroring,
+8 KiB battery-backed PRG RAM). PRG and CHR data are unchanged.
+FamiStudio sound engine: Copyright (c) 2019-2025 Mathieu Gauthier.
+https://github.com/zorchenhimer/nes-tetris/tree/e64ef29e4b68decd3f2c36a8f9f3cd7d679a4b7c
+
+openNES Breakout (assets/breakout.nes) — zlib
+Copyright (c) 2017 Sebastian Dine
+Unmodified v1.0.1 release ROM.
+https://github.com/sebastiandine/openNES-Breakout/releases/tag/v1.0.1
+
+openNES Pong (assets/pong.nes) — zlib
+Copyright (c) 2016-2017 Sebastian Dine
+Unmodified v1.0.1 release ROM.
+https://github.com/sebastiandine/openNES-Pong/releases/tag/v1.0.1
+
+VOID LANCER (assets/void-lancer.nes) — MIT
+Copyright (c) 2026 VOID LANCER contributors
+Unmodified v1.0.0 release ROM.
+https://github.com/Riyoway/void-lancer-nes/releases/tag/v1.0.0
+
+NES-Minesweeper (assets/mines.nes) — MIT
+Copyright (c) 2018 Rick Battagline
+Copyright (c) 2023 SmallCode
+Built from unmodified source with ca65/ld65 V2.19:
+ca65 src/main.asm -g -o build/main.o
+ld65 -o mines.nes -C src/linker.cfg build/main.o
+https://github.com/ProgrEmily/NES-Minesweeper/tree/1c376724227f4707147af8c7f496898d22fcc2c4
+
+NES 2048 (assets/2048.nes)
+Unmodified v0.1 release ROM by G42makes. The author permits
+redistribution of the binary with the credits page intact.
+https://github.com/G42makes/nes_2048/releases/tag/0.1
+https://github.com/G42makes/nes_2048/blob/ee8cc377008cae05a801ceb96f1e66f80aa80eba/README.md
+
+Concentration Room (assets/concentration.nes) — GPL-3.0-or-later with exception
+Exact copy of croom.nes from the 0.02 release. See Concentration-Room-GPL-3.0.txt
+and the author's notice below.
+https://pineight.com/croom/ConcentrationRoom-0.02.zip
+
+Copyright © 2010 Damian Yerrick <croom@pineight.com>
+
+Copying and distribution of this file, with or without modification, are permitted in any medium without royalty provided the copyright notice and this notice are preserved.  This file is offered as-is, without any warranty.
+
+The accompanying program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License, version 3 or later. As a special exception, you may copy and distribute exact copies of the program, as published by Damian Yerrick, in iNES or UNIF executable form without source code.
+
+This product is not sponsored or endorsed by Nintendo, Ravensburger, Hasbro, Mattel, Quaker Oats, NBC Universal, GameTek, or Apple.
+
+Emulator core (assets/nes.wasm)
+
+QuickNES uses Nes_Emu by Shay Green and contributors, licensed under
+LGPL-2.1-or-later, with additional GPL-2.0-or-later mappers. The VRC7
+synthesizer incorporates emu2413 by Mitsutaka Okazaki. The combined module
+and its bridge are distributed under GPL-2.0-or-later.
+See QuickNES-LGPL-2.1.txt and the GPLv2 text in core/quicknes-src.tar.xz
+(member LICENSE). That archive includes the core sources and original
+notices. core/bridge.cpp and core/build.sh reproduce the shipped module.
+https://github.com/libretro/QuickNES_Core/tree/26bb785c9deddb66a17717b21bb4e328f03ade32
+
+Emscripten runtime — MIT
+Copyright (c) 2010-2014 Emscripten authors, see AUTHORS file.
+emmalloc: Copyright 2018 The Emscripten Authors. All rights reserved.
+https://github.com/emscripten-core/emscripten/blob/4.0.4/AUTHORS
+https://github.com/emscripten-core/emscripten/blob/4.0.4/LICENSE
+
+For musl libc, see musl.txt. LLVM runtime portions embedded by the compiler
+are covered by the LLVM object-code exception.
+https://llvm.org/LICENSE.txt
+
+MIT license
+-----------
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+zlib license
+------------
+This software is provided 'as-is', without any express or implied warranty.
+In no event will the authors be held liable for any damages arising from
+the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+claim that you wrote the original software. If you use this software in
+a product, an acknowledgment in the product documentation would be
+appreciated but is not required.
+
+2. Altered source versions must be plainly marked as such, and must not
+be misrepresented as being the original software.
+
+3. This notice may not be removed or altered from any source distribution.
