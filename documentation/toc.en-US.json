@@ -1186,6 +1186,14 @@
         "label": "Overview"
       },
       {
+        "id": "account-token",
+        "label": "Account Token"
+      },
+      {
+        "id": "messaging",
+        "label": "Messaging"
+      },
+      {
         "id": "notifications",
         "label": "Sending Notifications"
       }
