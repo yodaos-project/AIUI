@@ -7,7 +7,7 @@ const targetDirName = process.argv[2];
 
 if (!targetDirName) {
   console.error('Please specify the project directory:');
-  console.error('  npx create-jsui-agent <project-directory>');
+  console.error('  npx @yodaos-pkg/create-aiui-agent <project-directory>');
   process.exit(1);
 }
 
