@@ -17,10 +17,10 @@ Create a new project with `npx`:
 npx @yodaos-pkg/create-aiui-agent my-agent
 ```
 
-If you already have the package available locally, you can also run:
+You can also run the package explicitly:
 
 ```bash
-npx create-aiui-agent my-agent
+npx @yodaos-pkg/create-aiui-agent my-agent
 ```
 
 Then enter the generated directory and start development:
@@ -85,12 +85,12 @@ npx skills add https://github.com/jsar-project/AIUI/tree/main/skills/aiui-dev
 If you are working directly inside this repository, the local skill source currently lives at:
 
 - `skills/aiui-dev/SKILL.md`
-- `skills/aiui-dev/components.md`
+- `skills/aiui-dev/references/components.md`
 
 Recommended usage:
 
 1. Load `SKILL.md` into your AI coding assistant as the main development guide.
-2. Also provide `components.md` when you need exact built-in component attributes, events, or examples.
+2. Also provide `references/components.md` when you need exact built-in component attributes, events, or examples.
 3. Ask the assistant to follow the `.ink` single-file component format used by the generated template.
 4. Keep the generated project files open so the assistant can align new code with the existing structure.
 
