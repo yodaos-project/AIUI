@@ -51,7 +51,7 @@ Keep the full-color source aligned with the public visual guidelines in
 
 | Audience | Where you meet the design language |
 |----------|------------------------------------|
-| AI agents (Claude Code, Cursor, Codex, …) | Bundled as `skills/aiui-dev/design-system-green.md` via `npx skills add` |
+| AI agents (Claude Code, Cursor, Codex, …) | Bundled as `skills/aiui-dev/references/design/monochrome-green.md` via `npx skills add` |
 | Human developers | This directory, linked from the root [`README.md`](../README.md) |
 | Sample authors | Mirror these tokens under [`samples/`](../samples/) |
 
