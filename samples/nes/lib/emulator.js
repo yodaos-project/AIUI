@@ -36,10 +36,12 @@ export async function openCartridge(filename) {
     frameMs: 1000 / 60,
     reset: core.reset,
     step(buttons, image, withAudio) {
-      const samples = core.run_frame(buttons);
+      const samples = core.run_frame(buttons, image ? 0 : 1);
       if (samples < 0) throw new Error('模拟器无法继续执行此卡带');
+      // Pace the next frame by the actual duration of the core's 48 kHz output.
+      if (samples > 0) this.frameMs = samples * 1000 / 48000;
       const memory = core.memory.buffer;
-      image.data.set(new Uint8ClampedArray(memory, videoPointer, WIDTH * HEIGHT * 4));
+      if (image) image.data.set(new Uint8ClampedArray(memory, videoPointer, WIDTH * HEIGHT * 4));
       return withAudio && samples ? new Int16Array(memory, audioPointer, samples) : null;
     },
   };

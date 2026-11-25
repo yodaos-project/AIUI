@@ -1,6 +1,6 @@
 # NES 模拟器
 
-此 AIUI 示例从游戏库进入独立的模拟器页面。QuickNES 在 WebAssembly 中运行 NES 卡带，页面把每帧的 256 × 240 像素写入 Canvas。桌面 Ink 通过 AudioPlayer 流式播放 48 kHz 单声道 PCM，Web 预览使用 Web Audio。内置九款游戏，卡带和模拟核心均从应用包读取，离线即可游玩。
+此 AIUI 示例从游戏库进入独立的模拟器页面。QuickNES 在 WebAssembly 中运行 NES 卡带。画面刷新延迟时，模拟器最多补算六帧，逐帧生成音频，只把最新的 256 × 240 画面写入 Canvas。眼镜和桌面 Ink 通过 AudioPlayer 流式播放 48 kHz 单声道 PCM，Web 预览使用 Web Audio。内置九款游戏，卡带和模拟核心均从应用包读取，离线即可游玩。
 
 ## 运行
 

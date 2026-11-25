@@ -26,7 +26,11 @@ void reset() { nes.reset(); }
 const uint32_t* video_buffer() { return rgba; }
 const int16_t* audio_buffer() { return pcm; }
 
-int run_frame(int buttons) {
+int run_frame(int buttons, int skip_video) {
+    if (skip_video) {
+        if (nes.emulate_skip_frame(buttons)) return -1;
+        return nes.read_samples(pcm, sizeof(pcm) / sizeof(pcm[0]));
+    }
     if (nes.emulate_frame(buttons)) return -1;
     const auto& frame = nes.frame();
     uint32_t palette[Nes_Emu::max_palette_size];
