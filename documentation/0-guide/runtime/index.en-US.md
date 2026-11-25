@@ -34,10 +34,10 @@ Preview and device testing serve different purposes: preview helps you iterate q
 
 AIUI uses JavaScript for agent interaction logic and also supports importing TypeScript modules. You can use common modern JavaScript syntax, but don't assume every browser API is available; check the relevant API documentation.
 
-Also avoid keeping the runtime busy with long-running synchronous code, which can prevent the interface from responding promptly. See [JavaScript Compatibility](./js.en-US.md) for common language features, TypeScript, and execution limits.
+Also avoid keeping the runtime busy with long-running synchronous code, which can prevent the interface from responding promptly. See [JavaScript](./js.en-US.md) for common language features, TypeScript, and execution limits.
 
 ## Continue Reading
 
 - [Runtime Environment](./env.en-US.md): Learn about simulation and device testing.
-- [JavaScript Compatibility](./js.en-US.md): Explore common language features, TypeScript, and execution limits.
+- [JavaScript](./js.en-US.md): Explore common language features, TypeScript, and execution limits.
 - [Runtime Mechanism](./mechanism.en-US.md): See how a page displays, responds to actions, and updates.

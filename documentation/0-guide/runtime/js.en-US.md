@@ -1,4 +1,4 @@
-# JavaScript Compatibility
+# JavaScript
 
 AIUI agents use JavaScript for interaction logic. You can use common modern features such as `Promise`, `async/await`, and modules, while taking care not to run synchronous code for too long.
 
@@ -89,27 +89,101 @@ For installation, configuration, and more examples, see [Modules: Using TypeScri
 
 ## Accelerate Repeated Computation
 
-When a page repeatedly processes many numbers or draws many graphics, mark a TypeScript function with `offload`. Supported calls can be accelerated; calls that are unsuitable for acceleration run as ordinary JavaScript by default.
+Offload can speed up eligible TypeScript loops when an agent repeatedly processes batches of samples or draws many shapes each frame. Use the `@offload` decorator on a class method or wrap a standalone function with `offload(function …)`. Import `offload` from `ink:compiler` for either form. Calls remain synchronous.
 
-For example, define a function in `utils/sum.ts` that adds values above a threshold:
+Give the AIUI runtime the original `.ts` file or `<script setup lang="ts">` source so it can recognize the marker while processing TypeScript.
+
+### Sum Samples Above a Threshold with `@offload`
+
+Add `@offload` to a public class method in `utils/sample-stats.ts`. For example, if you record the number of bytes received each second, pass the samples and a threshold to a static method to total the bytes received during high-traffic periods.
 
 ```typescript
 import { offload } from 'ink:compiler';
 
-export const sumAbove = offload(function sumAbove(values: Float64Array, threshold: number): number {
-  let total = 0;
-  for (let i = 0; i < values.length; i++) {
-    if (values[i] > threshold) total += values[i];
+export class SampleStats {
+  @offload
+  static sumAbove(values: Float64Array, threshold: number): number {
+    let total = 0;
+    for (let i = 0; i < values.length; i++) {
+      if (values[i] > threshold) total += values[i];
+    }
+    return total;
   }
-  return total;
-});
+}
+
+console.log(SampleStats.sumAbove(new Float64Array([1, 3, 5]), 2)); // 8
 ```
 
-For example, `sumAbove(new Float64Array([1, 3, 5]), 2)` returns `8`. Give the runtime the `.ts` file or `<script setup lang="ts">` source; do not compile away the marker into ordinary JavaScript first.
+Use `@offload` on a public instance or static method with a non-computed name. It must be the method's only decorator.
 
-Pass the data as arguments and use local variables and ordinary `for` loops. Do not read `this`, capture outer variables, or call custom helper functions inside the marked function. Supported Canvas 2D drawing can use the same approach, but not every drawing call can be accelerated. Measure the real workload on the target device; small tasks may not be faster.
+### Find the First Sample Above a Limit with `offload()`
 
-The default mode is `auto`: the original function runs when acceleration is unavailable. To check whether a call can be accelerated, pass `{ mode: 'require' }` as the second argument to `offload()`; an unsupported body reports a compilation error, and arguments that cannot be accelerated cause `OffloadUnsupportedError`. This does not replace type checking or remove the synchronous execution limit described below.
+If a reading above a limit should trigger an alert, scan the batch and return as soon as you find one. Write the `function` expression directly inside `offload()`, then call the returned function as usual.
+
+```typescript
+import { offload } from 'ink:compiler';
+
+export const findFirstAbove = offload(function (values: Float32Array, limit: number): number {
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] > limit) return i;
+  }
+  return -1;
+});
+
+console.log(findFirstAbove(new Float32Array([12, 15, 24, 18]), 20)); // 2
+```
+
+The index starts at `0`, and `-1` means no reading exceeded the limit. `offload()` requires an inline `function` expression. Passing an existing function or an arrow function causes a compilation error.
+
+### Scale a Batch of Waveform Samples
+
+Before drawing an audio waveform, multiply a batch of floating-point samples by the display scale and write the results into a reusable output array. The caller supplies an output array long enough to hold every result.
+
+```typescript
+import { offload } from 'ink:compiler';
+
+export const scaleSamples = offload(function (input: Float32Array, output: Float32Array, scale: number): void {
+  for (let i = 0; i < input.length; i++) {
+    output[i] = input[i] * scale;
+  }
+});
+
+const input = new Float32Array([-0.5, 0, 0.75]);
+const output = new Float32Array(input.length);
+scaleSamples(input, output, 40);
+console.log(Array.from(output)); // [-20, 0, 30]
+```
+
+### Draw a Canvas Bar Chart in a Batch
+
+On each chart refresh, pass the drawing context and bar heights to a decorated instance method. This example draws three bars on an offscreen canvas, all with a baseline of `y = 80`.
+
+```typescript
+import { offload } from 'ink:compiler';
+
+class BarPainter {
+  @offload
+  draw(ctx: InkCanvasRenderingContext2D, heights: Float32Array, baseline: number): void {
+    for (let i = 0; i < heights.length; i++) {
+      const height = heights[i];
+      ctx.fillRect(i * 8, baseline - height, 6, height);
+    }
+  }
+}
+
+const canvas = new Canvas(120, 80);
+const ctx = canvas.getContext('2d');
+ctx.fillStyle = '#33aa66';
+new BarPainter().draw(ctx, new Float32Array([24, 48, 36]), 80);
+```
+
+To draw on a page `<canvas>`, obtain its 2D context after the component mounts, pass it to `draw()`, and call `ctx.flush()` when finished. Canvas acceleration depends on the operations and their arguments. This example batches `fillRect()` calls. See [Canvas](/AIUI/api/canvas) for page and offscreen canvas usage.
+
+### Verify That a Call Can Be Accelerated
+
+The default `auto` mode runs the original function when acceleration is unavailable. To check whether a call can be accelerated with actual inputs, use `@offload({ mode: 'require' })` or pass `{ mode: 'require' }` as the second argument to `offload()`. In `require` mode, an unsupported function body causes a compilation error, and a call that cannot be accelerated throws `OffloadUnsupportedError`.
+
+Pass data and drawing contexts as arguments, and use local variables and ordinary `for` loops in the function. Reading `this`, capturing outer variables, or calling custom helpers makes the body ineligible. Numeric loops can use ordinary `Float32Array` and `Float64Array` inputs, and numeric offload is also available in Agent Workers. Measure with representative data volumes on the target device, since short tasks may run faster directly in JavaScript. Keep checking types during development and follow the synchronous execution limit below.
 
 ## Avoid Long-Running Synchronous Code
 
