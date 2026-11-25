@@ -1,22 +1,6 @@
 # Geolocation
 
-使用 `navigator.geolocation` 可以获取当前位置或持续接收位置变化，两种方式返回的经纬度都使用 WGS-84 坐标系。使用 `Geocoder` 可以根据已有经纬度查询地址。
-
-## 根据坐标查询地址
-
-已有经纬度时，可以使用 `Geocoder`，不必先获取设备位置：
-
-```javascript
-const geocoder = new Geocoder({ level: 'city', acceptLanguages: ['zh-CN'] });
-try {
-  const address = await geocoder.getFromLocation(30.2741, 120.1551);
-  console.log(address?.formattedAddress ?? '未找到地址');
-} catch (error) {
-  console.error('地址查询失败：', error.message);
-}
-```
-
-传入的经纬度须使用 WGS-84 坐标系。此查询不需要设备定位权限，但地址查询能力并非在所有环境中可用。返回字段可能为 `null`，请准备备用显示文字。
+使用 `navigator.geolocation` 可以获取当前位置或持续接收位置变化，两种方式返回的经纬度都使用 WGS-84 坐标系。
 
 ## 获取当前位置
 
@@ -40,7 +24,7 @@ navigator.geolocation.getCurrentPosition(
 );
 ```
 
-`getCurrentPosition()` 的 `reverseGeocode` 选项暂不可用。需要地址时，请使用上面的 `Geocoder` 查询坐标。
+`getCurrentPosition()` 的 `reverseGeocode` 选项暂不可用。如何用返回的坐标查询地址，见 [Geocoder](./geocoder.md)。
 
 ## 持续获取位置变化
 
@@ -74,6 +58,46 @@ navigator.geolocation.clearWatch(watchId);
 
 用户还需要允许设备的定位权限。定位被拒绝、暂时不可用或超时时，失败回调会收到对应错误。
 
+## 常见坐标系与转换
+
+同一个位置在不同坐标系下可能有不同的经纬度。把定位结果画在地图上之前，先确认目标地图 API 接受哪种坐标系。坐标系不一致时，地图上的标记会出现偏移。
+
+| 坐标系 | 背景 | 常见场景 |
+| --- | --- | --- |
+| **WGS-84** | 世界大地测量系统 1984，是 GPS 使用的全球大地参考系。 | GPS 模块输出、AIUI 定位结果和 Google Earth 使用的 KML 数据。[NGA WGS-84 说明](https://earth-info.nga.mil/?action=wgs84&dir=wgs84)、[Google KML 文档](https://developers.google.com/kml/articles/vector) |
+| **GCJ-02** | 由原中国国家测绘局制定，俗称火星坐标系。在 WGS-84 经纬度的基础上施加随位置变化的偏移。 | 高德地图和腾讯地图在中国大陆的标注、地点查询和路线规划。[高德坐标系说明](https://lbs.amap.com/api/javascript-api-v2/guide/transform/convertfrom)、[腾讯坐标系说明](https://cloud.tencent.com/developer/article/1361312) |
+| **BD-09** | 百度在 GCJ-02 基础上做了二次偏移。`BD09LL` 表示经纬度，`BD09MC` 表示以米为单位的墨卡托平面坐标。 | 百度地图在中国大陆的地图标注和地点服务通常用 `BD09LL`。[百度地图坐标系说明](https://lbsyun.baidu.com/docs/android?title=androidsdk%2Fguide%2Ftool%2Fcoordinate) |
+
+按所用 API、地区和图层确认输入坐标系。Google Maps JavaScript API 的经纬度采用 WGS-84，百度地图 JS API 的海外地图也使用 WGS-84。[Google Maps 坐标文档](https://developers.google.com/maps/documentation/javascript/coordinates)、[百度地图 JS API 坐标系](https://lbsyun.baidu.com/docs/jsapi?title=jsapi4%2Fguide%2Fconcept%2Fcoord)
+
+### 使用地图平台转换
+
+保存 `position.coords` 中的原始 WGS-84 经纬度，绘制标记或调用地图服务时按目标接口的要求转换一次。调用 `Geocoder.getFromLocation(latitude, longitude)` 时可以直接使用原始定位结果。
+
+| 转换方向 | 转换方法 |
+| --- | --- |
+| WGS-84 → GCJ-02 | 高德传入 `coordsys=gps`，腾讯传入 `type=1`。[高德坐标转换](https://lbs.amap.com/api/webservice/guide/api/convert)、[腾讯坐标转换](https://github.com/Tencent/tencentmap-webservice-skill/blob/main/references/api-tools.md#坐标转换) |
+| WGS-84 → BD09LL | 百度坐标转换传入 `model=2`。[百度坐标转换](https://lbsyun.baidu.com/docs/webapi?title=geoconv%2Fguide%2Fchangeposition-base) |
+| GCJ-02 → BD09LL | 百度坐标转换传入 `model=1`。[百度坐标转换](https://lbsyun.baidu.com/docs/webapi?title=geoconv%2Fguide%2Fchangeposition-base) |
+| BD09LL → GCJ-02 | 高德传入 `coordsys=baidu`，腾讯传入 `type=3`，或百度传入 `model=5`。[高德坐标转换](https://lbs.amap.com/api/webservice/guide/api/convert)、[腾讯坐标转换](https://github.com/Tencent/tencentmap-webservice-skill/blob/main/references/api-tools.md#坐标转换)、[百度坐标转换](https://lbsyun.baidu.com/docs/webapi?title=geoconv%2Fguide%2Fchangeposition-base) |
+| BD09LL ↔ BD09MC | 百度坐标转换中，转为米制坐标用 `model=3`，转回经纬度用 `model=4`。[百度坐标转换](https://lbsyun.baidu.com/docs/webapi?title=geoconv%2Fguide%2Fchangeposition-base) |
+
+输入为经纬度时，高德的 `locations` 和百度的 `coords` 按 `经度,纬度` 传参，腾讯的 `locations` 按 `纬度,经度` 传参。例如，同一个 WGS-84 定位点传给高德时写作 `locations=120.1551,30.2741`，传给腾讯时写作 `locations=30.2741,120.1551`。
+
+### 转回 WGS-84
+
+上述地图转换接口不提供转回 WGS-84 的方向。需要原始定位结果时，优先使用保存的 WGS-84 坐标。如果数据源只提供 GCJ-02 或 `BD09LL`，可以用第三方库（如 [`gcoord`](https://github.com/hujiulong/gcoord)）做近似逆转换。结果可能与原始定位有误差，使用前应按应用所需的精度验证。
+
+在安装了 `gcoord` 的 Node.js 项目中，传入 `[经度, 纬度]`、源坐标系和目标坐标系。以下示例将 GCJ-02 转为 WGS-84。输入为百度经纬度时，将源坐标系改为 `gcoord.BD09LL`。
+
+```javascript
+import gcoord from 'gcoord';
+
+const gcj02 = [120.1598, 30.2717];
+const [longitude, latitude] = gcoord.transform(gcj02, gcoord.GCJ02, gcoord.WGS84);
+console.log({ longitude, latitude });
+```
+
 ## API Reference
 
 ### `navigator.geolocation`
@@ -82,7 +106,7 @@ navigator.geolocation.clearWatch(watchId);
 
 #### `getCurrentPosition(success, error?, options?)`
 
-获取一次当前位置。方法没有返回值，成功回调收到包含 WGS-84 经纬度的 `GeolocationPosition`。`reverseGeocode` 选项暂不可用。需要地址时，请用 `Geocoder` 查询取得的坐标。
+获取一次当前位置。方法没有返回值，成功回调收到包含 WGS-84 经纬度的 `GeolocationPosition`。
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -133,57 +157,3 @@ navigator.geolocation.clearWatch(watchId);
 | `3` | `TIMEOUT` | 在设定时间内没有获得位置。 |
 
 `message` 包含便于阅读的错误说明。
-
-### `Geocoder`
-
-#### `new Geocoder(options?)`
-
-创建可重复使用的地址查询器。`options.level` 与 `acceptLanguages` 的含义与上面的定位选项相同；`timeout` 是查询超时毫秒数，默认 `3000`，范围为 0 至 2147483647。
-
-#### `getFromLocation(latitude, longitude)`
-
-查询一个 WGS-84 坐标，返回 `Promise<GeocodeAddress | null>`。纬度范围为 -90 至 90，经度范围为 -180 至 180；无匹配结果返回 `null`，服务不可用、超时或查询失败时拒绝 Promise，错误 `code` 分别为 `UNAVAILABLE`、`TIMEOUT`、`PROVIDER_ERROR`。
-
-### `GeocodeAddress`
-
-`formattedAddress`、`country`、`countryCode`、`region`、`city`、`district`、`street`、`streetNumber` 和 `postalCode` 均为字符串或 `null`。实际返回内容取决于地址查询服务。
-
-## 常见坐标系与转换
-
-同一个位置在不同坐标系下可能有不同的经纬度。把定位结果画在地图上之前，先确认目标地图 API 接受哪种坐标系。坐标系不一致时，地图上的标记会出现偏移。
-
-| 坐标系 | 背景 | 常见场景 |
-| --- | --- | --- |
-| **WGS-84** | 世界大地测量系统 1984，是 GPS 使用的全球大地参考系。 | GPS 模块输出、AIUI 定位结果和 Google Earth 使用的 KML 数据。[NGA WGS-84 说明](https://earth-info.nga.mil/?action=wgs84&dir=wgs84)、[Google KML 文档](https://developers.google.com/kml/articles/vector) |
-| **GCJ-02** | 由原中国国家测绘局制定，俗称火星坐标系。在 WGS-84 经纬度的基础上施加随位置变化的偏移。 | 高德地图和腾讯地图在中国大陆的标注、地点查询和路线规划。[高德坐标系说明](https://lbs.amap.com/api/javascript-api-v2/guide/transform/convertfrom)、[腾讯坐标系说明](https://cloud.tencent.com/developer/article/1361312) |
-| **BD-09** | 百度在 GCJ-02 基础上做了二次偏移。`BD09LL` 表示经纬度，`BD09MC` 表示以米为单位的墨卡托平面坐标。 | 百度地图在中国大陆的地图标注和地点服务通常用 `BD09LL`。[百度地图坐标系说明](https://lbsyun.baidu.com/docs/android?title=androidsdk%2Fguide%2Ftool%2Fcoordinate) |
-
-按所用 API、地区和图层确认输入坐标系。Google Maps JavaScript API 的经纬度采用 WGS-84，百度地图 JS API 的海外地图也使用 WGS-84。[Google Maps 坐标文档](https://developers.google.com/maps/documentation/javascript/coordinates)、[百度地图 JS API 坐标系](https://lbsyun.baidu.com/docs/jsapi?title=jsapi4%2Fguide%2Fconcept%2Fcoord)
-
-### 使用地图平台转换
-
-保存 `position.coords` 中的原始 WGS-84 经纬度，绘制标记或调用地图服务时按目标接口的要求转换一次。调用 `Geocoder.getFromLocation(latitude, longitude)` 时可以直接使用原始定位结果。
-
-| 转换方向 | 转换方法 |
-| --- | --- |
-| WGS-84 → GCJ-02 | 高德传入 `coordsys=gps`，腾讯传入 `type=1`。[高德坐标转换](https://lbs.amap.com/api/webservice/guide/api/convert)、[腾讯坐标转换](https://github.com/Tencent/tencentmap-webservice-skill/blob/main/references/api-tools.md#坐标转换) |
-| WGS-84 → BD09LL | 百度坐标转换传入 `model=2`。[百度坐标转换](https://lbsyun.baidu.com/docs/webapi?title=geoconv%2Fguide%2Fchangeposition-base) |
-| GCJ-02 → BD09LL | 百度坐标转换传入 `model=1`。[百度坐标转换](https://lbsyun.baidu.com/docs/webapi?title=geoconv%2Fguide%2Fchangeposition-base) |
-| BD09LL → GCJ-02 | 高德传入 `coordsys=baidu`，腾讯传入 `type=3`，或百度传入 `model=5`。[高德坐标转换](https://lbs.amap.com/api/webservice/guide/api/convert)、[腾讯坐标转换](https://github.com/Tencent/tencentmap-webservice-skill/blob/main/references/api-tools.md#坐标转换)、[百度坐标转换](https://lbsyun.baidu.com/docs/webapi?title=geoconv%2Fguide%2Fchangeposition-base) |
-| BD09LL ↔ BD09MC | 百度坐标转换中，转为米制坐标用 `model=3`，转回经纬度用 `model=4`。[百度坐标转换](https://lbsyun.baidu.com/docs/webapi?title=geoconv%2Fguide%2Fchangeposition-base) |
-
-输入为经纬度时，高德的 `locations` 和百度的 `coords` 按 `经度,纬度` 传参，腾讯的 `locations` 按 `纬度,经度` 传参。例如，同一个 WGS-84 定位点传给高德时写作 `locations=120.1551,30.2741`，传给腾讯时写作 `locations=30.2741,120.1551`。
-
-### 转回 WGS-84
-
-上述地图转换接口不提供转回 WGS-84 的方向。需要原始定位结果时，优先使用保存的 WGS-84 坐标。如果数据源只提供 GCJ-02 或 `BD09LL`，可以用第三方库（如 [`gcoord`](https://github.com/hujiulong/gcoord)）做近似逆转换。结果可能与原始定位有误差，使用前应按应用所需的精度验证。
-
-在安装了 `gcoord` 的 Node.js 项目中，传入 `[经度, 纬度]`、源坐标系和目标坐标系。以下示例将 GCJ-02 转为 WGS-84。输入为百度经纬度时，将源坐标系改为 `gcoord.BD09LL`。
-
-```javascript
-import gcoord from 'gcoord';
-
-const gcj02 = [120.1598, 30.2717];
-const [longitude, latitude] = gcoord.transform(gcj02, gcoord.GCJ02, gcoord.WGS84);
-console.log({ longitude, latitude });
-```

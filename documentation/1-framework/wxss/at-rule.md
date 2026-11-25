@@ -70,6 +70,8 @@
 
 支持 WOFF2 字体，也可以使用已支持的其他字体格式。
 
+随应用打包字体的配置和预览步骤见[自定义字体](../open-agent-format/assets/custom-fonts.md)。
+
 ---
 
 *更多 @规则 的使用详情，请参考 [MDN CSS At-rules](https://developer.mozilla.org/zh-CN/docs/Web/CSS/At-rule)。*

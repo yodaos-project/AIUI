@@ -359,7 +359,15 @@
             "id": "assets",
             "label": "资源（Assets）",
             "docId": "open-agent-format-assets",
-            "docPath": "1-framework/open-agent-format/assets.md"
+            "docPath": "1-framework/open-agent-format/assets.md",
+            "children": [
+              {
+                "id": "custom-fonts",
+                "label": "自定义字体",
+                "docId": "open-agent-format-assets-custom-fonts",
+                "docPath": "1-framework/open-agent-format/assets/custom-fonts.md"
+              }
+            ]
           },
           {
             "id": "packages",
@@ -883,16 +891,22 @@
         "expanded": false,
         "children": [
           {
+            "id": "maps",
+            "label": "系统导航",
+            "docId": "geo-data-maps",
+            "docPath": "3-api/geo-data/maps.md"
+          },
+          {
             "id": "geolocation",
             "label": "Geolocation",
             "docId": "geo-data-geolocation",
             "docPath": "3-api/geo-data/geolocation.md"
           },
           {
-            "id": "maps",
-            "label": "系统导航",
-            "docId": "geo-data-maps",
-            "docPath": "3-api/geo-data/maps.md"
+            "id": "geocoder",
+            "label": "Geocoder",
+            "docId": "geo-data-geocoder",
+            "docPath": "3-api/geo-data/geocoder.md"
           },
           {
             "id": "gpx-document",
