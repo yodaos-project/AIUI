@@ -10,6 +10,7 @@ import { cartridgeFor } from '../../lib/cartridges.js';
 import { openCartridge, WIDTH, HEIGHT } from '../../lib/emulator.js';
 import { Speaker, hasNativeAudio } from '../../lib/speaker.js';
 
+const MAX_FRAMES_PER_TICK = 6;
 const KEYS = {
   z: 1, x: 2, shift: 4, shiftleft: 4, shiftright: 4, enter: 8,
   arrowup: 16, arrowdown: 32, arrowleft: 64, arrowright: 128,
@@ -171,14 +172,18 @@ export default {
 
   draw(now) {
     const interval = this.emulator.frameMs;
-    // After a long host stall, resume with at most two frames of work.
-    this.nextFrame = Math.max(this.nextFrame ?? now, now - interval);
+    this.nextFrame ??= now;
     if (now < this.nextFrame) return;
+    const due = 1 + Math.floor((now - this.nextFrame) / interval);
+    const frames = Math.min(due, MAX_FRAMES_PER_TICK);
+    this.nextFrame += (due - frames) * interval;
     if (!this.data.muted && !this.speaker) this.startAudio();
     let buttons = 0;
     for (const bit of this.held.values()) buttons |= bit;
-    do {
-      const pcm = this.emulator.step(buttons | this.pending, this.image, !!this.speaker);
+    for (let i = 0; i < frames; i++) {
+      // Catch up on input and sound; only the last frame reaches the display.
+      const image = i === frames - 1 ? this.image : null;
+      const pcm = this.emulator.step(buttons | this.pending, image, !!this.speaker);
       if (pcm) {
         try {
           this.speaker.append(pcm);
@@ -187,8 +192,8 @@ export default {
         }
       }
       this.pending = 0;
-      this.nextFrame += interval;
-    } while (this.nextFrame <= now);
+      this.nextFrame += this.emulator.frameMs;
+    }
     this.ctx.putImageData(this.image, 0, 0);
     this.ctx.flush();
   },
