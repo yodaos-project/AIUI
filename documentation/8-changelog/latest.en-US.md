@@ -81,21 +81,26 @@ You can also crop before resizing; see [Canvas](/AIUI/api/canvas). When detectin
 
 ## Accelerate Repeated Computation
 
-TypeScript can use `offload` for repeated numeric work or supported Canvas drawing. For example, this function adds values above a threshold:
+Use the `@offload` decorator on a public TypeScript class method to accelerate eligible numeric loops and Canvas drawing. This static method adds up samples above a threshold.
 
 ```typescript
 import { offload } from 'ink:compiler';
 
-export const sumAbove = offload(function sumAbove(values: Float64Array, threshold: number): number {
-  let total = 0;
-  for (let i = 0; i < values.length; i++) {
-    if (values[i] > threshold) total += values[i];
+export class SampleStats {
+  @offload
+  static sumAbove(values: Float64Array, threshold: number): number {
+    let total = 0;
+    for (let i = 0; i < values.length; i++) {
+      if (values[i] > threshold) total += values[i];
+    }
+    return total;
   }
-  return total;
-});
+}
+
+console.log(SampleStats.sumAbove(new Float64Array([1, 3, 5]), 2)); // 8
 ```
 
-When a call cannot be accelerated, it falls back to ordinary JavaScript by default. See [JavaScript Compatibility](/AIUI/guide/runtime-js) for usage and limits.
+When a call cannot be accelerated, it runs the original JavaScript by default. See [JavaScript](/AIUI/guide/runtime-js) for both forms and more examples.
 
 ## Update a Single-File Interface Incrementally
 
@@ -226,7 +231,7 @@ Only the focused foreground `_blank` page can use this capability. A successfull
 
 ## When Upgrading
 
-- **Split Long Synchronous Work**: Each instance has a default 2,000 ms synchronous JavaScript budget. Exceeding it interrupts scripts and requests instance closure; asynchronous waiting after yielding control is excluded. Batch computations and yield the event loop. See [JavaScript Compatibility](/AIUI/guide/runtime-js).
+- **Split Long Synchronous Work**: Each instance has a default 2,000 ms synchronous JavaScript budget. Exceeding it interrupts scripts and requests instance closure; asynchronous waiting after yielding control is excluded. Batch computations and yield the event loop. See [JavaScript](/AIUI/guide/runtime-js).
 - **Retain Listener Callbacks**: Events support `capture`, `once`, `passive`, and `AbortSignal`. Removal requires the original callback and matching capture value; omitting it no longer clears all listeners. See [Events](/AIUI/framework/open-agent-format-page-events).
 - **Use the Module Reuse Entry Point**: `WebAssembly.validate()` and `compile()` no longer accept compiled Modules. Use `instantiate(module)`. Shared memory, threads, SIMD, memory64, and WASI remain unavailable.
 

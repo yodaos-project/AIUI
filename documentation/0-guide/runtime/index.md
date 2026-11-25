@@ -34,10 +34,10 @@
 
 AIUI 使用 JavaScript 编写智能体的交互逻辑，也支持导入 TypeScript 模块。你可以使用常见的现代 JavaScript 语法，但不能假设浏览器中的所有 API 都可以直接使用；请查看对应的 API 文档确认。
 
-同时，避免让同步代码长时间占用运行时，以免界面无法及时响应。常用语法、TypeScript 和执行时间限制见 [JavaScript 兼容性](./js.md)。
+同时，避免让同步代码长时间占用运行时，以免界面无法及时响应。常用语法、TypeScript 和执行时间限制见 [JavaScript](./js.md)。
 
 ## 继续阅读
 
 - [运行环境](./env.md)：了解模拟预览和真机测试。
-- [JavaScript 兼容性](./js.md)：了解常用语法、TypeScript 和执行限制。
+- [JavaScript](./js.md)：了解常用语法、TypeScript 和执行限制。
 - [运行机制](./mechanism.md)：了解页面如何显示、响应操作并更新内容。

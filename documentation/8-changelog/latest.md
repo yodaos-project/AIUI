@@ -81,21 +81,26 @@ bitmap.close();
 
 ## 加速重复计算
 
-TypeScript 可以用 `offload` 标记重复的数值计算或受支持的 Canvas 绘制。例如，下面的函数计算大于阈值的数之和：
+在 TypeScript 中给公开类方法加上 `@offload` 注解，可以加速符合条件的数值循环和 Canvas 绘制。下面的静态方法将大于阈值的采样值相加。
 
 ```typescript
 import { offload } from 'ink:compiler';
 
-export const sumAbove = offload(function sumAbove(values: Float64Array, threshold: number): number {
-  let total = 0;
-  for (let i = 0; i < values.length; i++) {
-    if (values[i] > threshold) total += values[i];
+export class SampleStats {
+  @offload
+  static sumAbove(values: Float64Array, threshold: number): number {
+    let total = 0;
+    for (let i = 0; i < values.length; i++) {
+      if (values[i] > threshold) total += values[i];
+    }
+    return total;
   }
-  return total;
-});
+}
+
+console.log(SampleStats.sumAbove(new Float64Array([1, 3, 5]), 2)); // 8
 ```
 
-不能加速时默认回退到普通 JavaScript；用法和限制见 [JavaScript 兼容性](/AIUI/guide/runtime-js)。
+不能加速时默认执行原来的 JavaScript。注解、函数写法和更多场景见 [JavaScript](/AIUI/guide/runtime-js)。
 
 ## 逐步更新单文件界面
 
@@ -226,7 +231,7 @@ export default {
 
 ## 升级时需要注意
 
-- **拆分长时间同步计算**：每个实例默认有 2,000 ms 同步 JavaScript 执行预算；超时会中断脚本并请求关闭实例，交还控制权后的异步等待不计入。批量计算应分批并让出事件循环，详见 [JavaScript 兼容性](/AIUI/guide/runtime-js)。
+- **拆分长时间同步计算**：每个实例默认有 2,000 ms 同步 JavaScript 执行预算；超时会中断脚本并请求关闭实例，交还控制权后的异步等待不计入。批量计算应分批并让出事件循环，详见 [JavaScript](/AIUI/guide/runtime-js)。
 - **保留监听器的回调引用**：事件支持 `capture`、`once`、`passive` 和 `AbortSignal`。移除时须传入原回调及相同的 capture；省略回调不再清空全部监听器，详见[事件](/AIUI/framework/open-agent-format-page-events)。
 - **使用正确的模块复用入口**：`WebAssembly.validate()` 和 `compile()` 不再接收已编译 Module，请使用 `instantiate(module)`。共享内存、线程、SIMD、memory64 和 WASI 仍不可用。
 
