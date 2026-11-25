@@ -20,11 +20,17 @@ agent-app/
     ├── intro.mp4
     ├── notification.ogg
     ├── loading.json
+    ├── fonts/
+    │   └── DemoFont-Regular.woff2
     └── images/
         └── lottie-icon.png
 ```
 
 This is a recommendation, not a runtime requirement. Assets may instead live next to the Page, Widget, or feature module that owns them. Directory names and nesting do not affect loading as long as each reference resolves to the correct path.
+
+## Use Custom Fonts
+
+Fonts can ship with the application. You can keep font files in `assets/fonts/` and register them in `app.json` to use them on a page. See [Custom Fonts](./assets/custom-fonts.en-US.md) for the file layout, configuration, and preview steps.
 
 ## Use Relative Paths
 

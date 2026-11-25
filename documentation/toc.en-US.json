@@ -359,7 +359,15 @@
             "id": "assets",
             "label": "Assets",
             "docId": "open-agent-format-assets",
-            "docPath": "1-framework/open-agent-format/assets.en-US.md"
+            "docPath": "1-framework/open-agent-format/assets.en-US.md",
+            "children": [
+              {
+                "id": "custom-fonts",
+                "label": "Custom Fonts",
+                "docId": "open-agent-format-assets-custom-fonts",
+                "docPath": "1-framework/open-agent-format/assets/custom-fonts.en-US.md"
+              }
+            ]
           },
           {
             "id": "packages",
@@ -723,16 +731,22 @@
         "expanded": false,
         "children": [
           {
+            "id": "maps",
+            "label": "System Navigation",
+            "docId": "geo-data-maps",
+            "docPath": "3-api/geo-data/maps.en-US.md"
+          },
+          {
             "id": "geolocation",
             "label": "Geolocation",
             "docId": "geo-data-geolocation",
             "docPath": "3-api/geo-data/geolocation.en-US.md"
           },
           {
-            "id": "maps",
-            "label": "System Navigation",
-            "docId": "geo-data-maps",
-            "docPath": "3-api/geo-data/maps.en-US.md"
+            "id": "geocoder",
+            "label": "Geocoder",
+            "docId": "geo-data-geocoder",
+            "docPath": "3-api/geo-data/geocoder.en-US.md"
           },
           {
             "id": "gpx-document",

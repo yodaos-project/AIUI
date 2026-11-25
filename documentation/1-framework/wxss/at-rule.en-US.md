@@ -70,6 +70,8 @@ Used to load custom web fonts.
 
 WOFF2 fonts are supported alongside other supported font formats.
 
+To bundle a font with your application, follow the setup and preview steps in [Custom Fonts](../open-agent-format/assets/custom-fonts.en-US.md).
+
 ---
 
 *For more details about at-rules, see [MDN CSS At-rules](https://developer.mozilla.org/en-US/docs/Web/CSS/At-rule).*

@@ -17,7 +17,7 @@ try {
 }
 ```
 
-Coordinates use WGS-84; the numbers in the example are latitude and longitude, respectively. Looking up supplied coordinates does not require device location permission. Address lookup may be unavailable in some environments, and returns `null` when no match is found. See [Geolocation](/AIUI/api/geo-data-geolocation) for more options.
+Coordinates use WGS-84; the numbers in the example are latitude and longitude, respectively. Looking up supplied coordinates does not require device location permission. Address lookup may be unavailable in some environments, and returns `null` when no match is found. See [Geocoder](../3-api/geo-data/geocoder.en-US.md) for more options.
 
 ## Open Navigation for the User
 

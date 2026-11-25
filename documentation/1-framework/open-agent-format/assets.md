@@ -20,11 +20,17 @@ agent-app/
     ├── intro.mp4
     ├── notification.ogg
     ├── loading.json
+    ├── fonts/
+    │   └── DemoFont-Regular.woff2
     └── images/
         └── lottie-icon.png
 ```
 
 这只是一种推荐方式，不是运行要求。资源也可以放在 Page、Widget 或功能模块附近；只要引用路径能够正确解析，目录名称和层级不会影响资源加载。
+
+## 使用自定义字体
+
+字体也可以随应用一起打包。你可以把字体文件放在 `assets/fonts/`，在 `app.json` 中登记后，就能在页面中使用。文件放置、配置和预览步骤见[自定义字体](./assets/custom-fonts.md)。
 
 ## 使用相对路径
 
