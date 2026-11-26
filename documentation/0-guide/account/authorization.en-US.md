@@ -79,20 +79,44 @@ if (!authResult?.data?.checkResult) {
 }
 ```
 
-Example response when the user has not authorized:
+The outer `code: 1` and `msg: "success"` indicate that the authorization check succeeded. Read `data.checkResult` to determine whether authorization is effective.
+
+| `data.checkResult` | Authorization state | `data.msg` |
+| --- | --- | --- |
+| `false` | Not effective | Gives the reason, which can vary. For example, the user may not have authorized the developer. |
+| `true` | Effective | An empty string (`""`). There is no message to show. |
+
+**Example response when authorization is not effective**
 
 ```json
 {
   "code": 1,
   "msg": "success",
-  "timestamp": 1762760038068,
-  "uuid": "trace-id",
+  "timestamp": 1700000000001,
+  "uuid": "example-trace-1",
   "data": {
     "checkResult": false,
-    "msg": "用户未与开发者签约"
+    "msg": "当前智能体未勾选Rokid账号信息"
   }
 }
 ```
+
+**Example response when authorization is effective**
+
+```json
+{
+  "code": 1,
+  "msg": "success",
+  "timestamp": 1700000000002,
+  "uuid": "example-trace-2",
+  "data": {
+    "checkResult": true,
+    "msg": ""
+  }
+}
+```
+
+In two checks of the same agent, `getProfile()` returned `accountId` and `userName` while authorization was not effective, and both `mobile` and `code` were `null`. Both restricted fields had values in the call after authorization took effect. Check each field for a value before use.
 
 ### 4.2 Retrieve Basic Account Information
 
