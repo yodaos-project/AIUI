@@ -1,6 +1,43 @@
 # Agent 会话
 
-通过 `getApp().getAgent()` 向当前 Agent 会话发布背景数据、发送用户消息、展示可更新的卡片，以及调用远端工具和读取资源。它不会创建模型或新对话。
+通过 `getApp().getAgent()` 向当前 Agent 会话发布背景数据、发送用户消息、发送卡片，以及调用远端工具和读取资源。它不会创建模型或新对话。
+
+## 查看会话支持哪些功能
+
+在 App 或 Page 中，先用 `getApp().getAgent()` 获取当前会话，再读取 `agent.capabilities`。下面的示例会打印实际返回的值，并检查能否发文本消息、调用远端工具，以及接收列表变化通知。
+
+```javascript
+const agent = getApp().getAgent();
+const capabilities = agent.capabilities;
+console.log(JSON.stringify({ connectionState: agent.connectionState, capabilities }));
+
+const canSendText = capabilities.operations.includes('conversation.sendMessage') &&
+  capabilities.contentTypes.includes('text');
+const canCallTools = capabilities.operations.includes('tools.call');
+
+console.log('可以发送文本消息', canSendText);
+console.log('可以调用远端工具', canCallTools);
+console.log('支持工具列表变化通知', capabilities.toolListChanged);
+console.log('支持资源列表变化通知', capabilities.resourceListChanged);
+```
+
+用 `.includes()` 检查列表里有没有指定的值。对于通知字段，`true` 表示支持。能力可能随连接变化，可以在 `capabilitieschange` 事件中读取最新值。完整字段见 [capabilities](#capabilities)。
+
+在 Rokid Glasses 2 代上，通过 `aix launch-page` 预览本地页面时，全屏和卡片预览都返回了下面的结果：
+
+```json
+{
+  "connectionState": "unavailable",
+  "capabilities": {
+    "operations": [],
+    "contentTypes": [],
+    "toolListChanged": false,
+    "resourceListChanged": false
+  }
+}
+```
+
+`unavailable` 表示当前页面没有可用的 Agent 会话。这时 `operations` 和 `contentTypes` 都为空，两个通知字段都是 `false`。要判断活跃会话支持哪些操作，请在 `connectionState` 为 `ready` 时重新读取 `agent.capabilities`。
 
 ## 发送用户消息
 
@@ -19,8 +56,6 @@ async function askAboutProduct() {
   }
 }
 ```
-
-先读取 `agent.capabilities.operations` 可以判断当前会话支持的操作。例如，发送文本消息对应 `conversation.sendMessage`，同时要求 `capabilities.contentTypes` 包含 `text`。能力可能在连接过程中变化；请求本身仍应处理失败。
 
 ## 显式发布和移除上下文
 
@@ -43,42 +78,33 @@ selection.dispose();
 
 发布和更新不会发送用户消息或自动开始推理；成功只表示确认接收，不保证模型已经读取。多个条目汇总发布，更新按顺序发送。条目是模型只读背景，不是双向共享状态。
 
-## 发送和更新卡片
+## 发送卡片
 
-使用 `sendCard()` 可以在 Rokid AI App 的会话中展示一张卡片。例如，智能体可以发送一张商品卡片，让用户点击后打开商品页面。目前卡片支持标题和跳转链接；描述和 `data` 的展示将在后续支持。
-
-在 App 或 Page 的业务方法中调用：
+用 `sendCard()` 在会话里显示一张卡片。会话就绪且支持 `conversation.sendCard` 时才发送。
 
 ```javascript
-async function sendProductCard() {
-  const conversation = getApp().getAgent().conversation;
+async function showProductCard() {
   try {
-    const card = await conversation.sendCard({
-      title: '查看商品 DEMO',
-      href: 'https://example.com/products/DEMO',
+    const agent = getApp().getAgent();
+    if (agent.connectionState !== 'ready' ||
+        !agent.capabilities.operations.includes('conversation.sendCard')) {
+      return;
+    }
+
+    await agent.conversation.sendCard({
+      title: '商品 DEMO',
     });
-    return card;
   } catch (error) {
     console.error('发送卡片失败', error);
   }
 }
+
+showProductCard();
 ```
 
-`title` 是用户看到的标题，`href` 是点击卡片后打开的地址。部分运行时版本尚不支持 `href`，传入时会返回 `DataError`。
-
-调用成功后会返回卡片句柄，可以用它更新卡片：
-
-```javascript
-const card = await sendProductCard();
-if (card) {
-  await card.update({
-    title: '查看更新后的商品',
-    href: 'https://example.com/products/DEMO',
-  });
-}
-```
-
-更新会替换整张卡片，因此需要重新提供要保留的字段。每次 `sendCard()` 都会新建一张卡片，目前没有删除接口。卡片内容不会自动提供给模型；如果模型也需要这些信息，请另外调用 `provideContext()`。
+- `title` 是卡片标题，`href` 是点击后打开的链接。部分运行时传入 `href` 会报 `DataError`。卡片描述和 `data` 暂不展示。
+- 每次发送都会创建新卡片，目前没有删除接口。
+- 如果模型也需要卡片里的信息，请用 `provideContext()` 提供。
 
 ## 使用远端工具和资源
 
@@ -128,7 +154,25 @@ if (resource) console.log(await agent.readResource(resource.uri));
 
 #### `capabilities`
 
-只读快照，包含 `operations`、`contentTypes`，以及表示列表变更通知是否可用的 `toolListChanged` 和 `resourceListChanged`。
+当前会话能力的只读快照。列表可以为空，通知不可用时对应字段为 `false`。
+
+| 字段 | 类型 | 值的含义 |
+| --- | --- | --- |
+| `operations` | `readonly string[]` | 当前会话支持的操作名，见下表。 |
+| `contentTypes` | `readonly 'text'[]` | 目前唯一的可选值是 `text`。空列表表示当前会话不支持发送文本。 |
+| `toolListChanged` | `boolean` | `true` 表示支持 `toolschange` 通知。 |
+| `resourceListChanged` | `boolean` | `true` 表示支持 `resourceschange` 通知。 |
+
+以下是本页介绍的操作：
+
+| 操作名 | 用途 |
+| --- | --- |
+| `conversation.sendMessage` | 发送用户消息 |
+| `conversation.sendCard` | 发送卡片 |
+| `conversation.updateContext` | 发布、更新或移除上下文 |
+| `tools.call` | 调用远端工具 |
+| `resources.list` | 列出远端资源 |
+| `resources.read` | 读取远端资源 |
 
 #### `invocation`
 
@@ -203,7 +247,7 @@ if (resource) console.log(await agent.readResource(resource.uri));
 
 #### `sendCard(definition, options?)`
 
-返回 `Promise<CardHandle>`，需要 `conversation.sendCard`。卡片定义与更新共用以下字段；通用请求选项不支持卡片 `lifetime`。
+返回 `Promise<CardHandle>`，需要 `conversation.sendCard`。卡片定义包含以下字段；通用请求选项不支持卡片 `lifetime`。
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -227,10 +271,6 @@ if (resource) console.log(await agent.readResource(resource.uri));
 #### `id`
 
 只读、由运行时生成的卡片标识，限定在所属连接和 App 内。
-
-#### `update(definition, options?)`
-
-返回 `Promise<void>`，需要 `conversation.updateCard`。保留 id 并完整替换展示数据；完成表示确认处理，不保证画面已显示。
 
 ### 通用请求选项与错误
 
