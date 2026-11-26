@@ -1,6 +1,43 @@
 # Agent Sessions
 
-Use `getApp().getAgent()` to publish background data, send user messages, display updatable cards, call remote tools, and read resources in the current Agent session. It does not create a model or a new conversation.
+Use `getApp().getAgent()` to publish background data, send user messages, send cards, call remote tools, and read resources in the current Agent session. It does not create a model or a new conversation.
+
+## Check What the Session Supports
+
+In an App or Page, use `getApp().getAgent()` to get the current session, then read `agent.capabilities`. This example logs the actual values and checks whether the session can send text, call remote tools, and receive list change notifications.
+
+```javascript
+const agent = getApp().getAgent();
+const capabilities = agent.capabilities;
+console.log(JSON.stringify({ connectionState: agent.connectionState, capabilities }));
+
+const canSendText = capabilities.operations.includes('conversation.sendMessage') &&
+  capabilities.contentTypes.includes('text');
+const canCallTools = capabilities.operations.includes('tools.call');
+
+console.log('Can send text messages', canSendText);
+console.log('Can call remote tools', canCallTools);
+console.log('Supports tool list change notifications', capabilities.toolListChanged);
+console.log('Supports resource list change notifications', capabilities.resourceListChanged);
+```
+
+Use `.includes()` to look for a value in a list. For notification flags, `true` means the notification is available. Capabilities can change as the connection changes. Use the `capabilitieschange` event to read the latest values. See [capabilities](#capabilities) for all fields.
+
+On Rokid Glasses (2nd generation), previewing a local page with `aix launch-page` returned these values in both full-screen and card previews:
+
+```json
+{
+  "connectionState": "unavailable",
+  "capabilities": {
+    "operations": [],
+    "contentTypes": [],
+    "toolListChanged": false,
+    "resourceListChanged": false
+  }
+}
+```
+
+`unavailable` means the current page has no available Agent session. Both `operations` and `contentTypes` are empty, and both notification flags are `false`. To check what an active session supports, read `agent.capabilities` again when `connectionState` is `ready`.
 
 ## Send a User Message
 
@@ -19,8 +56,6 @@ async function askAboutProduct() {
   }
 }
 ```
-
-Read `agent.capabilities.operations` to check the operations available in the current session. For example, text messages require `conversation.sendMessage` and `text` in `capabilities.contentTypes`. Capabilities can change during connection; requests must still handle failure.
 
 ## Publish and Remove Context Explicitly
 
@@ -43,42 +78,33 @@ selection.dispose();
 
 Publishing and updating context neither sends a user message nor starts inference. Success acknowledges receipt without guaranteeing that a model has read the data. Entries are published together and updates are ordered. An entry is read-only model background, not shared two-way state.
 
-## Send and Update a Card
+## Send a Card
 
-Use `sendCard()` to display a card in a conversation in the Rokid AI App. For example, an agent can send a product card that the user can tap to open the product page. Cards currently support a title and a destination link; display of a description and `data` will be supported later.
-
-Call it from an App or Page method:
+Use `sendCard()` to show a card in the conversation. Send only when the session is ready and supports `conversation.sendCard`.
 
 ```javascript
-async function sendProductCard() {
-  const conversation = getApp().getAgent().conversation;
+async function showProductCard() {
   try {
-    const card = await conversation.sendCard({
-      title: 'View product DEMO',
-      href: 'https://example.com/products/DEMO',
+    const agent = getApp().getAgent();
+    if (agent.connectionState !== 'ready' ||
+        !agent.capabilities.operations.includes('conversation.sendCard')) {
+      return;
+    }
+
+    await agent.conversation.sendCard({
+      title: 'Product DEMO',
     });
-    return card;
   } catch (error) {
     console.error('Failed to send card', error);
   }
 }
+
+showProductCard();
 ```
 
-`title` is the text shown to the user, and `href` is the address opened when they tap the card. Some runtime versions do not yet support `href` and return a `DataError` when it is provided.
-
-When the call succeeds, it returns a card handle that you can use to update the card:
-
-```javascript
-const card = await sendProductCard();
-if (card) {
-  await card.update({
-    title: 'View the updated product',
-    href: 'https://example.com/products/DEMO',
-  });
-}
-```
-
-An update replaces the entire card, so include any fields you want to keep. Each `sendCard()` creates a new card, and there is no removal API. Card content is not automatically provided to the model; call `provideContext()` separately if the model needs it.
+- `title` is the card title. `href` is the link that opens when the user taps the card. Some runtimes return `DataError` if you pass `href`. Card descriptions and `data` are not displayed yet.
+- Each send creates a new card. There is currently no delete API.
+- If the model also needs the information on the card, pass it to `provideContext()`.
 
 ## Use Remote Tools and Resources
 
@@ -128,7 +154,25 @@ Read-only state: `unavailable` (no service), `connecting`, `ready`, or `closed` 
 
 #### `capabilities`
 
-Read-only snapshot containing `operations`, `contentTypes`, and the `toolListChanged` and `resourceListChanged` flags indicating available list-change notifications.
+A read-only snapshot of the current session capabilities. The lists can be empty. If a notification is unavailable, its field is `false`.
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `operations` | `readonly string[]` | Operation names supported by the current session. See the table below. |
+| `contentTypes` | `readonly 'text'[]` | Currently, `text` is the only possible value. If the list is empty, the session does not support sending text. |
+| `toolListChanged` | `boolean` | `true` means `toolschange` notifications are available. |
+| `resourceListChanged` | `boolean` | `true` means `resourceschange` notifications are available. |
+
+This page covers the following operations.
+
+| Operation | Use |
+| --- | --- |
+| `conversation.sendMessage` | Send a user message |
+| `conversation.sendCard` | Send a card |
+| `conversation.updateContext` | Publish, update, or remove context |
+| `tools.call` | Call a remote tool |
+| `resources.list` | List remote resources |
+| `resources.read` | Read a remote resource |
 
 #### `invocation`
 
@@ -203,7 +247,7 @@ Returns `Promise<void>`. Requires `conversation.sendMessage` and text content su
 
 #### `sendCard(definition, options?)`
 
-Returns `Promise<CardHandle>` and requires `conversation.sendCard`. Creation and updates share the fields below. Cards accept common request options but no `lifetime`.
+Returns `Promise<CardHandle>` and requires `conversation.sendCard`. The card definition accepts the fields below. Cards accept common request options but no `lifetime`.
 
 | Field | Type | Required | Description |
 | --- | --- | --- | --- |
@@ -227,10 +271,6 @@ Returns `undefined`. Removes the local entry immediately and schedules publicati
 #### `id`
 
 Read-only, runtime-generated identifier scoped to the connection and App.
-
-#### `update(definition, options?)`
-
-Returns `Promise<void>` and requires `conversation.updateCard`. Preserves the id and replaces the complete presentation data. Completion acknowledges processing without guaranteeing visible presentation.
 
 ### Common Request Options and Errors
 
