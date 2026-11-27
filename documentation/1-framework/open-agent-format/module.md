@@ -2,7 +2,7 @@
 
 AIUI 支持基于 ES Modules 的模块组织方式，可用于拆分业务逻辑、复用工具函数以及管理静态资源导入。
 
-除了普通的 JavaScript 模块外，AIUI 也支持直接导入使用可擦除类型语法的 `.ts` 文件。
+AIUI 可以直接导入 `.ts` 文件。运行时支持 TypeScript 可擦除语法的一个子集。
 
 ## 导出与导入
 
@@ -39,7 +39,14 @@ export default {
 
 AIUI 运行时会在模块执行前移除支持的类型语法，然后执行剩下的 JavaScript。支持的语法包括 `interface`、`type` 类型别名、类型标注、泛型参数和类型实参、`as` 类型断言、`satisfies` 表达式以及独立的 `import type` 声明。运行时不做类型检查，也不支持 TSX。
 
-运行时会拒绝 `enum` 和 `namespace`/`module` 声明，因为类型擦除不会为这些声明生成运行时 JavaScript。可以用普通对象保存枚举值，再用联合类型约束取值范围。
+运行时不支持在导入列表中用 `type` 标记类型，例如 `import { type Mode, value } from './mode'`。从同一模块导入类型和值时，请分开声明。
+
+```typescript
+import type { Mode } from './mode';
+import { value } from './mode';
+```
+
+运行时也不支持类的 `implements` 子句、`enum` 声明以及所有 `namespace`/`module` 声明，即使其中只包含类型。可以用普通对象保存枚举值，再用联合类型约束取值范围。
 
 ```typescript
 export const Mode = { A: 1, B: 2 } as const;
