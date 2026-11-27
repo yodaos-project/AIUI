@@ -2,7 +2,7 @@
 
 AIUI 支持基于 ES Modules 的模块组织方式，可用于拆分业务逻辑、复用工具函数以及管理静态资源导入。
 
-除了普通的 JavaScript 模块外，AIUI 也支持直接导入 `.ts` 文件。运行时会在模块执行前移除 TypeScript 语法，但当前不会进行类型检查，且不支持 TSX。
+除了普通的 JavaScript 模块外，AIUI 也支持直接导入使用可擦除类型语法的 `.ts` 文件。
 
 ## 导出与导入
 
@@ -33,11 +33,22 @@ export default {
 };
 ```
 
-如果使用 TypeScript，也可以直接导入 `.ts` 模块；省略扩展名时会优先尝试 `.js`，再尝试 `.ts`。
+导入时如果省略扩展名，运行时会先尝试 `.js`，再尝试 `.ts`。
 
 ## 使用 TypeScript
 
-AIUI 运行时会在模块执行前移除 TypeScript 类型语法，因此可以直接编写和导入 `.ts` 文件。但类型检查、编辑器补全和全局 API 提示仍然需要在项目中自行配置 TypeScript 环境。
+AIUI 运行时会在模块执行前移除支持的类型语法，然后执行剩下的 JavaScript。支持的语法包括 `interface`、`type` 类型别名、类型标注、泛型参数和类型实参、`as` 类型断言、`satisfies` 表达式以及独立的 `import type` 声明。运行时不做类型检查，也不支持 TSX。
+
+运行时会拒绝 `enum` 和 `namespace`/`module` 声明，因为类型擦除不会为这些声明生成运行时 JavaScript。可以用普通对象保存枚举值，再用联合类型约束取值范围。
+
+```typescript
+export const Mode = { A: 1, B: 2 } as const;
+export type Mode = (typeof Mode)[keyof typeof Mode];
+```
+
+如果页面静态导入的依赖中含有不支持的声明，该模块编译会失败，页面脚本也无法执行。如果看到 `Failed to execute page`，请在日志中查找 `Unsupported TypeScript feature`，根据其中的模块路径、位置和语法名称定位问题。
+
+如需类型检查、编辑器补全和全局 API 提示，请在项目中配置 TypeScript 环境。
 
 首先安装 TypeScript 和 AIUI 的类型定义包：
 

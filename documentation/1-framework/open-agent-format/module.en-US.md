@@ -2,7 +2,7 @@
 
 AIUI supports ES Modules for organizing code, reusing utilities, and managing static asset imports.
 
-In addition to standard JavaScript modules, AIUI also supports importing `.ts` files directly. TypeScript syntax is removed before runtime evaluation, but there is currently no type checking, and TSX is not supported.
+AIUI can also import `.ts` files directly when they use erasable type syntax.
 
 ## Exporting And Importing
 
@@ -33,11 +33,22 @@ export default {
 };
 ```
 
-If you use TypeScript, `.ts` modules can also be imported directly. When the extension is omitted, resolution tries `.js` first and then `.ts`.
+When the extension is omitted, the runtime tries `.js` first and then `.ts`.
 
 ## Using TypeScript
 
-AIUI removes TypeScript type syntax before runtime evaluation, so `.ts` files can be authored and imported directly. However, type checking, editor completion, and global API hints still need a local TypeScript setup in your project.
+Before executing a module, the AIUI runtime strips supported type syntax and runs the remaining JavaScript. Supported forms include `interface` declarations, `type` aliases, type annotations, generic type parameters and arguments, `as` assertions, `satisfies` expressions, and standalone `import type` declarations. The runtime does not type-check modules or support TSX.
+
+The runtime rejects `enum` and `namespace`/`module` declarations. Type erasure cannot generate the JavaScript needed to provide runtime values for these declarations. For enum-like values, use a plain object with a union type.
+
+```typescript
+export const Mode = { A: 1, B: 2 } as const;
+export type Mode = (typeof Mode)[keyof typeof Mode];
+```
+
+If a statically imported dependency of a page contains an unsupported declaration, the module fails to compile and the page script cannot execute. If you see `Failed to execute page`, look for `Unsupported TypeScript feature` in the logs to find the module path, position, and unsupported syntax.
+
+Set up TypeScript in your project for type checking, editor completion, and global API hints.
 
 First install TypeScript and the AIUI type package:
 
