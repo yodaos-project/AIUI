@@ -2,7 +2,7 @@
 
 AIUI supports ES Modules for organizing code, reusing utilities, and managing static asset imports.
 
-AIUI can also import `.ts` files directly when they use erasable type syntax.
+AIUI can import `.ts` files directly. The runtime supports a subset of erasable TypeScript syntax.
 
 ## Exporting And Importing
 
@@ -39,7 +39,14 @@ When the extension is omitted, the runtime tries `.js` first and then `.ts`.
 
 Before executing a module, the AIUI runtime strips supported type syntax and runs the remaining JavaScript. Supported forms include `interface` declarations, `type` aliases, type annotations, generic type parameters and arguments, `as` assertions, `satisfies` expressions, and standalone `import type` declarations. The runtime does not type-check modules or support TSX.
 
-The runtime rejects `enum` and `namespace`/`module` declarations. Type erasure cannot generate the JavaScript needed to provide runtime values for these declarations. For enum-like values, use a plain object with a union type.
+The runtime rejects inline type specifiers such as `import { type Mode, value } from './mode'`. To import a type and a value from the same module, use separate declarations.
+
+```typescript
+import type { Mode } from './mode';
+import { value } from './mode';
+```
+
+The runtime also rejects `implements` clauses on classes, `enum` declarations, and all `namespace`/`module` declarations, even those containing only types. For enum-like values, use a plain object with a union type.
 
 ```typescript
 export const Mode = { A: 1, B: 2 } as const;
