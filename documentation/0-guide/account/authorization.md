@@ -66,20 +66,44 @@ if (!authResult?.data?.checkResult) {
 }
 ```
 
-未授权时的响应示例：
+外层的 `code: 1` 和 `msg: "success"` 表示授权检查请求成功。用 `data.checkResult` 判断授权是否已生效。
+
+| `data.checkResult` | 授权状态 | `data.msg` |
+| --- | --- | --- |
+| `false` | 未生效 | 返回原因，内容可能因情况而异，例如“用户未与开发者签约”。 |
+| `true` | 已生效 | 空字符串 `""`，无需提示。 |
+
+**授权未生效时的响应示例**
 
 ```json
 {
   "code": 1,
   "msg": "success",
-  "timestamp": 1762760038068,
-  "uuid": "trace-id",
+  "timestamp": 1700000000001,
+  "uuid": "example-trace-1",
   "data": {
     "checkResult": false,
-    "msg": "用户未与开发者签约"
+    "msg": "当前智能体未勾选Rokid账号信息"
   }
 }
 ```
+
+**授权已生效时的响应示例**
+
+```json
+{
+  "code": 1,
+  "msg": "success",
+  "timestamp": 1700000000002,
+  "uuid": "example-trace-2",
+  "data": {
+    "checkResult": true,
+    "msg": ""
+  }
+}
+```
+
+在同一智能体的两次检查中，授权未生效时，`getProfile()` 仍返回了 `accountId` 和 `userName`，而 `mobile` 和 `code` 均为 `null`。授权生效后，这两个受限字段在该次调用中均有值。使用前仍需分别检查它们是否有值。
 
 ### 4.2 获取用户账号基础信息
 获取当前登录用户的账号基础信息，并生成一个有效期为 5 分钟的账号校验码。
