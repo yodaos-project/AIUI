@@ -4,10 +4,10 @@ AIUI fully embraces the modern JavaScript ecosystem and provides comprehensive s
 
 ## 1. ESM Support
 
-The underlying AIUI runtime (Ink) supports ESM natively, which means you can use the `import` and `export` keywords when developing agents.
+The AIUI runtime supports ESM natively, so you can use `import` and `export` when developing agents.
 
 > [!IMPORTANT]
-> **`.ink` files (single-file components) do not support exports.** They serve as page or component entry points for agents and can only import other modules. Only standard `.js` files support exporting.
+> Single-file components (`.ink` files) can serve as page or component entry points. To share code across pages or components, export it from a standalone `.js` or `.ts` module and import it from each entry point.
 
 ### Export Modules
 
@@ -53,19 +53,15 @@ async function loadChart() {
 
 ## 3. Using Third-Party Libraries
 
-Since AIUI currently does not support importing npm packages directly from `node_modules`, follow these steps if you need to use a third-party library:
-
-1.  **Download manually**: Download the ESM build of the library, usually a `.mjs` file or a bundled `.js` file.
-2.  **Store it in your project**: Put the file into your project directory, for example in a `libs/` folder.
-3.  **Import it locally**: Use a relative path to import it.
+Install an npm package with an ESM entry point from the app root. AIUI resolves package names from the app's `node_modules`. With the `@demo/ui` example from the [Packages guide](/AIUI/framework/open-agent-format-packages) installed, you can import it by name.
 
 ```javascript
-import { throttle } from './libs/lodash-es.js';
+import { formatMessage } from '@demo/ui';
 
-const handledScroll = throttle(() => {
-  console.log('Scrolling...');
-}, 100);
+console.log(formatMessage('AIUI'));
 ```
+
+If the package declares `./utils` in its `package.json` `exports` field, you can import that subpath as `@demo/ui/utils`.
 
 ## 4. Differences From Traditional CommonJS
 
@@ -76,5 +72,5 @@ Unlike older mini-program frameworks, AIUI does **not support** `module.exports`
 
 ## 5. Notes
 
-*   **Path extensions**: When importing local files, you must include the full file extension such as `.js`, which follows the ESM specification in modern browsers.
+*   **File extensions**. An explicit `.js` or `.ts` extension selects that file. When you omit the extension, as in `import './utils'`, AIUI looks for `./utils.js` first, then `./utils.ts`.
 *   **Top-level await**: AIUI currently does **not support** top-level `await`. Use `await` inside async functions instead.
