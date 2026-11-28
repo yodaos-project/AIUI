@@ -74,9 +74,37 @@ npm create @yodaos-pkg/aiui-agent@latest my-agent
 
 ## 7.查看和编辑 AIUI 智能体代码
 
-打开**代码**页签，从文件树选择要查看的文件。先在 `app.json` 中找到已注册的页面，再打开首页文件查看界面。各文件的用途见 [AIUI 项目结构](../structure.md)。
+打开**代码**页签，在文件树中选择 `app.json`，从 `pages` 找到首页路径。例如，路径为 `pages/index/index` 时，打开 `pages/index/index.ink`。修改一段页面上显示的文字，再打开**效果预览**，确认新文字已经显示。
 
 ![Studio 代码页签中的项目文件树](../../image/quickstart/13.png)
+
+包含首页、天气 Widget 和后台任务的项目可以这样组织。
+
+```text
+agent-app/
+├── AGENTS.md
+├── app.json
+├── app.js
+├── pages/
+│   └── index/
+│       └── index.ink
+├── widgets/
+│   └── weather/
+│       └── index.ink
+├── workers/
+│   └── sync.js
+└── assets/
+```
+
+- `AGENTS.md` 描述智能体的身份、职责和行为边界。
+- `app.json` 注册 Page、Widget 和 Agent Worker，也可以设置全局窗口等选项。
+- `app.js` 存放应用级逻辑，例如智能体启动时要执行的操作。
+- `pages/` 存放页面和交互逻辑。在 `.ink` 文件中，`<page>` 定义界面，`<script setup>` 保存页面数据和处理函数，`<style>` 定义样式。Page 也可以由同名的 `.wxml`、`.wxss`、`.js` 和 `.json` 文件组成。
+- `widgets/` 存放天气卡片之类的小型独立界面。每个 Widget 使用一个 `.ink` 文件。
+- `workers/` 存放 Agent Worker，也就是在后台执行任务且没有界面的脚本。
+- `assets/` 存放图片、音频等资源。可复用的界面组件可以放在 `components/`。
+
+初始项目可能只有首页。需要 Widget、Worker、组件或资源时，再添加对应目录。
 
 ## 8.提审与发布上架到 Rokid Ai 智能体商店
 

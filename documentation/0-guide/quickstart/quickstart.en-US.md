@@ -74,9 +74,37 @@ If you see the previous build, check that Studio uploaded and saved the latest v
 
 ## VII. View and Edit AIUI Agent Code
 
-Open **Code** and select a file in the tree. Start with `app.json` to find the registered pages, then open the home page to inspect its interface. See [AIUI project structure](../structure.en-US.md) for the role of each file.
+Open **Code** and select `app.json` in the file tree. Find the home page under `pages`. For example, if the entry is `pages/index/index`, open `pages/index/index.ink`. Change a piece of text displayed on the page, then open **Preview** and check that the new text appears.
 
 ![Source files in the Studio Code tab](../../image/quickstart.en-us/13.png)
+
+A project with a home page, a Widget, and a background task can look like this.
+
+```text
+agent-app/
+├── AGENTS.md
+├── app.json
+├── app.js
+├── pages/
+│   └── index/
+│       └── index.ink
+├── widgets/
+│   └── weather/
+│       └── index.ink
+├── workers/
+│   └── sync.js
+└── assets/
+```
+
+- `AGENTS.md` describes the agent’s identity, responsibilities, and boundaries.
+- `app.json` registers Pages, Widgets, and Agent Workers and sets options such as the window configuration.
+- `app.js` contains application-level logic, such as what happens when the agent starts.
+- `pages/` contains the screens and their interactions. In an `.ink` file, look in `<page>` for the markup, `<script setup>` for data and handlers, and `<style>` for styles. A Page can also use matching `.wxml`, `.wxss`, `.js`, and `.json` files.
+- `widgets/` contains Widgets, which are small standalone interfaces such as a weather view. Each Widget uses an `.ink` file.
+- `workers/` contains Agent Workers, which are scripts that run tasks without a UI.
+- `assets/` contains files such as images and audio. Projects can also keep reusable interface components in `components/`.
+
+A starter project may have only a home page. Add Widgets, Workers, components, or assets when the agent needs them.
 
 ## VIII. Publish and Submit for Review in the Hi Rokid Agent Store
 
