@@ -54,10 +54,19 @@ reference for exact options and behavior. For example, the AIX packaging
 tutorial shows how to produce and inspect an archive, while the CLI reference
 owns the command options.
 
-Keep the first-run path in `0-guide/quickstart/`. Link to the first runnable
-tutorial, then show how to continue in the same project. State prerequisites,
-the working directory, and the visible result. Put device debugging and
-publishing after the first preview.
+Make every page under `documentation/0-guide/`, especially
+`0-guide/quickstart/`, usable on its own for the task it promises. State the
+starting state and prerequisites, include the commands or UI steps needed to
+finish, and show how to verify the result. Include a short recovery step when
+a common failure would stop the reader. Keep the first preview before device
+debugging or publishing.
+
+Repeat the necessary setup, steps, examples, and limits across guides when
+that saves readers a trip to another page. Write for someone who lands
+directly on the page, including a section reached through search. Keep full
+API and CLI option lists in their reference pages. Use links for optional
+background, advanced variants, or a next task, after the current text gives
+the reader enough to proceed.
 
 ## Audience and Abstraction Boundary
 
@@ -361,3 +370,5 @@ Before finishing a documentation change:
 10. Read changed prose in each language as a first-time reader. Check that
     headings make sense on their own, the reader can identify the next action
     and its result, and every claim is as specific as the evidence allows.
+    For `0-guide/`, read the page without opening its links and check that
+    the reader can complete the stated task and confirm the result.
