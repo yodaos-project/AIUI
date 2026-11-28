@@ -1,0 +1,23 @@
+name: Markdown Links
+
+on: pull_request
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-links:
+    name: Check Markdown link extensions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - run: npm ci --prefix .github/markdown-links
+      - run: node --test .github/markdown-links/check.test.js
+      - run: npm run lint:markdown-links

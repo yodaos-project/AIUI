@@ -1,0 +1,8 @@
+{
+  "name": "aiui-markdown-link-check",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "mdast-util-from-markdown": "^2.0.3"
+  }
+}
