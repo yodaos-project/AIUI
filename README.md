@@ -4,15 +4,17 @@
 
 AIUI brings together documentation, a starter project, design guidance, examples, and developer skills for building agents on Rokid Glasses.
 
-[简体中文](./README.zh-CN.md) · [Quick start](./documentation/0-guide/quickstart/quickstart.en-US.md) · [Benchmark](./bench/README.md) · [Documentation](./documentation/) · [Examples](./samples/) · [Awesome AIUI](https://github.com/yodaos-project/awesome-aiui)
+[简体中文](./README.zh-CN.md) · [Quick start](./documentation/0-guide/quickstart/index.en-US.md) · [Benchmark](./bench/README.md) · [Documentation](./documentation/) · [Examples](./samples/) · [Awesome AIUI](https://github.com/yodaos-project/awesome-aiui)
 
 ## Start building
+
+With Node.js 20 or later and npm, run this in the directory where you want to create the project.
 
 ```bash
 npm create @yodaos-pkg/aiui-agent@latest my-agent
 ```
 
-The starter contains `app.js`, `app.json`, `AGENTS.md`, and an Ink page at `pages/index/index.ink`. Follow the [quick start](./documentation/0-guide/quickstart/quickstart.en-US.md) for the Craft, AIUI Studio, and device debugging workflow.
+The command creates the `my-agent` directory with a home page at `pages/index/index.ink`. Follow the [quick start](./documentation/0-guide/quickstart/index.en-US.md) to preview your first page and add an interaction.
 
 ## AIUI Coding Benchmark
 

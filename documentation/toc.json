@@ -9,12 +9,12 @@
         "expanded": true,
         "children": [
           {
-            "id": "intro",
-            "label": "介绍"
+            "id": "quickstart",
+            "label": "使用 AIUI Studio 开发"
           },
           {
-            "id": "quickstart",
-            "label": "快速入门"
+            "id": "intro",
+            "label": "介绍"
           },
           {
             "id": "first-chat",
@@ -98,7 +98,7 @@
         "children": [
           {
             "id": "network",
-            "label": "网络",
+            "label": "网络开发",
             "children": [
               {
                 "id": "usage",
@@ -109,7 +109,8 @@
                 "label": "局域网通信",
                 "status": "unsupported"
               }
-            ]
+            ],
+            "hasIndex": true
           },
           {
             "id": "storage",
@@ -214,16 +215,16 @@
         "expanded": false,
         "children": [
           {
-            "id": "publish",
-            "label": "提审与发布到 Rokid Ai 智能体商店"
+            "id": "cli",
+            "label": "使用命令行打包"
           },
           {
             "id": "aix",
             "label": "什么是 AIX"
           },
           {
-            "id": "cli",
-            "label": "命令行工具"
+            "id": "publish",
+            "label": "提审与发布"
           }
         ],
         "hasIndex": true
@@ -820,6 +821,7 @@
       {
         "id": "network",
         "label": "网络",
+        "sourcePath": "3-api/network",
         "expanded": false,
         "children": [
           {

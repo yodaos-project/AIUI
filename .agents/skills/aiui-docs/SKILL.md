@@ -16,13 +16,15 @@ public skill listings.
 
 ## Before Writing
 
-1. Read `documentation/toc.json` when adding, moving, renaming, or removing a
-   page. Keep its nested IDs aligned with the file path.
+1. Identify what the reader wants to accomplish or look up. Check both
+   navigation files and nearby pages to find the entry point and the page
+   that already owns the relevant instructions or reference.
 2. Read the target page and nearby pages before editing. Follow the terminology,
    heading depth, link style, and amount of detail used in that section.
-3. Verify API, component, configuration, and runtime behavior against current
-   source, type declarations, packages, or runnable samples. Do not document
-   inferred capabilities as supported behavior.
+3. Verify claims against the intended release. Use implementation or tests for
+   runtime behavior, the scaffold or installed CLI for setup commands, and the
+   product interface for UI steps. Do not document inferred capabilities as
+   supported behavior.
 4. Check whether both the Chinese and English files exist before changing a
    page.
 
@@ -37,11 +39,25 @@ public skill listings.
 - `documentation/6-design/`: visual and interaction guidance.
 - `documentation/7-tools/`: development tools and supporting workflows.
 - `documentation/8-changelog/`: release-oriented change summaries.
-- `documentation/toc.json`: navigation hierarchy shared by localized pages.
+- `documentation/toc.json` and `documentation/toc.en-US.json`: Chinese and
+  English navigation, respectively.
 
-Use the existing directory that matches the reader's task. Do not reorganize
-the navigation or invent a new top-level section for a single page unless the
-request explicitly requires it.
+Keep the existing numbered directories and top-level navigation sections unless
+the user asks to change them. Improve discoverability through ordering, labels,
+and cross-links inside the existing sections. Preserve published route IDs when
+changing labels or order. If a node's route differs from its file path, follow
+the existing explicit `sourcePath` or `docPath` convention.
+
+Use one page as the reference for each API or CLI contract. A task guide can
+include the commands or calls needed for its workflow and link to that
+reference for exact options and behavior. For example, the AIX packaging
+tutorial shows how to produce and inspect an archive, while the CLI reference
+owns the command options.
+
+Keep the first-run path in `0-guide/quickstart/`. Link to the first runnable
+tutorial, then show how to continue in the same project. State prerequisites,
+the working directory, and the visible result. Put device debugging and
+publishing after the first preview.
 
 ## Audience and Abstraction Boundary
 
@@ -83,18 +99,42 @@ it.
 
 ## Writing Style
 
-- Start with what the feature enables, then show how to use it.
-- Prefer task-oriented sections and short paragraphs.
-- Use real Markdown headings for content that should appear in the page outline.
-- Use backticks for identifiers, API names, paths, attributes, and literal
-  values.
-- Use fenced code blocks with an explicit language.
-- Keep examples focused and executable. Avoid unrelated setup and placeholder
-  behavior that the runtime does not support.
-- Explain important defaults, errors, permissions, lifecycle constraints, and
-  platform limitations close to the relevant example.
-- Use root-relative AIUI documentation links such as `/AIUI/api/...` when
-  linking between rendered documentation pages, following nearby pages.
+Write for a developer who can read code but may be new to AIUI. Open with
+what they can build, do, or look up. Give the action, its prerequisites, and
+the expected result close together.
+
+- Use direct verbs and name the actor when it matters: the developer, the
+  API, or the runtime. Replace broad promises about simplicity or performance
+  with concrete behavior. Omit phrases like “just” and “simply” in English
+  and “只需” and “轻松” in Chinese when they gloss over a step or prerequisite.
+- Keep public names such as Page, Widget, and Agent Worker. Explain unfamiliar
+  terms and abbreviations at first use when the reader needs them. Use natural
+  Chinese and US English. Preserve exact code identifiers and UI labels.
+- Write pages that make sense on their own. State relevant versions,
+  permissions, and environment limits near the affected step. Link to stable
+  documentation for background. Keep chat, PR discussion, and editing history
+  out of reader-facing pages.
+- Use short, task-named headings and the shallowest outline that serves the
+  page. Prefer sentence case for new English prose headings. Preserve
+  existing anchors and the API reference hierarchy described below. Use bold
+  for UI labels or important distinctions. Skip decorative headings and symbols.
+- Use backticks for identifiers, paths, attributes, and literal values. Put
+  commands the reader should run and multi-line examples in language-tagged
+  fences. Include the working directory when it affects the outcome.
+- Keep examples focused and executable. Show the default, failure behavior,
+  or cleanup step where it affects the reader's next action.
+- Follow nearby documentation link conventions. Use links whose text tells
+  readers what they will find.
+
+For example, write “From the project directory, run `aix preview .`. Open the
+URL printed in the terminal.” In Chinese, “在项目目录运行 `aix preview .`，
+然后打开终端打印的地址。” For a permission boundary, write
+“`navigator.permissions.query()` reads the current state without opening a
+permission dialog.”
+
+Adapt the voice and word-choice guidance from the
+[Cloudflare Computer prose skill](https://github.com/cloudflare/computer/blob/main/.agents/skills/prose/SKILL.md).
+Keep AIUI's functional Markdown markers and reference conventions.
 
 ## API Reference Page Structure
 
@@ -297,8 +337,10 @@ Before finishing a documentation change:
 
 1. Confirm every changed Chinese page has its corresponding English update when
    a pair exists.
-2. For new or moved pages, verify `documentation/toc.json` resolves to the
-   intended files in both locales.
+2. For navigation changes, follow the affected entry points in both locales.
+   Check targets, link fragments, and related tutorial catalog entries. Keep
+   public routes stable and confirm any intentional locale differences against
+   product availability.
 3. Check API Style groups for matching markers, valid defaults, unique IDs,
    bold-only labels, and equivalent examples.
 4. Render or inspect the Markdown without AIUI-specific enhancement and confirm
@@ -312,3 +354,10 @@ Before finishing a documentation change:
    it.
 8. Check changed public documentation for `Ink` references and replace them
    with product-level wording or the locale-appropriate runtime term.
+9. Run changed first-run commands in a fresh project and test examples with
+   the target runtime or tool where available. Check the expected result.
+   Report what was verified and note any browser, account, or device steps
+   that still require validation.
+10. Read changed prose in each language as a first-time reader. Check that
+    headings make sense on their own, the reader can identify the next action
+    and its result, and every claim is as specific as the evidence allows.

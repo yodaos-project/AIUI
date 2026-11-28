@@ -4,15 +4,17 @@
 
 这里汇集了 Rokid Glasses AIUI 开发所需的文档、项目模板、设计规范、示例和 AI 编码技能。
 
-[English](./README.md) · [快速开始](./documentation/0-guide/quickstart/quickstart.md) · [Benchmark](./bench/README.zh-CN.md) · [开发文档](./documentation/) · [示例项目](./samples/) · [Awesome AIUI](https://github.com/yodaos-project/awesome-aiui)
+[English](./README.md) · [快速开始](./documentation/0-guide/quickstart/index.md) · [Benchmark](./bench/README.zh-CN.md) · [开发文档](./documentation/) · [示例项目](./samples/) · [Awesome AIUI](https://github.com/yodaos-project/awesome-aiui)
 
 ## 快速开始
+
+准备 Node.js 20 或更高版本及 npm，在准备存放项目的目录中运行以下命令。
 
 ```bash
 npm create @yodaos-pkg/aiui-agent@latest my-agent
 ```
 
-模板包含 `app.js`、`app.json`、`AGENTS.md`，以及位于 `pages/index/index.ink` 的 Ink 页面。按照[快速开始指南](./documentation/0-guide/quickstart/quickstart.md)，可继续使用 Craft 开发、上传 AIUI Studio，并在眼镜上调试。
+命令会创建 `my-agent` 目录，首页位于 `pages/index/index.ink`。按照[快速开始指南](./documentation/0-guide/quickstart/index.md)预览第一个页面并添加交互。
 
 ## AIUI 编码基准测试
 

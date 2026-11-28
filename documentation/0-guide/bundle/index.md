@@ -1,10 +1,9 @@
 # 打包与分发
 
-在 AIUI 智能体开发完成后，需要通过特定的工具将其打包为 **AIX** 格式以便分发和运行。
+将项目打包成 `.aix` 文件后，先检查包内文件，再预览、安装到眼镜或提交审核。
 
-本章节将引导你了解 AIUI 的打包体系，请参考以下子章节进行深入学习：
+1. [打包并检查 AIX 文件](../../4-tutorials/delivery/package-an-aix.md)。
+2. [在浏览器中预览打包后的智能体](../../4-tutorials/delivery/preview-a-packaged-agent.md)。要验证真机表现，请[安装到眼镜上](../../4-tutorials/delivery/install-an-aix-on-glasses.md)。
+3. 准备上架后，[通过 AIUI Studio 提审并发布](./publish.md)。
 
-- **[提审与发布到 Rokid Ai 智能体商店](/AIUI/guide/bundle-publish)**: 了解如何通过 Rokid AIUI Studio 发布你的 AIUI 智能体。
-- **[什么是 AIX](/AIUI/guide/bundle-aix)**: 了解 AIUI 引入的标准软件包格式及其核心特性。
-- **[AIX 命令行工具](/AIUI/guide/bundle-cli)**: 学习如何安装和使用 `aix` 命令行工具进行打包和资源优化。
-
+要了解包格式，参阅[什么是 AIX](./aix.md)。要查询命令选项，参阅[命令行参考](../../7-tools/cli.md)。

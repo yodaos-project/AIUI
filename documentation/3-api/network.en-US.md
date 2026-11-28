@@ -1,8 +1,8 @@
 # Network
 
-AIUI networking capabilities mainly fall into three categories: one-shot request and response, continuous server push, and bidirectional real-time communication. Most business APIs and AI service calls should start with `HTTPS`; if the server needs to keep pushing incremental results to the frontend, you can use `SSE`; only consider `WebSocket` when you truly need a long-lived bidirectional real-time connection.
+Choose HTTPS for a request that returns one response, server-sent events (SSE) for updates from the server, or WebSocket when both sides need to send messages.
 
-In the AI glasses scenario, networking also needs to balance battery life and power consumption. To reduce the energy cost of direct network access on the device side, AIUI on Rokid Glasses connects to the mobile app over Bluetooth and carries HTTPS traffic through that link. For developers, the request style stays the same, but when you are interpreting network behavior, poor-network conditions, and on-device debugging results, you should keep in mind that these requests actually travel through the Bluetooth link between the device and the phone.
+On Rokid Glasses, HTTPS requests can travel through the phone’s Bluetooth connection. Use the same request API and check how your page handles slow responses or lost connections on the device.
 
 ## How To Choose
 
@@ -49,6 +49,7 @@ wx.request({
 
 ## Continue Reading
 
+- Start with [Load and Display Remote Data](../4-tutorials/data/load-remote-data.en-US.md) to display the loading message, response, or error.
 - **[HTTPS](/AIUI/api/network-https)**: Learn how ordinary request-response scenarios work in AIUI.
 - **[Event Source](/AIUI/api/network-event-source)**: Learn which business scenarios fit one-way streaming pushes from the server.
 - **[WebSocket](/AIUI/api/network-websocket)**: Learn the typical usage patterns for bidirectional real-time connections, plus connection management and reconnection recommendations.

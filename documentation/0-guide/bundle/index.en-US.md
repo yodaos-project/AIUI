@@ -1,9 +1,9 @@
 # Packaging and Distribution
 
-After AIUI agent development is complete, you need to package the project into the **AIX** format with dedicated tools so it can be distributed and run.
+Package your project as an `.aix` file. Check the files in the package before you preview it, install it on glasses, or submit the agent for review.
 
-This section helps you understand the AIUI packaging system. See the following subtopics for details:
+1. [Package and inspect an AIX file](../../4-tutorials/delivery/package-an-aix.en-US.md).
+2. [Preview the packaged agent in a browser](../../4-tutorials/delivery/preview-a-packaged-agent.en-US.md). To check how it runs on the device, [install it on glasses](../../4-tutorials/delivery/install-an-aix-on-glasses.en-US.md).
+3. [Submit and publish through AIUI Studio](./publish.en-US.md) when the agent is ready for the store.
 
-- **[Submit for Review and Publish to the Hi Rokid Agent Store](/AIUI/guide/bundle-publish)**: Learn how to publish your AIUI agent through the Rokid AIUI Studio Global.
-- **[What is AIX](/AIUI/guide/bundle-aix)**: Learn about the standard package format introduced by AIUI and its core features.
-- **[AIX Command Line Tool](/AIUI/guide/bundle-cli)**: Learn how to install and use the `aix` command line tool for packaging and asset optimization.
+See [What is AIX?](./aix.en-US.md) for the package format and the [CLI reference](../../7-tools/cli.en-US.md) for command options.

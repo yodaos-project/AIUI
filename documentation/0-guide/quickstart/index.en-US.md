@@ -1,26 +1,17 @@
-# QuickStart
+# Quick Start
 
-Welcome to AIUI! AIUI is an AI-native GUI local agent framework designed specifically for AI + AR. It emphasizes both agent-oriented interaction and organizational patterns, while also integrating local device-side capabilities to help developers build truly deployable intelligent agents. To help you develop agents more efficiently, we provide a complete documentation guide:
+Build a page for Rokid Glasses and check it in your browser. The local steps use Node.js 20 or later and npm.
 
-## 📖 How to Use This Documentation
+## Build and Preview Your First Agent
 
-You can switch between different functional modules through the top navigation bar:
+1. [Create and preview a page](../../4-tutorials/getting-started/create-first-agent.en-US.md). Create a project and check that the page displays `Hello, AIUI!` in the browser.
+2. [Add an interactive counter](../../4-tutorials/interface/build-interactive-counter.en-US.md). Connect buttons to page state and check that the count changes in the preview.
 
-- **Quick Overview**: If this is your first time working with AIUI, start here. It covers the core concepts of intelligent agents, the directory structure, and how to build your first agent.
-- **Agent Framework**: Learn more about AIUI's runtime model, including configuration conventions (`AGENTS.md`, `app.json`), [framework structure](../../1-framework/open-agent-format/index.en-US.md) (Pages, Widgets, and Agent Workers), and the WXML/WXSS reference documentation.
-- **Components**: Lists all UI components supported by AIUI in detail, such as `view`, `scroll-view`, `image`, and more, together with their properties and usage.
-- **API**: Provides the JavaScript API reference for AIUI, including framework core APIs, open service APIs, multimedia APIs, network requests, and WeChat Mini Program-compatible APIs.
-- **Developer Tools**: Introduces the AIUI developer tooling system, including the CLI and on-device debugging capabilities.
-- **Changelog**: Learn about the latest features and fixes in AIUI.
+To create a project directly in the browser, [build with AIUI Studio](./quickstart.en-US.md).
 
-In addition, you can choose different documentation versions from the upper-right corner of the page.
+## Next Steps
 
-## 🚀 Next Steps
-
-- **[Read the introduction](../../0-guide/quickstart/intro.en-US.md)**: Understand the basic ideas behind AIUI.
-- **[AIUI Quickstart](../../0-guide/quickstart/quickstart.en-US.md)**: Get a quick overview of AIUI Studio AI CODEING development, debugging, submission for review, and release.
-- **[Conversational AIUI](../../0-guide/quickstart/first-chat.en-US.md)**: Start with card-based interaction inside the chat flow.
-- **[Immersive AIUI](../../0-guide/quickstart/first-immersive.en-US.md)**: Start with complete interaction inside a standalone interface.
-- **[Learn the directory structure](../../0-guide/structure.en-US.md)**: Get familiar with how a standard intelligent agent project is organized.
-
-If you run into any issues during development, feel free to consult the relevant sections at any time.
+- [Test on glasses with AIUI Studio](../debug/real_device_debug.en-US.md) or [install an AIX package with the CLI](../../4-tutorials/delivery/install-an-aix-on-glasses.en-US.md).
+- [Package and publish your agent](../bundle/index.en-US.md).
+- Choose an interaction model. Start with [a card in a conversation](./first-chat.en-US.md) or [an immersive page](./first-immersive.en-US.md).
+- Learn [what AIUI provides](./intro.en-US.md) and [how an AIUI project is organized](../structure.en-US.md).

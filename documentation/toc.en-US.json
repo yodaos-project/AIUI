@@ -9,12 +9,12 @@
         "expanded": true,
         "children": [
           {
-            "id": "intro",
-            "label": "Introduction"
+            "id": "quickstart",
+            "label": "Build with AIUI Studio"
           },
           {
-            "id": "quickstart",
-            "label": "Quick Start"
+            "id": "intro",
+            "label": "Introduction"
           },
           {
             "id": "first-chat",
@@ -109,7 +109,8 @@
                 "label": "LAN",
                 "status": "unsupported"
               }
-            ]
+            ],
+            "hasIndex": true
           },
           {
             "id": "storage",
@@ -214,16 +215,16 @@
         "expanded": false,
         "children": [
           {
-            "id": "publish",
-            "label": "Submit for Review and Publish to the Hi Rokid Agent Store"
+            "id": "cli",
+            "label": "Package with the CLI"
           },
           {
             "id": "aix",
             "label": "What Is AIX"
           },
           {
-            "id": "cli",
-            "label": "CLI"
+            "id": "publish",
+            "label": "Submit and Publish"
           }
         ],
         "hasIndex": true
@@ -624,6 +625,12 @@
         "expanded": false,
         "children": [
           {
+            "id": "overview",
+            "label": "Choose a Media API",
+            "docId": "media",
+            "docPath": "3-api/media.en-US.md"
+          },
+          {
             "id": "sound",
             "label": "Sound"
           },
@@ -660,6 +667,7 @@
       {
         "id": "network",
         "label": "Network",
+        "sourcePath": "3-api/network",
         "expanded": false,
         "children": [
           {
@@ -1198,6 +1206,14 @@
       {
         "id": "overview",
         "label": "Overview"
+      },
+      {
+        "id": "account-token",
+        "label": "Get an Account Token"
+      },
+      {
+        "id": "messaging",
+        "label": "Work with Temporary Messages"
       },
       {
         "id": "notifications",

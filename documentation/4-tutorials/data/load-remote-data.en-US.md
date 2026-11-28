@@ -1,12 +1,12 @@
 # Load and Display Remote Data
 
-This tutorial loads remote data with `fetch()` and presents distinct loading, success, and failure states.
+Request a JSON message with `fetch()`. Show a loading message while the request runs, then display the response or an error.
 
 ## Request the Data
 
 <!-- aiui-tutorial-step -->
 
-Start the request in `onLoad()`. Enter the loading state first, then update the page data once for each response outcome. Replace the example URL with your own HTTPS endpoint.
+Replace the example URL with an HTTPS endpoint that returns a JSON object with a string `message` field. The page starts the request in `onLoad()`.
 
 ```html
 <script setup>
@@ -46,7 +46,7 @@ export default {
 
 <!-- aiui-tutorial-step -->
 
-Do not implement only the successful result. Check the loading state first, show an error when present, and otherwise render the returned content.
+Show the loading text while `loading` is true. When the request finishes, show the error if there is one or display the message.
 
 ```html
 <page>
@@ -60,4 +60,4 @@ Do not implement only the successful result. Check the loading state first, show
 
 <!-- /aiui-tutorial-step -->
 
-On-device requests may travel through the Bluetooth link between the glasses and phone, so verify the failure state under slow and disconnected network conditions. See [Network APIs](/AIUI/api/network) for other request patterns.
+On-device requests may travel through the Bluetooth link between the glasses and phone, so verify the failure state under slow and disconnected network conditions. See the [HTTPS reference](../../3-api/network/https.en-US.md) for `fetch` parameters, responses, and errors, or [choose a network API](../../3-api/network.en-US.md) for other request patterns.
