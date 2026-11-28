@@ -1,6 +1,10 @@
 name: Markdown Links
 
-on: pull_request
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: read
@@ -20,4 +24,5 @@ jobs:
 
       - run: npm ci --prefix .github/markdown-links
       - run: node --test .github/markdown-links/check.test.js
-      - run: npm run lint:markdown-links
+      - name: Check local link targets and extensions
+        run: npm run lint:markdown-links
