@@ -1,12 +1,12 @@
 # 构建一个交互式计数器
 
-这个教程通过一个计数器介绍页面数据、Mustache 数据绑定、事件处理和 `setData()`。
+沿用[创建第一个 AIUI 智能体](../getting-started/create-first-agent.md)中的项目。替换 `pages/index/index.ink` 中的三个区块，把欢迎页面改成交互计数器。
 
 ## 添加页面状态
 
 <!-- aiui-tutorial-step -->
 
-在 `pages/index/index.ink` 的 `<script setup>` 中声明 `count`。事件处理函数通过 `setData()` 更新状态，AIUI 随后会刷新使用该状态的界面。
+用下面的代码替换 `<script setup>` 区块。按钮的事件处理函数调用 `setData()` 修改 `count`，AIUI 随后更新绑定到 `count` 的文本。
 
 ```html
 <script setup>
@@ -32,7 +32,7 @@ export default {
 
 <!-- aiui-tutorial-step -->
 
-使用 `{{ count }}` 显示当前值，并用 `bindtap` 将两个按钮连接到页面方法。方法名需要和 `<script setup>` 中的定义一致。
+替换整个 `<page>` 区块。使用 `{{ count }}` 显示当前值，并用 `bindtap` 将两个按钮连接到页面方法。方法名需要和 `<script setup>` 中的定义一致。
 
 ```html
 <page>
@@ -53,7 +53,7 @@ export default {
 
 <!-- aiui-tutorial-step -->
 
-让页面尺寸跟随宿主可用区域，并使用 Flexbox 排列内容。不要为眼镜界面写死根节点宽高。
+替换 `<style>` 中的 CSS，用 Flexbox 在可用空间内排列计数器。
 
 ```css
 .counter {
@@ -79,4 +79,12 @@ export default {
 
 <!-- /aiui-tutorial-step -->
 
-在效果预览中连续点击按钮，确认显示值会随每次操作更新。数据绑定的完整规则参见[数据绑定](/AIUI/framework/wxml/data-binding)。
+在项目目录启动预览，然后打开终端打印的地址。
+
+```bash
+aix preview .
+```
+
+计数从 `0` 开始。点击**增加**后应显示 `1`，再点击**减少**应回到 `0`。预览结束后，在终端按 `Ctrl+C` 停止服务。要了解显示值如何更新，参阅[数据绑定](/AIUI/framework/wxml/data-binding)。
+
+接下来可以[使用 AIUI Studio 在眼镜上调试](../../0-guide/debug/real_device_debug.md)，或[用 AIX CLI 打包智能体](../delivery/package-an-aix.md)。

@@ -1,12 +1,12 @@
 # 创建第一个 AIUI 智能体
 
-这个教程会创建一个最小 AIUI 项目，并用 `.ink` 单文件页面显示一条欢迎消息。
+创建一个在浏览器中显示 `Hello, AIUI!` 的页面。开始前请准备 Node.js 20 或更高版本和 npm。
 
 ## 创建项目
 
 <!-- aiui-tutorial-step -->
 
-运行脚手架并进入项目目录。脚手架会生成 `app.json`、`app.js`、`AGENTS.md` 和页面目录。
+在存放项目的目录中运行以下命令。第一条命令会创建 `hello-aiui`，其中已包含应用配置和首页。
 
 ```bash
 npm create @yodaos-pkg/aiui-agent@latest hello-aiui
@@ -19,7 +19,7 @@ cd hello-aiui
 
 <!-- aiui-tutorial-step -->
 
-`app.json` 声明智能体包含哪些 Page。这里仅注册一个首页，路径不包含文件扩展名。
+确认 `app.json` 的 `pages` 列表中包含 `pages/index/index`，路径不带文件扩展名。保留脚手架生成的其他字段。
 
 ```json
 {
@@ -35,7 +35,7 @@ cd hello-aiui
 
 <!-- aiui-tutorial-step -->
 
-创建 `pages/index/index.ink`。一个 `.ink` 文件可以同时包含页面逻辑、结构和样式，适合快速完成第一个可运行界面。
+将 `pages/index/index.ink` 的内容替换为以下代码。`<script setup>` 定义消息，`<page>` 显示消息，`<style>` 将消息放在页面中央。
 
 ```html
 <script setup>
@@ -70,4 +70,21 @@ export default {
 
 <!-- /aiui-tutorial-step -->
 
-现在可以将项目导入 AIUI Studio，通过效果预览检查页面。继续阅读[项目结构](/AIUI/guide/structure)，了解 Page、Widget 和 Agent Worker 的组织方式。
+## 预览页面
+
+<!-- aiui-tutorial-step -->
+
+在 `hello-aiui` 目录中安装 AIX CLI 并启动预览。保持预览运行，在浏览器中打开终端打印的地址。
+
+```bash
+npm install -g @yodaos-pkg/aix-cli
+aix preview .
+```
+
+<!-- /aiui-tutorial-step -->
+
+确认页面中央显示 `Hello, AIUI!`。如果显示了其他页面，检查当前目录和 `app.json` 中的 `pages` 配置。预览结束后，在终端按 `Ctrl+C` 停止服务。
+
+## 添加交互
+
+接着[构建交互计数器](../interface/build-interactive-counter.md)，让页面上的数值随按钮点击更新。

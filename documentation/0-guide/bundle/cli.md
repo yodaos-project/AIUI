@@ -1,17 +1,15 @@
 # AIX-CLI 工具
 
-`AIX-CLI` 是用于管理、打包和查看 AIX 文件的官方命令行工具。
+用 `aix` 打包项目，并检查包内有哪些文件。
+
+有关安装要求及完整的命令和选项，请参阅[命令行参考](../../7-tools/cli.md)。
 
 ## 安装
 
-如果你已经获取了源码，可以通过 npm 或 cargo 进行安装：
+使用 Node.js 20 或更高版本，通过 npm 安装已发布的命令行工具。
 
 ```bash
 npm install -g @yodaos-pkg/aix-cli
-```
-
-```bash
-cargo install --path packages/aix-cli
 ```
 
 ## 核心命令

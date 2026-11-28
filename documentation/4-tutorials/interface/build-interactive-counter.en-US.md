@@ -1,12 +1,12 @@
 # Build an Interactive Counter
 
-This tutorial uses a counter to introduce page data, Mustache data binding, event handlers, and `setData()`.
+Start with the project from [Create Your First AIUI Agent](../getting-started/create-first-agent.en-US.md). Replace the three sections of `pages/index/index.ink` to turn the welcome screen into a counter.
 
 ## Add Page State
 
 <!-- aiui-tutorial-step -->
 
-Declare `count` in the `<script setup>` section of `pages/index/index.ink`. The event handlers update state with `setData()`, and AIUI then refreshes the interface that uses that state.
+Replace `<script setup>` with the code below. Each button handler calls `setData()` to change `count`. AIUI updates the text bound to `count`.
 
 ```html
 <script setup>
@@ -32,7 +32,7 @@ export default {
 
 <!-- aiui-tutorial-step -->
 
-Use `{{ count }}` to display the current value and `bindtap` to connect both buttons to page methods. Each method name must match its definition in `<script setup>`.
+Replace the entire `<page>` section. Use `{{ count }}` to display the current value and `bindtap` to connect both buttons to page methods. Each method name must match its definition in `<script setup>`.
 
 ```html
 <page>
@@ -53,7 +53,7 @@ Use `{{ count }}` to display the current value and `bindtap` to connect both but
 
 <!-- aiui-tutorial-step -->
 
-Let the page follow the space available from its host and arrange the content with Flexbox. Avoid fixed dimensions on the root container of a glasses interface.
+Replace the CSS inside `<style>`. Flexbox arranges the counter within the available space.
 
 ```css
 .counter {
@@ -79,4 +79,12 @@ Let the page follow the space available from its host and arrange the content wi
 
 <!-- /aiui-tutorial-step -->
 
-Click the buttons repeatedly in the preview and confirm that the displayed value changes after every action. See [Data Binding](/AIUI/framework/wxml/data-binding) for the complete binding rules.
+Start the preview from the project directory and open the URL printed in the terminal.
+
+```bash
+aix preview .
+```
+
+The counter starts at `0`. Click **Increase** to see `1`, then click **Decrease** to return to `0`. Press `Ctrl+C` in the terminal to stop the preview. See [data binding](/AIUI/framework/wxml/data-binding) for the complete binding rules.
+
+Next, [test on glasses with AIUI Studio](../../0-guide/debug/real_device_debug.en-US.md) or [package your agent with the AIX CLI](../delivery/package-an-aix.en-US.md).

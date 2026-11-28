@@ -1,17 +1,15 @@
 # AIX-CLI Tool
 
-`AIX-CLI` is the official command line tool for managing, packaging, and inspecting AIX files.
+Use `aix` to package a project and check which files the package contains.
+
+See the [CLI reference](../../7-tools/cli.en-US.md) for installation requirements and the full list of commands and options.
 
 ## Installation
 
-If you already have the source code, you can install it with npm or cargo:
+To install the published CLI, use npm with Node.js 20 or later.
 
 ```bash
 npm install -g @yodaos-pkg/aix-cli
-```
-
-```bash
-cargo install --path packages/aix-cli
 ```
 
 ## Core Commands
