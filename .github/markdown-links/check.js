@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { posix } from 'node:path';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 
@@ -24,7 +24,7 @@ function* linkDestinations(markdown) {
   }
 }
 
-function suggestFilename(source, url, markdownFiles) {
+function checkDestination(source, url, files, directories) {
   const [pathname] = url.split(/[?#]/, 1);
   if (!pathname || /^(?:\/|[a-z][a-z\d+.-]*:)/i.test(pathname)) return;
 
@@ -35,23 +35,36 @@ function suggestFilename(source, url, markdownFiles) {
     return;
   }
 
-  if (decodedPath.endsWith('/') || decodedPath.endsWith('.md')) return;
+  const sourceDirectory = posix.dirname(source);
+  const target = posix.join(sourceDirectory, decodedPath);
+  if (files.has(target) || directories.has(target.replace(/\/$/, ''))) return;
 
-  const directory = posix.dirname(source);
-  if (markdownFiles.has(posix.join(directory, decodedPath + '.md')) &&
-      !existsSync(posix.join(directory, decodedPath))) {
-    return pathname + '.md' + url.slice(pathname.length);
+  if (!decodedPath.endsWith('/') && !decodedPath.endsWith('.md') &&
+      files.has(posix.join(sourceDirectory, decodedPath + '.md'))) {
+    const replacement = pathname + '.md' + url.slice(pathname.length);
+    return `should be ${JSON.stringify(replacement)}`;
+  }
+
+  return 'does not point to a tracked file or directory';
+}
+
+const trackedPaths = execFileSync('git', ['ls-files', '-z'], { encoding: 'utf8' });
+const files = new Set(trackedPaths.split('\0').filter(Boolean));
+const directories = new Set(['.']);
+for (const file of files) {
+  let directory = posix.dirname(file);
+  while (!directories.has(directory)) {
+    directories.add(directory);
+    directory = posix.dirname(directory);
   }
 }
 
-const trackedMarkdown = execFileSync('git', ['ls-files', '-z', '--', '*.md'], { encoding: 'utf8' });
-const markdownFiles = new Set(trackedMarkdown.split('\0').filter(Boolean));
-
-for (const file of markdownFiles) {
+for (const file of files) {
+  if (!file.endsWith('.md')) continue;
   for (const { url, position } of linkDestinations(readFileSync(file, 'utf8'))) {
-    const replacement = suggestFilename(file, url, markdownFiles);
-    if (replacement) {
-      console.error(`${file}:${position.start.line}: ${JSON.stringify(url)} should be ${JSON.stringify(replacement)}`);
+    const problem = checkDestination(file, url, files, directories);
+    if (problem) {
+      console.error(`${file}:${position.start.line}: ${JSON.stringify(url)} ${problem}`);
       process.exitCode = 1;
     }
   }
