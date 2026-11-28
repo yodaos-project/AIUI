@@ -1,13 +1,13 @@
 # Submit for Review and Publish to the Hi Rokid Agent Store
 
-After developing your agent, packaging it as an AIX file, and uploading it to the cloud, you can publish it to the Hi Rokid Agent Store through AIUI Studio(Global), where users in Chinese mainland can download and use it.
+Before submitting in AIUI Studio Global, package the current version in **Build & Review**, wait for upload, and save the agent information. In the Hi Rokid app, update the glasses resource package and confirm the agent opens and its main workflow works on the glasses. Use this page to prepare permissions, store copy, and preview materials for that version. This guide covers submissions for the agent store in mainland China.
 
 ## AIUI Agent Review and Publishing
 
 ## 1. Complete Workflow
 ![Review workflow](../../image/publish.en-US/review-workflow.en-US.png)
 
-```latex
+```text
 Build project -> Simulate in browser -> Package AIX and upload to cloud -> Debug on a real device -> Complete review information -> Submit for review -> Review result
 ```
 

@@ -1,116 +1,84 @@
 # AIUI Studio 快速入门
+
+在 AIUI Studio 创建或导入智能体，然后在浏览器中确认首页能打开。开始前请准备 Rokid 账号。已有项目时，直接选择对应的导入方式。
+
 ## 1.什么是 AIUI Studio
 
-AIUI Studio 是 Rokid 面向 Rokid Glasses 的 AIUI 智能体一站式开发构建平台，运行在浏览器中，无需安装本地开发环境。它为开发者提供从“创建 AIUI 智能体”到“提交上架”的完整链路：
-
-- 用 **AIUI CODING** 驱动开发：用自然语言描述需求，AI 直接读写项目代码；
-- **真机模拟**：模拟智能体在眼镜上的交互流程，也可直接运行智能体；
-- **智能体调试与提审**：完成真机验证、版本生成、资料保存和提交审核。
+AIUI Studio 在浏览器中运行。你可以在工作台编辑智能体，在到眼镜上测试前先预览界面。
 
 ## 2.登陆 AIUI Studio
 
-1. 在浏览器打开 AIUI Studio：<https://aiui.rokid.com/>
-2. 若无登录，请在 Rokid 账号中心完成登录。
-3. 登录完成后自动返回工作台，左侧智能体列表会加载当前账号下的云端 AIUI 智能体。
+打开 [AIUI Studio](https://aiui.rokid.com/)，登录 Rokid 账号。登录后确认能进入工作台，并在左侧看到当前账号的智能体列表。
 
 ## 3.在 AIUI Studio 中创建 AIUI 项目
 
-新建 AIUI 智能体有三种方式：
+根据源码的位置选择一种创建方式。
 
-| 创建方式 | 适用场景 | 结果 |
-| --- | --- | --- |
-| 对话创建 | 从零开始构建智能体 | 进入 AIUI CODING，通过自然语言生成完整工程 |
-| 本地导入 | 本机已有 AIUI 工程 | 授权系统文件夹后导入代码 |
-| GitHub 导入 | 代码位于远程仓库 | 按仓库地址、分支或标签导入指定目录 |
-
-```latex
-⚠️ 只需选择一种方式进行创建 AIUI 项目，新手推荐使用“对话创建”。
-```
+| 手头的项目 | 创建方式 |
+| --- | --- |
+| 还没有项目 | **对话创建** |
+| 电脑上已有项目 | **本地导入** |
+| 项目存放在 GitHub | **GitHub 导入** |
 
 ## 创建方式一：通过 AI Coding 创建
 
-AIUI CODING 是主要开发界面，初次使用需要下载并启用 AIUI Studio 内置的 `aiui-dev` Skill。
+选择**对话创建**。首次使用 **AIUI CODING** 时，下载并启用内置的 `aiui-dev` 技能。
 
-![image.png](../../image/quickstart/1.png)
-
-你可以持续用自然语言补充功能、调整界面或排查问题，AI 会读取工程上下文并直接修改项目文件。
+![AIUI Studio 工作台中的 AIUI CODING 设置](../../image/quickstart/1.png)
 
 ## 创建方式二：本地导入 AIUI 项目
 
-1. 在终端输入：
+已有项目时，找到包含 `app.json` 的文件夹。需要新建项目时，准备 Node.js 20 或更高版本及 npm，在存放项目的目录中运行以下命令。
 
-```plain
+```bash
 npm create @yodaos-pkg/aiui-agent@latest my-agent
 ```
 
-![image.png](../../image/quickstart/2.png)
+在 Studio 选择**本地导入**，选中 `my-agent` 文件夹或现有项目的根目录。如果浏览器请求访问文件夹，授予所选文件夹的访问权限。
 
-2. 找到文件所在位置。
-
-![image.png](../../image/quickstart/3.png)
-
-3. 点击“本地导入”，选择对应文件夹。
-
-![image.png](../../image/quickstart/4.png)
+![AIUI Studio 的本地项目导入入口](../../image/quickstart/4.png)
 
 ## 创建方式三：GitHub 导入
 
-AIUI Sample 项目：<https://github.com/jsar-project/AIUI/tree/main/samples>
+选择 **GitHub 导入**，输入仓库地址，选择分支或标签，再指定包含 `app.json` 的目录。也可以从 [AIUI 示例项目](https://github.com/yodaos-project/AIUI/tree/main/samples) 中选择一个项目导入。
 
-![image.png](../../image/quickstart/5.png)
+![AIUI Studio 的 GitHub 项目导入界面](../../image/quickstart/5.png)
 
 ## 4.使用 AIUI CODING 生成与修改项目
 
-AIUI CODING 是 AIUI Studio 的 AI 开发工具，可以持续用自然语言补充项目功能、调整界面或排查问题，工具会读取工程上下文并直接修改项目文件。
+在 **AIUI CODING** 中，每次描述一项改动。第一次可以让它显示一个从 0 开始的计数，再加一个按钮，每点击一次就加 1。需要指定修改位置时，可以附上相关文件。
 
-- **命令输入框**：输入需求后发送，生成过程中可随时停止。
+![AIUI CODING 的指令输入区](../../image/quickstart/6.png)
 
-![image.png](../../image/quickstart/6.png)
-
-- **上下文附件**：将相关文件附加到当前指令，帮助 AI 精确理解修改范围。
-
-![image.png](../../image/quickstart/7.png)
-
-- **指令建议**：一次指令只描述一个清晰目标，并补充页面状态、交互方式和验收结果。
-
-![image.png](../../image/quickstart/8.png)
+打开**代码**页签，检查 AIUI CODING 改动了哪些文件。
 
 ## 5. AIUI 智能体网页端模拟调试
 
-点击“真机模拟”栏的“效果预览”按钮，可直接在 Web 端进行模拟调试。可模拟用户输入、镜腿操作和不同光照环境显示的效果。
+在**真机模拟**中选择**效果预览**，确认能看到首页。如果做了计数器，点击按钮，确认计数从 0 变为 1。
 
-![image.png](../../image/quickstart/9.png)
+![Studio 浏览器预览中的智能体页面](../../image/quickstart/9.png)
 
-了解更多内容，请查看 [AIUI 智能体网页端模拟调试](../../0-guide/debug/web_debug.md)
+用预览控件测试智能体实际用到的输入，例如语音或镜腿操作。切换光照设置，检查文字是否清晰。如果某一步失败，查看控制台或网络日志。
 
 ## 6. AIUI 智能体真机调试
 
-对 AIUI 智能体进行打包，构建与提审 -> AIX打包，打包成功后会自动同步到云端
+在 Rokid AI App 中连接 Rokid 眼镜，再将刚预览的版本同步到眼镜。
 
-![image.jpg](../../image/quickstart/10.jpg)
+1. 在 Studio 打开**构建与提审**，执行 **AIX 打包**，等待上传完成。保存智能体资料，手机 App 才能下载新版本。
+2. 在 Rokid AI App 中进入**设置 → 开发者选项 → AIUI**，点击**更新眼镜资源包**，等待出现**智能体资源包下载成功**。
+3. 说出智能体名称并打开它，检查首屏是否包含刚才的改动，再操作一遍主要功能。
 
+![Rokid AI App 中的眼镜资源包更新入口](../../image/quickstart/11.png)
 
-```latex
-⚠️ 在进行 AIUI 智能体真机调试前，需要完成“打包 AIX”才可以获取到最新的 AIUI 智能体
-```
-
-在 Rokid Ai APP 中进入设置 -> 开发者 -> 更新眼镜资源包
-
-![image.png](../../image/quickstart/11.png)
-
-看到“智能体资源包下载成功”提示后，通过语义命中智能体，体验真实交互链路，例如：“乐奇，打开 xxx 智能体”。
-
-![image.png](../../image/quickstart/12.png)
-
-了解更多内容，请查看 [AIUI 智能体真机调试](../../0-guide/debug/real_device_debug.md)
+如果打开的还是旧版本，确认 Studio 已上传并保存最新版本，再更新一次眼镜资源包。更多检查项见[真机调试](../debug/real_device_debug.md)。
 
 ## 7.查看和编辑 AIUI 智能体代码
 
-打开右侧“代码”页签即可检查或手动编辑 AIUI 代码，文件树支持新建、重命名、删除、复制路径和刷新目录。
+打开**代码**页签，在文件树中选择 `app.json`，从 `pages` 找到首页路径。例如，路径为 `pages/index/index` 时，打开 `pages/index/index.ink`。修改一段页面上显示的文字，再打开**效果预览**，确认新文字已经显示。
 
-![image.png](../../image/quickstart/13.png)
+![Studio 代码页签中的项目文件树](../../image/quickstart/13.png)
 
-项目目录通常包含全局配置、Page、Widget、Agent Worker、组件和资源：
+包含首页、天气 Widget 和后台任务的项目可以这样组织。
 
 ```text
 agent-app/
@@ -127,29 +95,23 @@ agent-app/
 │   └── sync.js
 └── assets/
 ```
-+ `AGENTS.md`：描述智能体身份、职责和行为边界。
-+ `app.json`：声明 Page、Widget、Agent Worker 和全局窗口行为。
-+ `pages/`：存放页面及交互逻辑。
-+ `widgets/`：存放小尺寸独立界面，每个入口使用 `.ink` 文件。
-+ `workers/`：存放不显示界面的 Agent Worker 后台脚本。
-+ `assets/`：存放图片、音频等静态资源。
-+ `.ink`：该文件格式可在单个文件中组合 Page 或 Widget 的配置、逻辑、结构和样式；
-+ 项目也可以采用 WXML、WXSS、JavaScript 和 JSON 组成的多文件页面结构
 
-了解更多 AIUI 文件结构请查看[项目结构](../structure.md)。
+- `AGENTS.md` 描述智能体的身份、职责和行为边界。
+- `app.json` 注册 Page、Widget 和 Agent Worker，也可以设置全局窗口等选项。
+- `app.js` 存放应用级逻辑，例如智能体启动时要执行的操作。
+- `pages/` 存放页面和交互逻辑。在 `.ink` 文件中，`<page>` 定义界面，`<script setup>` 保存页面数据和处理函数，`<style>` 定义样式。Page 也可以由同名的 `.wxml`、`.wxss`、`.js` 和 `.json` 文件组成。
+- `widgets/` 存放天气卡片之类的小型独立界面。每个 Widget 使用一个 `.ink` 文件。
+- `workers/` 存放 Agent Worker，也就是在后台执行任务且没有界面的脚本。
+- `assets/` 存放图片、音频等资源。可复用的界面组件可以放在 `components/`。
+
+初始项目可能只有首页。需要 Widget、Worker、组件或资源时，再添加对应目录。
 
 ## 8.提审与发布上架到 Rokid Ai 智能体商店
 
-在“构建与提审”栏中填写基本信息、权限依赖和预览素材，然后保存资料并提交审核。
+在眼镜上验证主要流程后，打开**构建与提审**。填写智能体名称、应用类别、功能介绍和开场白，更换默认图标，勾选用到的权限并写明各自用途。上传 3 至 5 个预览文件，其中至少有 1 张图片和 1 个视频。
 
-![image.png](../../image/quickstart/14.png)
+保存资料，确认当前版本，再点击**提交审核**。在智能体列表查看审核状态。如果未通过，根据审核原因修改后再次提交。
 
-了解更多 AIUI 智能体提审与发布，请查看 [提审与发布到 Rokid Ai 智能体商店](../../0-guide/bundle/publish.md)
+![构建与提审页签中的资料表单](../../image/quickstart/14.png)
 
-审核状态：
-
-+ **审核中**：等待平台审核，期间可在智能体列表查看状态。
-+ **审核拒绝**：根据拒绝原因修改代码或资料，重新打包、保存并提交。
-+ **审核通过**：智能体进入可发布状态，并可在 Rokid AI App 的智能体商店中展示和使用。
-
-提交前建议再次确认，真机核心流程已通过、权限声明与代码一致、资料无夸大内容、图片与视频数量和格式符合要求。
+字段长度、素材格式和审核标准见[发布要求](../bundle/publish.md)。

@@ -1,50 +1,35 @@
 # Real-Device Debugging with AIUI Studio
 
-On-device debugging is a critical step in verifying the real user experience of AIUI agents. Compared with desktop or simulated environments, real devices can more accurately reflect device-side performance, interaction feedback, network conditions, and local capability invocation, Prioritize real-device results as the final basis for judging the user experience.
-
-This page covers packaging in AIUI Studio and updating the glasses resource package through the Rokid AI App. To install and launch a local project over ADB, see [Real-Device Debugging (CLI)](/AIUI/guide/debug-cli_device_debug).
+Install the version you saved in AIUI Studio and check that the agent opens on your glasses. You need the agent project in Studio and Rokid Glasses connected to the Hi Rokid app. To install from a local project through ADB, follow the [command-line device guide](/AIUI/guide/debug-cli_device_debug).
 
 ## 1. Package and Save the AIX
 
-Open the **Build & Review** tab on the right, then complete the packaging and save the agent information. The Rokid AI App downloads the latest version of the current agent through **Update glasses resource** only after a new version has been generated and saved in AIUI Studio.
+1. Open **Build & Review** and use the AIX packaging action.
+2. Wait for the upload to finish. If it fails, use the error message to fix the problem, then package again.
+3. Save the agent information. The app downloads the new build after Studio has packaged it and saved the version. Studio assigns the version number.
 
-The version number is generated automatically by the system and cannot be edited by developers. The version number increases each time you package, save the agent information, or submit it for review.
-
-A progress dialog is displayed during upload:
-
-- **Upload successful:** Continue with real-device debugging or submit the agent for review.
-- **Upload failed:** Fix the issue based on the error message and try again.
-
-Package the AIUI agent by going to **Build & Review -> AIX Packaging**. After packaging succeeds, the package is automatically synchronized to the cloud.
-
-![image.jpg](../../image/quickstart.en-us/10.png)
-
-```latex
-⚠️ Before debugging an AIUI agent on a real device, you must complete “AIX Packaging” to obtain the latest files.
-```
+![AIX packaging in the Build & Review tab](../../image/quickstart.en-us/10.png)
 
 ## 2. Real-Device Debugging
 
-1. Open the Hi Rokid App and connect your Rokid Glasses.
-2. Go to **Settings -> Developer Options -> AIUI**.
-3. Tap **Update glasses resource** and wait for the download to finish on the glasses.
+1. In the Hi Rokid app, go to **Settings → Developer Options → AIUI**.
+2. Tap **Update glasses resource** and wait for **Agent resource package downloaded successfully**.
 
-![image.jpg](../../image/quickstart.en-us/11.png)
+![Glasses resource update in the mobile app](../../image/quickstart.en-us/11.png)
 
-4. After the message **Agent resource package downloaded successfully** appears, invoke the agent by voice and complete the real interaction flow, for example: “Hi Rokid, open the xxx agent.”
+3. Ask the glasses to open your agent by name. Check that its first screen includes the change you made.
 
-![image.jpg](../../image/quickstart.en-us/12.png)
+![Agent launch on Rokid Glasses](../../image/quickstart.en-us/12.png)
 
-5. If the result does not match expectations, return to AIUI Studio, make the necessary changes, package and save the agent again, and repeat the steps above.
+If the change is missing, confirm the latest build was uploaded and saved in Studio, then update the glasses resource again.
 
 ## 3. Developer Self-Test
 
-After completing real-device debugging, verify at least the following:
+Run the agent’s main task from start to finish on the glasses.
 
-- The initial screen loads as expected, and core tasks and return paths work correctly.
-- Speech recognition, camera input, and Temple Controls behave as expected.
-- Text, icons, and status information remain clear and legible under different lighting conditions.
-- Console, Problems, and network information contain no unhandled errors.
-- The application recovers correctly during continuous operation, after unexpected input, and under weak-network conditions.
+- Confirm the first screen loads and you can complete the task and return.
+- Try the inputs your agent uses, such as voice, camera, or temple controls.
+- Check text, icons, and status messages under different lighting conditions.
+- Repeat the main task and check what the agent shows when it gets unexpected input or loses its network connection. Look for unhandled errors in the console or network log.
 
-Real-device results are the primary basis for evaluating the final experience. Pay particular attention to startup time, visual stability, voice and gesture feedback, network status, local capability calls, and stability over extended use.
+After these checks pass, [prepare the submission](../bundle/publish.en-US.md).
