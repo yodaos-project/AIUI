@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "lint:markdown-links": "node .github/markdown-links/check.js",
     "bench": "node bench/src/cli.js",
     "bench:test": "npm test --prefix bench"
   },
